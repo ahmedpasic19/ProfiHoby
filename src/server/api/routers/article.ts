@@ -27,7 +27,7 @@ export const articleRouter = createTRPCRouter({
 
   getAllArticles: publicProcedure.query(async ({ ctx }) => {
     const articles = await ctx.prisma.article.findMany({
-      include: { image: true },
+      include: { image: true, categories: true },
     })
     return articles
   }),

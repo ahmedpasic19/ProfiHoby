@@ -74,8 +74,9 @@ model Article {
     discount    Int?
     image       Image[]
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt  DateTime              @default(now())
+    updatedAt  DateTime              @updatedAt
+    categories CategoriesOnArticle[]
 }
 
 model Image {
@@ -86,4 +87,20 @@ model Image {
     article_id String?
     User       User?    @relation(fields: [userId], references: [id])
     userId     String?
+}
+
+model Category {
+    id       String                @id @default(cuid())
+    name     String
+    articles CategoriesOnArticle[]
+}
+
+model CategoriesOnArticle {
+    article     Article  @relation(fields: [article_id], references: [id])
+    article_id  String
+    category    Category @relation(fields: [category_id], references: [id])
+    category_id String
+    assignedAt  DateTime @default(now())
+
+    @@id([article_id, category_id])
 }

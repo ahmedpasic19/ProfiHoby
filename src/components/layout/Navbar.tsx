@@ -9,7 +9,11 @@ const Navbar = () => {
   const navlinks = [
     {
       href: '/',
-      label: 'Home',
+      label: 'Početna stranica',
+    },
+    {
+      href: '/add-article',
+      label: 'Dodaj Artikal',
     },
     {
       href: '/articles',
