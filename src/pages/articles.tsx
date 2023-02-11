@@ -24,7 +24,7 @@ const Articles: NextPage = () => {
 
   const columns = useMemo<ColumnDef<TArticle>[]>(() => articleColumns, [])
 
-  const dummyData = () => {
+  const useData = () => {
     return data ? data : ([] as TArticle[])
   }
 
@@ -44,8 +44,8 @@ const Articles: NextPage = () => {
           </button>
         </section>
 
-        <div className='w-fulljustify-center relative flex overflow-y-auto'>
-          <MainTable data={dummyData()} columns={columns} showNavigation />
+        <div className='w-full justify-center relative flex overflow-y-auto'>
+          <MainTable data={useData()} columns={columns} showNavigation />
         </div>
       </div>
       <CreateArticleModal isOpen={openCreate} setIsOpen={setOpenCreate} />
