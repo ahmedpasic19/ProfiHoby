@@ -12,12 +12,12 @@ const Navbar = () => {
       label: 'Početna stranica',
     },
     {
-      href: '/add-article',
-      label: 'Dodaj Artikal',
-    },
-    {
       href: '/articles',
       label: 'Artikli',
+    },
+    {
+      href: '/create-category',
+      label: 'Kategorije',
     },
   ]
 

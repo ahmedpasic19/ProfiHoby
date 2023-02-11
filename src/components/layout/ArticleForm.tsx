@@ -2,16 +2,19 @@ import { Article } from '@prisma/client'
 import { FormEvent, ChangeEvent } from 'react'
 import { api } from '../../utils/api'
 import FieldSet from '../Fieldset'
+import * as Ai from 'react-icons/ai'
 
 type TProps = {
   setArticleData: React.Dispatch<React.SetStateAction<Article>>
   setPageIndex: React.Dispatch<React.SetStateAction<number>>
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   setArticleId: React.Dispatch<React.SetStateAction<string | null>>
   articleData: Article
   pageIndex: number
 }
 
 const ArticleForm = ({
+  setIsOpen,
   setArticleData,
   setPageIndex,
   setArticleId,
@@ -52,7 +55,7 @@ const ArticleForm = ({
   return (
     <form
       onSubmit={createArticle}
-      className='w-[450px] rounded-xl bg-white p-10 drop-shadow-2xl'
+      className='relative w-[450px] rounded-xl bg-white p-10 drop-shadow-2xl'
     >
       <h1 className='w-full text-center text-2xl font-bold text-gray-800'>
         Dodaj artikal
@@ -107,6 +110,10 @@ const ArticleForm = ({
           Dodaj
         </button>
       </section>
+      <Ai.AiFillCloseCircle
+        onClick={() => setIsOpen(false)}
+        className='absolute top-4 right-4 h-8 w-8 cursor-pointer rounded-full bg-gray-600 text-white hover:bg-gray-800'
+      />
     </form>
   )
 }
