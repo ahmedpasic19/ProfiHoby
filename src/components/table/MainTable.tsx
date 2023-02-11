@@ -30,19 +30,19 @@ const MainTable = <T extends object>({
   })
 
   return (
-    <div className='flex flex-col'>
-      <div className='overflow-x-auto sm:-mx-6 lg:-mx-8'>
-        <div className='inline-block w-full py-4 sm:px-6 lg:px-8'>
+    <div className='flex h-fit flex-col'>
+      <div className='overflow-x-auto'>
+        <div className='relative flex w-full flex-col items-center pb-4'>
           {showNavigation ? <Pagination table={table} /> : null}
-          <div className='overflow-hidden p-2'>
-            <table className='min-w-full text-center'>
+          <div className='mt-10 max-h-[450px] overflow-auto'>
+            <table className='w-full min-w-[1400px] text-center'>
               <thead className='border-b bg-gray-50'>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={headerGroup.id}>
                     {headerGroup.headers.map((header) => (
                       <th
                         key={header.id}
-                        className='px-6 py-4 text-sm font-medium text-gray-900'
+                        className='px-6 py-4 text-lg font-medium text-gray-900'
                       >
                         {header.isPlaceholder
                           ? null
