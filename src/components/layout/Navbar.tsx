@@ -16,7 +16,7 @@ const Navbar = () => {
       label: 'Artikli',
     },
     {
-      href: '/create-category',
+      href: '/categories',
       label: 'Kategorije',
     },
   ]
