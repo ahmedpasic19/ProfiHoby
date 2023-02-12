@@ -5,10 +5,11 @@ type TProps = {
   type: string
   label: string
   value?: string | number
+  readOnly?: boolean
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
-const FieldSet = ({ name, type, label, value, onChange }: TProps) => {
+const FieldSet = ({ name, type, label, value, readOnly, onChange }: TProps) => {
   return (
     <fieldset className='my-3 flex w-full flex-col items-center'>
       <label
@@ -21,6 +22,7 @@ const FieldSet = ({ name, type, label, value, onChange }: TProps) => {
         type={type}
         id={name}
         name={name}
+        readOnly={readOnly}
         value={value || ''}
         placeholder={label}
         onChange={onChange}

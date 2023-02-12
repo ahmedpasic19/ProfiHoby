@@ -4,12 +4,22 @@ import { useState, useMemo } from 'react'
 import { Category } from '@prisma/client'
 import { api } from '../utils/api'
 
-import CreateCategoryModal from '../components/modals/CreateCategoryModal'
+import CreateCategoryModal from '../components/modals/categories/CreateCategoryModal'
+import UpdateCategoryModal from '../components/modals/categories/UpdateCategoryModal'
+import DeleteCategoryModal from '../components/modals/categories/DeleteCategoryModal'
 import MainTable from '../components/table/MainTable'
-import columns from '../data/categoryColumns'
+import * as Fa from 'react-icons/fa'
+import * as Ai from 'react-icons/ai'
+
+type TRow = {
+  original: Category
+}
 
 const Categories: NextPage = () => {
+  const [category, setCategory] = useState({} as Category)
   const [openCreate, setOpenCreate] = useState(false)
+  const [openUpdate, setOpenUpdate] = useState(false)
+  const [openDelete, setOpenDelete] = useState(false)
 
   const { data: allCategories } = api.category.getAllCategories.useQuery()
 
@@ -18,6 +28,45 @@ const Categories: NextPage = () => {
   const useData = () => {
     return data ? data : ([] as Category[])
   }
+
+  const columns = [
+    {
+      header: 'Šifra',
+      accessorKey: 'id',
+    },
+    {
+      header: 'Naziv',
+      accessorKey: 'name',
+    },
+    {
+      header: 'Akcije',
+      accessorKey: 'actions',
+      cell: ({ row }: { row: TRow }) => {
+        return (
+          <div className='flex w-full justify-evenly'>
+            <button
+              className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
+              onClick={() => {
+                setOpenUpdate(true)
+                setCategory(row.original)
+              }}
+            >
+              <Ai.AiFillEdit className='h-8 w-8' />
+            </button>
+            <button
+              className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
+              onClick={() => {
+                setOpenDelete(true)
+                setCategory(row.original)
+              }}
+            >
+              <Fa.FaTrash className='h-8 w-8' />
+            </button>
+          </div>
+        )
+      },
+    },
+  ]
 
   return (
     <>
@@ -40,6 +89,18 @@ const Categories: NextPage = () => {
         </div>
       </div>
       <CreateCategoryModal isOpen={openCreate} setIsOpen={setOpenCreate} />
+      <UpdateCategoryModal
+        setIsOpen={setOpenUpdate}
+        setCategory={setCategory}
+        isOpen={openUpdate}
+        category={category}
+      />
+      <DeleteCategoryModal
+        setIsOpen={setOpenDelete}
+        setCategory={setCategory}
+        isOpen={openDelete}
+        category={category}
+      />
     </>
   )
 }

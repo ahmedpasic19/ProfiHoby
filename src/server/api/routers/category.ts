@@ -6,7 +6,6 @@ export const categoryRouter = createTRPCRouter({
   createCategory: publicProcedure
     .input(z.object({ name: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      console.log(input)
       const new_category = await ctx.prisma.category.create({
         data: { name: input.name },
       })
@@ -36,7 +35,9 @@ export const categoryRouter = createTRPCRouter({
     }),
 
   getAllCategories: publicProcedure.query(async ({ ctx }) => {
-    const all_categories = await ctx.prisma.category.findMany()
+    const all_categories = await ctx.prisma.category.findMany({
+      orderBy: { createdAt: 'asc' },
+    })
 
     return all_categories
   }),
