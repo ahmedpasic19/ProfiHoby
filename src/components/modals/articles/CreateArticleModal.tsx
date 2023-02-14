@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Dialog } from '@headlessui/react'
 
-import ArticleForm from '../layout/ArticleForm'
-import UploadImageForm from '../layout/UploadImageForm'
-import ArticleCategoryForm from '../layout/ArticleCategoryForm'
+import ArticleForm from '../../layout/ArticleForm'
+import UploadImageForm from '../../layout/UploadImageForm'
+import ArticleCategoryForm from '../../layout/ArticleCategoryForm'
 import { Article } from '@prisma/client'
 
 type TProps = {

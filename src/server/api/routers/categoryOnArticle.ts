@@ -18,24 +18,27 @@ export const categoryOnArticleRelationRouter = createTRPCRouter({
   updateRelation: publicProcedure
     .input(
       z.object({
-        old_article_id: z.string(),
-        old_category_id: z.string(),
         article_id: z.string(),
-        category_id: z.string(),
+        categories: z.array(
+          z.object({
+            article_id: z.string(),
+            category_id: z.string(),
+          })
+        ),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const updated_relation = await ctx.prisma.categoriesOnArticle.update({
-        where: {
-          article_id_category_id: {
-            article_id: input.old_article_id,
-            category_id: input.old_category_id,
-          },
-        },
-        data: { article_id: input.article_id, category_id: input.category_id },
+      // DELETE previous relation
+      await ctx.prisma.categoriesOnArticle.deleteMany({
+        where: { article_id: input.article_id },
       })
 
-      return updated_relation
+      // UPDATE by creating a new relation
+      const new_relations = await ctx.prisma.categoriesOnArticle.createMany({
+        data: input.categories,
+      })
+
+      return new_relations
     }),
 
   deleteRelation: publicProcedure
@@ -56,6 +59,18 @@ export const categoryOnArticleRelationRouter = createTRPCRouter({
       })
 
       return deleted_relation
+    }),
+
+  getArticleCategories: publicProcedure
+    .input(
+      z.object({ article_id: z.string(), categories: z.array(z.string()) })
+    )
+    .query(async ({ input, ctx }) => {
+      const article_categories = await ctx.prisma.category.findMany({
+        where: { articles: { some: { article_id: input.article_id } } },
+      })
+
+      return article_categories
     }),
 
   getAllRelations: publicProcedure.query(async ({ ctx }) => {

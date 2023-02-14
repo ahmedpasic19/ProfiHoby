@@ -22,12 +22,16 @@ const ArticleCategoryForm = ({
     [] as MultiValue<{ value: string; label: string }>
   )
 
+  const utils = api.useContext()
+
   const { data: allCategories } = api.category.getAllCategories.useQuery()
   const { mutate: associateArticle } =
     api.article_category_relation.createRelation.useMutation({
-      onSuccess: () => {
+      onSuccess: async () => {
         if (pageIndex !== 2) setPageIndex((prev) => prev + 1)
         else setPageIndex(0)
+        await utils.article_category_relation.getAllRelations.invalidate()
+        await utils.article.getAllArticles.invalidate()
       },
     })
 

@@ -28,6 +28,7 @@ export const articleRouter = createTRPCRouter({
   getAllArticles: publicProcedure.query(async ({ ctx }) => {
     const articles = await ctx.prisma.article.findMany({
       include: { image: true, categories: true },
+      orderBy: { createdAt: 'asc' },
     })
     return articles
   }),
@@ -68,7 +69,14 @@ export const articleRouter = createTRPCRouter({
 
   deleteArticle: publicProcedure
     .input(z.object({ id: z.string() }))
-    .query(async ({ input, ctx }) => {
+    .mutation(async ({ input, ctx }) => {
+      // DELETE realtions
+      await ctx.prisma.categoriesOnArticle.deleteMany({
+        where: {
+          article_id: input.id,
+        },
+      })
+
       const article = await ctx.prisma.article.delete({
         where: { id: input.id },
       })

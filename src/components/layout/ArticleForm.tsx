@@ -21,10 +21,13 @@ const ArticleForm = ({
   articleData,
   pageIndex,
 }: TProps) => {
+  const utils = api.useContext()
+
   const { mutate: postArticle } = api.article.createArticle.useMutation({
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       setArticleId(data.id)
       setArticleData({} as Article)
+      await utils.article.getAllArticles.invalidate()
       if (pageIndex !== 2) setPageIndex((prev) => prev + 1)
       else setPageIndex(0)
     },
