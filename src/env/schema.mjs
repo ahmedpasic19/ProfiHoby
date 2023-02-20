@@ -23,6 +23,10 @@ export const serverSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string(),
   GITHUB_CLIENT_ID: z.string(),
   GITHUB_CLIENT_SECRET: z.string(),
+  BUCKET_REGION: z.string(),
+  BUCKET_NAME: z.string(),
+  SECRET_ACCES_KEY: z.string(),
+  ACCESS_KEY: z.string(),
 })
 
 /**
@@ -39,6 +43,10 @@ export const serverEnv = {
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
   GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+  BUCKET_REGION: process.env.BUCKET_REGION,
+  BUCKET_NAME: process.env.BUCKET_NAME,
+  SECRET_ACCES_KEY: process.env.SECRET_ACCES_KEY,
+  ACCESS_KEY: process.env.ACCESS_KEY,
 }
 
 /**

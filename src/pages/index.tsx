@@ -1,5 +1,6 @@
 'use client'
 import { NextPage } from 'next'
+import Image from 'next/image'
 import React from 'react'
 import { api } from '../utils/api'
 
@@ -7,7 +8,7 @@ type TArticleProps = {
   description: string
   title: string
   price: number
-  image: string
+  url: string
 }
 
 const Home: NextPage = () => {
@@ -24,7 +25,7 @@ const Home: NextPage = () => {
                 key={article.id}
                 title={article.name}
                 description={article.description}
-                image={article.image[0]?.image || ''}
+                url={article.image[0]?.url || ''}
                 price={article.base_price}
               />
             ))}
@@ -37,12 +38,11 @@ const Home: NextPage = () => {
 
 export default Home
 
-const Article = ({ description, title, price, image }: TArticleProps) => {
+const Article = ({ description, title, price, url }: TArticleProps) => {
   return (
     <div className='max-h-[400px] max-w-sm rounded-lg border border-gray-200 bg-white shadow dark:border-gray-700 dark:bg-gray-800'>
       <div className='flex h-[250px] w-full items-center justify-center '>
-        {/* eslint-disable-next-line */}
-        <img src={image} />
+        <Image src={url} alt='article image' width={100} height={100} />
       </div>
       <div className='p-5'>
         <a href='#'>

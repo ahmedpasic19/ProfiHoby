@@ -2,13 +2,66 @@ import { z } from 'zod'
 
 import { createTRPCRouter, publicProcedure } from '../trpc'
 
+import AWS from 'aws-sdk'
+import { env } from '../../../env/server.mjs'
+
+const BUCKET_REGION = env.BUCKET_REGION
+const BUCKET_NAME = env.BUCKET_NAME
+const SECRET_ACCES_KEY = env.SECRET_ACCES_KEY
+const ACCESS_KEY = env.ACCESS_KEY
+
+const s3 = new AWS.S3({
+  region: BUCKET_REGION,
+  accessKeyId: ACCESS_KEY,
+  secretAccessKey: SECRET_ACCES_KEY,
+})
+
 export const imageRouter = createTRPCRouter({
+  createPresignedURL: publicProcedure
+    .input(z.object({ name: z.string(), article_id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      await ctx.prisma.image.create({
+        data: {
+          article_id: input.article_id,
+          name: input.name,
+          image: `${input.name}-${input.article_id}`,
+        },
+      })
+
+      let data
+      s3.createPresignedPost(
+        {
+          Fields: {
+            key: `${input.name}-${input.article_id}`,
+          },
+          Conditions: [
+            ['starts-with', '$Content-Type', 'image/'],
+            ['content-length-range', 0, 1000000],
+          ],
+          Expires: 30,
+          Bucket: BUCKET_NAME,
+        },
+        (err, signed) => {
+          if (err) data = err
+          else data = signed
+        }
+      )
+
+      return data as
+        | {
+            url: string
+            fields: object
+          }
+        | undefined
+    }),
+
   postArticleImage: publicProcedure
     .input(
       z.object({
         article_id: z.string(),
         name: z.string(),
         image: z.string(),
+        formData: z.any(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -30,7 +83,17 @@ export const imageRouter = createTRPCRouter({
         where: { article_id: input.id },
       })
 
-      return article_images
+      const extended_images = await Promise.all(
+        article_images.map(async (image) => ({
+          ...image,
+          url: await s3.getSignedUrlPromise('getObject', {
+            Bucket: BUCKET_NAME,
+            Key: image.image,
+          }),
+        }))
+      )
+
+      return extended_images
     }),
 
   getArticleImage: publicProcedure

@@ -19,6 +19,15 @@ const UploadImageForm = ({
   const [articleImage, setArticleImage] = useState<string | undefined>(
     undefined
   )
+  const [file, setFile] = useState<File | undefined>(undefined)
+
+  const { data, refetch } = api.image.createPresignedURL.useQuery(
+    {
+      name: file?.name ? file?.name : '',
+      article_id: articleId ? articleId : '',
+    },
+    { enabled: file?.name && articleId ? true : false }
+  )
 
   const { mutate: addImage } = api.image.postArticleImage.useMutation({
     onSuccess: () => {
@@ -40,6 +49,7 @@ const UploadImageForm = ({
       return URL.createObjectURL(file)
     })
 
+    setFile(e.currentTarget.files?.[0])
     setArticleImage(imagesArray[0])
   }
 
@@ -49,9 +59,35 @@ const UploadImageForm = ({
     addImage({ article_id: articleId, name: '', image: articleImage })
   }
 
+  const handleUploadImage = async (e: FormEvent<HTMLElement>) => {
+    e.preventDefault()
+    if (!file || !data) return
+    await refetch()
+
+    const fileds = { ...data?.fields }
+    const url = data?.url
+    const fileData = {
+      ...fileds,
+      'Content-Type': file.type,
+      file,
+    }
+
+    const formData = new FormData()
+    for (const name in fileData) {
+      formData.append(name, fileData[name])
+    }
+
+    await fetch(url, {
+      method: 'POST',
+      body: formData,
+    })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err))
+  }
+
   return (
     <form
-      onSubmit={uploadImage}
+      onSubmit={handleUploadImage}
       className='min-h-[584px] w-[450px] rounded-xl bg-white p-10 drop-shadow-2xl'
     >
       <h1 className='w-full text-center text-2xl font-bold text-gray-800'>
@@ -70,8 +106,8 @@ const UploadImageForm = ({
 
       <section className='mt-14 flex w-full items-center justify-center'>
         <button
-          disabled={!articleImage}
-          onSubmit={uploadImage}
+          disabled={!file}
+          onSubmit={handleUploadImage}
           className='w-4/5 rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
         >
           Dodaj
