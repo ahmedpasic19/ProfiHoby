@@ -3,19 +3,10 @@ import { api } from '../../utils/api'
 import * as Ai from 'react-icons/ai'
 
 type TProps = {
-  setArticleId: React.Dispatch<React.SetStateAction<string | null>>
-  setPageIndex: React.Dispatch<React.SetStateAction<number>>
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-  pageIndex: number
   articleId: string | null
 }
-const UploadImageForm = ({
-  setArticleId,
-  setPageIndex,
-  setIsOpen,
-  articleId,
-  pageIndex,
-}: TProps) => {
+const UploadImageForm = ({ setIsOpen, articleId }: TProps) => {
   const [articleImage, setArticleImage] = useState<string | undefined>(
     undefined
   )
@@ -29,16 +20,6 @@ const UploadImageForm = ({
     { enabled: file?.name && articleId ? true : false }
   )
 
-  const { mutate: addImage } = api.image.postArticleImage.useMutation({
-    onSuccess: () => {
-      setIsOpen(false)
-      setArticleId(null)
-      setArticleImage(undefined)
-      if (pageIndex !== 2) setPageIndex((prev) => prev + 1)
-      else setPageIndex(0)
-    },
-  })
-
   const onImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.currentTarget.files?.[0]) return
 
@@ -51,12 +32,6 @@ const UploadImageForm = ({
 
     setFile(e.currentTarget.files?.[0])
     setArticleImage(imagesArray[0])
-  }
-
-  const uploadImage = (e: FormEvent<HTMLElement>) => {
-    e.preventDefault()
-    if (!articleId || !articleImage) return
-    addImage({ article_id: articleId, name: '', image: articleImage })
   }
 
   const handleUploadImage = async (e: FormEvent<HTMLElement>) => {
@@ -83,6 +58,8 @@ const UploadImageForm = ({
     })
       .then((res) => console.log(res))
       .catch((err) => console.log(err))
+
+    setIsOpen(false)
   }
 
   return (

@@ -42,13 +42,7 @@ const CreateArticleModal = ({ isOpen, setIsOpen }: TProps) => {
               articleId={articleId}
             />
           ) : (
-            <UploadImageForm
-              setIsOpen={setIsOpen}
-              setArticleId={setArticleId}
-              setPageIndex={setPageIndex}
-              articleId={articleId}
-              pageIndex={pageIndex}
-            />
+            <UploadImageForm setIsOpen={setIsOpen} articleId={articleId} />
           )}
         </main>
       </Dialog.Panel>

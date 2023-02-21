@@ -1,20 +1,20 @@
 'use client'
 import { NextPage } from 'next'
 import { useMemo, useState } from 'react'
-import { api } from '../utils/api'
+import { api } from '../../utils/api'
 
 import { ColumnDef } from '@tanstack/react-table'
 import { Article, CategoriesOnArticle, Image } from '@prisma/client'
 
-import MainTable from '../components/table/MainTable'
-import CreateArticleModal from '../components/modals/articles/CreateArticleModal'
-import DeleteArticleModal from '../components/modals/articles/DeleteArticleModal'
+import MainTable from '../../components/table/MainTable'
+import CreateArticleModal from '../../components/modals/articles/CreateArticleModal'
+import DeleteArticleModal from '../../components/modals/articles/DeleteArticleModal'
 import * as Bi from 'react-icons/bi'
 import * as Bs from 'react-icons/bs'
 import * as Fa from 'react-icons/fa'
 import * as Ai from 'react-icons/ai'
-import UpdateArticleModal from '../components/modals/articles/UpdateArticleModal'
-import UpdateArticleCategoriesModal from '../components/modals/articles/UpdateArticleCategoriesModal'
+import UpdateArticleModal from '../../components/modals/articles/UpdateArticleModal'
+import UpdateArticleCategoriesModal from '../../components/modals/articles/UpdateArticleCategoriesModal'
 
 type TArticle = Article & {
   image: Image[]
