@@ -19,7 +19,7 @@ const s3 = new AWS.S3({
 export const imageRouter = createTRPCRouter({
   createPresignedURL: publicProcedure
     .input(z.object({ name: z.string(), article_id: z.string() }))
-    .query(async ({ input, ctx }) => {
+    .mutation(async ({ input, ctx }) => {
       await ctx.prisma.image.create({
         data: {
           article_id: input.article_id,

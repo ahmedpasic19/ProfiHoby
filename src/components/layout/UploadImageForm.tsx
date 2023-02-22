@@ -3,22 +3,43 @@ import { api } from '../../utils/api'
 import * as Ai from 'react-icons/ai'
 
 type TProps = {
+  setPageIndex: React.Dispatch<React.SetStateAction<number>>
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   articleId: string | null
 }
-const UploadImageForm = ({ setIsOpen, articleId }: TProps) => {
-  const [articleImage, setArticleImage] = useState<string | undefined>(
-    undefined
-  )
+const UploadImageForm = ({ setPageIndex, setIsOpen, articleId }: TProps) => {
+  const [articleImage, setArticleImage] = useState<string>('')
   const [file, setFile] = useState<File | undefined>(undefined)
 
-  const { data, refetch } = api.image.createPresignedURL.useQuery(
-    {
-      name: file?.name ? file?.name : '',
-      article_id: articleId ? articleId : '',
+  const { mutateAsync: createURL } = api.image.createPresignedURL.useMutation({
+    onSuccess: async (data) => {
+      setArticleImage('')
+      setFile(undefined)
+
+      if (!file) return alert('No File')
+
+      const fileds = { ...data?.fields }
+      const url = data?.url
+      const fileData = {
+        ...fileds,
+        'Content-Type': file.type,
+        file,
+      }
+
+      const formData = new FormData()
+      for (const name in fileData) {
+        formData.append(name, fileData[name])
+      }
+      if (!url) return alert('NO URL')
+
+      await fetch(url, {
+        method: 'POST',
+        body: formData,
+      })
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err))
     },
-    { enabled: file?.name && articleId ? true : false }
-  )
+  })
 
   const onImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.currentTarget.files?.[0]) return
@@ -31,35 +52,15 @@ const UploadImageForm = ({ setIsOpen, articleId }: TProps) => {
     })
 
     setFile(e.currentTarget.files?.[0])
+    if (!imagesArray[0]) return
     setArticleImage(imagesArray[0])
   }
 
   const handleUploadImage = async (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
-    if (!file || !data) return
-    await refetch()
+    if (!file || !articleId) return
 
-    const fileds = { ...data?.fields }
-    const url = data?.url
-    const fileData = {
-      ...fileds,
-      'Content-Type': file.type,
-      file,
-    }
-
-    const formData = new FormData()
-    for (const name in fileData) {
-      formData.append(name, fileData[name])
-    }
-
-    await fetch(url, {
-      method: 'POST',
-      body: formData,
-    })
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err))
-
-    setIsOpen(false)
+    await createURL({ article_id: articleId, name: file.name })
   }
 
   return (
@@ -92,7 +93,10 @@ const UploadImageForm = ({ setIsOpen, articleId }: TProps) => {
       </section>
 
       <Ai.AiFillCloseCircle
-        onClick={() => setIsOpen(false)}
+        onClick={() => {
+          setIsOpen(false)
+          setPageIndex(0)
+        }}
         className='absolute top-4 right-4 h-8 w-8 cursor-pointer rounded-full bg-gray-600 text-white hover:bg-gray-800'
       />
     </form>

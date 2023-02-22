@@ -1,4 +1,3 @@
-'use client'
 import { NextPage } from 'next'
 import { useMemo, useState } from 'react'
 import { api } from '../../utils/api'

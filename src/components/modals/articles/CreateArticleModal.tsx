@@ -16,11 +16,20 @@ const CreateArticleModal = ({ isOpen, setIsOpen }: TProps) => {
   const [articleData, setArticleData] = useState({} as Article)
   const [articleId, setArticleId] = useState<string | null>(null)
   return (
-    <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
+    <Dialog
+      open={isOpen}
+      onClose={() => {
+        setIsOpen(false)
+        setPageIndex(0)
+      }}
+    >
       <Dialog.Panel className='fixed inset-0'>
         <div
           className='absolute h-full w-full bg-black/30'
-          onClick={() => setIsOpen(false)}
+          onClick={() => {
+            setIsOpen(false)
+            setPageIndex(0)
+          }}
         />
         <Dialog.Title>Kreiraj artikal</Dialog.Title>
 
@@ -42,7 +51,11 @@ const CreateArticleModal = ({ isOpen, setIsOpen }: TProps) => {
               articleId={articleId}
             />
           ) : (
-            <UploadImageForm setIsOpen={setIsOpen} articleId={articleId} />
+            <UploadImageForm
+              setPageIndex={setPageIndex}
+              setIsOpen={setIsOpen}
+              articleId={articleId}
+            />
           )}
         </main>
       </Dialog.Panel>

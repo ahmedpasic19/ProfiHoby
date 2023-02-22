@@ -1,4 +1,3 @@
-'use client'
 import { NextPage } from 'next'
 import { useState, useMemo } from 'react'
 import { Category } from '@prisma/client'
