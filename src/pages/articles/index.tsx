@@ -1,4 +1,5 @@
 import { NextPage } from 'next'
+import { useRouter } from 'next/router'
 import { useMemo, useState } from 'react'
 import { api } from '../../utils/api'
 
@@ -6,14 +7,15 @@ import { ColumnDef } from '@tanstack/react-table'
 import { Article, CategoriesOnArticle, Image } from '@prisma/client'
 
 import MainTable from '../../components/table/MainTable'
-import CreateArticleModal from '../../components/modals/articles/CreateArticleModal'
+
 import DeleteArticleModal from '../../components/modals/articles/DeleteArticleModal'
+import UpdateArticleModal from '../../components/modals/articles/UpdateArticleModal'
+import UpdateArticleCategoriesModal from '../../components/modals/articles/UpdateArticleCategoriesModal'
+
 import * as Bi from 'react-icons/bi'
 import * as Bs from 'react-icons/bs'
 import * as Fa from 'react-icons/fa'
 import * as Ai from 'react-icons/ai'
-import UpdateArticleModal from '../../components/modals/articles/UpdateArticleModal'
-import UpdateArticleCategoriesModal from '../../components/modals/articles/UpdateArticleCategoriesModal'
 
 type TArticle = Article & {
   image: Image[]
@@ -31,7 +33,16 @@ const Articles: NextPage = () => {
   const [openUpdate, setOpenUpdate] = useState(false)
   const [openUpdateCategories, setOpenUpdateCategories] = useState(false)
 
-  const { data: allArticles } = api.article.getAllArticles.useQuery()
+  const [pageIndex, setPageIndex] = useState(0)
+  const [pageSize, setPageSize] = useState(10)
+
+  const router = useRouter()
+
+  const { data: allArticles } = api.article.getAllArticles.useQuery({
+    category: '',
+    pageIndex,
+    pageSize,
+  })
 
   const articleColumns = [
     {
@@ -118,7 +129,7 @@ const Articles: NextPage = () => {
 
         <section className='flex w-4/5 items-center py-10'>
           <button
-            onClick={() => setOpenCreate(true)}
+            onClick={() => router.push('/articles/create-article')}
             className='w-[250px] rounded-xl bg-blue-500 p-4 text-xl font-semibold text-white hover:bg-blue-600'
           >
             Dodaj artikal
@@ -126,10 +137,17 @@ const Articles: NextPage = () => {
         </section>
 
         <div className='relative flex w-full justify-center overflow-y-auto'>
-          <MainTable data={useData()} columns={columns} showNavigation />
+          <MainTable
+            pageSize={pageSize}
+            pageIndex={pageIndex}
+            setPageSize={setPageSize}
+            setPageIndex={setPageIndex}
+            data={useData()}
+            columns={columns}
+            showNavigation
+          />
         </div>
       </div>
-      <CreateArticleModal isOpen={openCreate} setIsOpen={setOpenCreate} />
       <DeleteArticleModal
         article={article}
         isOpen={openDelete}

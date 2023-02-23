@@ -23,14 +23,12 @@ export const articleRouter = createTRPCRouter({
         name: z.string(),
         description: z.string(),
         base_price: z.number(),
-        discount: z.number().nullish(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       const new_article = await ctx.prisma.article.create({
         data: {
           base_price: input.base_price,
-          discount: input.discount,
           name: input.name,
           description: input.description,
         },
@@ -39,33 +37,50 @@ export const articleRouter = createTRPCRouter({
       return new_article
     }),
 
-  getAllArticles: publicProcedure.query(async ({ ctx }) => {
-    const articles = await ctx.prisma.article.findMany({
-      include: {
-        image: true,
-        categories: {
-          include: {
-            category: true,
+  getAllArticles: publicProcedure
+    .input(
+      z.object({
+        pageSize: z.number(),
+        pageIndex: z.number(),
+        category: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const filter = input.category
+      const where = filter
+        ? { categories: { some: { category: { name: input.category } } } }
+        : {}
+
+      const articles = await ctx.prisma.article.findMany({
+        include: {
+          image: true,
+          categories: {
+            include: {
+              category: true,
+            },
           },
         },
-      },
-      orderBy: { createdAt: 'asc' },
-    })
+        where,
+        skip: input.pageSize * input.pageIndex,
+        take: input.pageSize,
+        orderBy: { createdAt: 'desc' },
+      })
 
-    const arr = articles.map((article) => {
-      const extended_images = article.image.map((image) => ({
-        ...image,
-        url: s3.getSignedUrl('getObject', {
-          Bucket: BUCKET_NAME,
-          Key: image.image,
-        }),
-      }))
+      // Assigning an accessURL from S3
+      const arr = articles.map((article) => {
+        const extended_images = article.image.map((image) => ({
+          ...image,
+          url: s3.getSignedUrl('getObject', {
+            Bucket: BUCKET_NAME,
+            Key: image.image,
+          }),
+        }))
 
-      return { ...article, image: extended_images }
-    })
+        return { ...article, image: extended_images }
+      })
 
-    return arr
-  }),
+      return arr
+    }),
 
   getArticle: publicProcedure
     .input(z.object({ id: z.string() }))

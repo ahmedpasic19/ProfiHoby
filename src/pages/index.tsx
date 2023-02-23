@@ -1,10 +1,10 @@
-'use client'
 import { CategoriesOnArticle, Category } from '@prisma/client'
 import { NextPage } from 'next'
-import Image from 'next/image'
 import { useRouter } from 'next/router'
-import React from 'react'
+import { useState } from 'react'
 import { api } from '../utils/api'
+
+import Image from 'next/image'
 
 type TArticleProps = {
   description: string
@@ -16,15 +16,39 @@ type TArticleProps = {
 }
 
 const Home: NextPage = () => {
-  const { data } = api.article.getAllArticles.useQuery()
+  const [category, setCategory] = useState('')
+  const [pageIndex, setPageIndex] = useState(0)
+  const { data: allArticles } = api.article.getAllArticles.useQuery({
+    pageIndex,
+    pageSize: 50,
+    category,
+  })
+  const { data: allCategories } = api.category.getAllCategories.useQuery()
 
   return (
     <div className='flex h-full min-h-screen w-full items-center justify-center'>
       <div className='grid h-full min-h-screen w-full grid-cols-[350px_auto]'>
-        <div className='h-full w-full border-r-2 border-gray-600'></div>
+        <div className='flex w-full flex-col border-r-2 border-gray-600'>
+          <h2 className='w-full py-5 text-center text-xl font-bold tracking-tighter'>
+            Kategorije
+          </h2>
+          <ul className='flex h-full w-full flex-col'>
+            {allCategories?.map((cat) => (
+              <li
+                onClick={() => {
+                  if (category === cat.name) setCategory('')
+                  else setCategory(cat.name)
+                }}
+                key={cat.id}
+              >
+                {cat.name}
+              </li>
+            ))}
+          </ul>
+        </div>
         <div className='flex w-full items-center justify-center'>
           <div className='grid h-full w-full grid-cols-4 gap-5 px-10 pt-[25vh]'>
-            {data?.map((article) => (
+            {allArticles?.map((article) => (
               <Article
                 key={article.id}
                 title={article.name}
