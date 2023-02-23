@@ -1,7 +1,7 @@
 import { CategoriesOnArticle, Category } from '@prisma/client'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { api } from '../utils/api'
 
 import Image from 'next/image'
@@ -18,12 +18,24 @@ type TArticleProps = {
 const Home: NextPage = () => {
   const [category, setCategory] = useState('')
   const [pageIndex, setPageIndex] = useState(0)
-  const { data: allArticles } = api.article.getAllArticles.useQuery({
+  const { data: articlesData, refetch } = api.article.getAllArticles.useQuery({
     pageIndex,
     pageSize: 50,
     category,
   })
   const { data: allCategories } = api.category.getAllCategories.useQuery()
+
+  function createRandomArray(length: number) {
+    const arr = []
+    for (let i = 0; i < length; i++) {
+      arr.push(i + 1) // generates a random number between 0 and 99
+    }
+    return arr
+  }
+
+  useEffect(() => {
+    refetch()
+  }, [pageIndex, refetch])
 
   return (
     <div className='flex h-full min-h-screen w-full items-center justify-center'>
@@ -35,9 +47,15 @@ const Home: NextPage = () => {
           <ul className='flex h-full w-full flex-col'>
             {allCategories?.map((cat) => (
               <li
+                className={`${
+                  category === cat.name ? 'bg-gray-400' : 'bg-gray-300'
+                } mb-[1px] h-8 w-full cursor-pointer pl-4 text-lg font-semibold hover:bg-gray-400`}
                 onClick={() => {
                   if (category === cat.name) setCategory('')
-                  else setCategory(cat.name)
+                  else {
+                    setCategory(cat.name)
+                    setPageIndex(0)
+                  }
                 }}
                 key={cat.id}
               >
@@ -48,7 +66,7 @@ const Home: NextPage = () => {
         </div>
         <div className='flex w-full items-center justify-center'>
           <div className='grid h-full w-full grid-cols-4 gap-5 px-10 pt-[25vh]'>
-            {allArticles?.map((article) => (
+            {articlesData?.articles?.map((article) => (
               <Article
                 key={article.id}
                 title={article.name}
@@ -60,6 +78,19 @@ const Home: NextPage = () => {
               />
             ))}
           </div>
+        </div>
+        <div className='col-start-2 col-end-3 flex h-full w-full items-center justify-center py-5'>
+          {createRandomArray(articlesData?.pageCount || 0).map((page) => (
+            <button
+              onClick={() => setPageIndex(page - 1)}
+              key={Math.random().toString()}
+              className={`${
+                pageIndex === page - 1 ? 'bg-gray-800' : 'bg-gray-600 '
+              } mx-1 flex h-5 w-5 items-center justify-center text-clip rounded-full p-5 text-xl font-bold text-white`}
+            >
+              <p>{page}</p>
+            </button>
+          ))}
         </div>
       </div>
     </div>
@@ -100,7 +131,7 @@ const Article = ({
           {categories.map((category, i) => {
             if (i > 2) return
             return (
-              <Category
+              <ArticleCategory
                 key={Math.random().toString()}
                 name={category.category.name}
               />
@@ -115,7 +146,7 @@ const Article = ({
   )
 }
 
-const Category = ({ name }: { name: string }) => {
+const ArticleCategory = ({ name }: { name: string }) => {
   return (
     <div className='h-6 w-[100px] truncate rounded-sm bg-gray-200 px-2 text-sm text-gray-800 drop-shadow-[0px_0px_1px]'>
       {name}

@@ -28,13 +28,12 @@ type TRow = {
 
 const Articles: NextPage = () => {
   const [article, setArticle] = useState({} as TArticle)
-  const [openCreate, setOpenCreate] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
   const [openUpdate, setOpenUpdate] = useState(false)
   const [openUpdateCategories, setOpenUpdateCategories] = useState(false)
 
   const [pageIndex, setPageIndex] = useState(0)
-  const [pageSize, setPageSize] = useState(10)
+  const [pageSize, setPageSize] = useState(50)
 
   const router = useRouter()
 
@@ -111,7 +110,10 @@ const Articles: NextPage = () => {
     },
   ]
 
-  const data = useMemo(() => allArticles, [allArticles])
+  const data = useMemo(
+    () => allArticles?.articles || [],
+    [allArticles?.articles]
+  )
 
   // eslint-disable-next-line
   const columns = useMemo<ColumnDef<TArticle>[]>(() => articleColumns, [])

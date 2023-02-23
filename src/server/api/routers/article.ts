@@ -66,6 +66,9 @@ export const articleRouter = createTRPCRouter({
         orderBy: { createdAt: 'desc' },
       })
 
+      const totalArticles = await ctx.prisma.article.count({ where })
+      const pageCount = Math.ceil(totalArticles / input.pageSize)
+
       // Assigning an accessURL from S3
       const arr = articles.map((article) => {
         const extended_images = article.image.map((image) => ({
@@ -79,7 +82,12 @@ export const articleRouter = createTRPCRouter({
         return { ...article, image: extended_images }
       })
 
-      return arr
+      return {
+        articles: arr,
+        pageCount,
+        pageIndex: input.pageIndex,
+        pageSize: input.pageSize,
+      }
     }),
 
   getArticle: publicProcedure
