@@ -71,7 +71,6 @@ model Article {
     name        String
     description String
     base_price  Int
-    discount    Int?
     image       Image[]
 
     createdAt  DateTime              @default(now())
