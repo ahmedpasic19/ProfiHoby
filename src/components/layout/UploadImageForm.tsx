@@ -1,15 +1,35 @@
-import { useState, ChangeEvent, FormEvent } from 'react'
+import { useState, ChangeEvent, FormEvent, useEffect } from 'react'
 import { api } from '../../utils/api'
-import * as Ai from 'react-icons/ai'
+import Image from 'next/image'
+import { useRouter } from 'next/router'
 
 type TProps = {
   setPageIndex: React.Dispatch<React.SetStateAction<number>>
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   articleId: string | null
 }
-const UploadImageForm = ({ setPageIndex, setIsOpen, articleId }: TProps) => {
+const UploadImageForm = ({ setPageIndex, articleId }: TProps) => {
   const [articleImage, setArticleImage] = useState<string>('')
   const [file, setFile] = useState<File | undefined>(undefined)
+
+  const utils = api.useContext()
+  const router = useRouter()
+
+  const { data: articleImages } = api.image.getAllArticleImages.useQuery(
+    {
+      // eslint-disable-next-line
+      id: articleId!,
+    },
+    {
+      enabled: articleId ? true : false,
+    }
+  )
+
+  useEffect(() => {
+    if (articleImages?.length === 8) {
+      router.push('/')
+      setPageIndex(0)
+    }
+  }, [articleImages, setPageIndex, router])
 
   const { mutateAsync: createURL } = api.image.createPresignedURL.useMutation({
     onSuccess: async (data) => {
@@ -38,6 +58,8 @@ const UploadImageForm = ({ setPageIndex, setIsOpen, articleId }: TProps) => {
       })
         .then((res) => console.log(res))
         .catch((err) => console.log(err))
+
+      await utils.image.getAllArticleImages.invalidate()
     },
   })
 
@@ -66,7 +88,7 @@ const UploadImageForm = ({ setPageIndex, setIsOpen, articleId }: TProps) => {
   return (
     <form
       onSubmit={handleUploadImage}
-      className='min-h-[584px] w-[450px] rounded-xl bg-white p-10 drop-shadow-2xl'
+      className='min-h-[484px] w-[550px] rounded-xl bg-white p-10 drop-shadow-2xl'
     >
       <h1 className='w-full text-center text-2xl font-bold text-gray-800'>
         Dodaj dodaj sliku
@@ -92,13 +114,21 @@ const UploadImageForm = ({ setPageIndex, setIsOpen, articleId }: TProps) => {
         </button>
       </section>
 
-      <Ai.AiFillCloseCircle
-        onClick={() => {
-          setIsOpen(false)
-          setPageIndex(0)
-        }}
-        className='absolute top-4 right-4 h-8 w-8 cursor-pointer rounded-full bg-gray-600 text-white hover:bg-gray-800'
-      />
+      <div className='mt-5 grid w-full grid-cols-8 grid-rows-1 gap-2 overflow-x-auto'>
+        {articleImages?.map((image) => (
+          <div
+            key={Math.random().toString()}
+            className='flex h-full w-full items-center justify-center'
+          >
+            <Image
+              alt='article image'
+              src={image.url}
+              width={300}
+              height={300}
+            />
+          </div>
+        ))}
+      </div>
     </form>
   )
 }
