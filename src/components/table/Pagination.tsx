@@ -11,7 +11,7 @@ interface ReactTableProps<T extends object> {
 
 const Pagination = <T extends object>({ table }: ReactTableProps<T>) => {
   return (
-    <div className='fixed flex h-12 w-full min-w-[1400px] items-center justify-center gap-2 bg-white'>
+    <div className='sticky flex h-12 w-full min-w-[1400px] items-center justify-center gap-2 bg-white'>
       <button
         className='min-w-[40px] cursor-pointer rounded border p-1'
         onClick={() => table.setPageIndex(0)}
