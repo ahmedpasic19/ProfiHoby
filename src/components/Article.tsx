@@ -1,48 +1,70 @@
+import { CategoriesOnArticle, Category } from '@prisma/client'
+import { useRouter } from 'next/router'
+
+import Image from 'next/image'
+
 type TArticleProps = {
   description: string
   title: string
   price: number
-  image: string
+  url: string
+  article_id: string
+  categories: (CategoriesOnArticle & { category: Category })[]
 }
 
-const Article = ({ description, title, price, image }: TArticleProps) => {
+const Article = ({
+  description,
+  title,
+  price,
+  url,
+  categories,
+  article_id,
+}: TArticleProps) => {
+  const router = useRouter()
   return (
-    <div className='max-h-[400px] max-w-sm rounded-lg border border-gray-200 bg-white shadow dark:border-gray-700 dark:bg-gray-800'>
-      <div className='flex h-[250px] w-full items-center justify-center '>
-        {/* eslint-disable-next-line */}
-        <img src={image} />
-      </div>
-      <div className='p-5'>
-        <a href='#'>
-          <h5 className='mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white'>
-            {title}
-          </h5>
-        </a>
-        <p className='mb-3 font-normal text-gray-700 dark:text-gray-400'>
-          {description}
-        </p>
-        <a
-          href='#'
-          className='inline-flex items-center rounded-lg bg-blue-700 px-3 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
-        >
+    <div
+      onClick={() => router.push(`/articles/${article_id}`)}
+      className='relative h-[320px] w-[250px] cursor-pointer rounded-lg border-2 bg-white drop-shadow-[3px_3px_2px] transition duration-100 hover:scale-105 hover:transform hover:drop-shadow-[7px_7px_4px]'
+    >
+      <section className='flex w-full items-center justify-center'>
+        <Image
+          src={url}
+          alt='article image'
+          width={250}
+          height={150}
+          className='rounded-xl rounded-b-none'
+        />
+      </section>
+      <section className='mt-2 flex w-full flex-col p-2'>
+        <h3 className='text-lg font-semibold tracking-tight text-gray-800'>
+          {title}
+        </h3>
+        <p className='text-gray-400'>{description}</p>
+        <div className='mt-2 grid grid-cols-2 grid-rows-2 gap-2'>
+          {categories.map((category, i) => {
+            if (i > 2) return
+            return (
+              <ArticleCategory
+                key={Math.random().toString()}
+                name={category.category.name}
+              />
+            )
+          })}
+        </div>
+        <h2 className='absolute right-4 bottom-4 text-xl font-bold tracking-tighter text-gray-800'>
           {price}KM
-          <svg
-            aria-hidden='true'
-            className='ml-2 -mr-1 h-4 w-4'
-            fill='currentColor'
-            viewBox='0 0 20 20'
-            xmlns='http://www.w3.org/2000/svg'
-          >
-            <path
-              fillRule='evenodd'
-              d='M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z'
-              clipRule='evenodd'
-            ></path>
-          </svg>
-        </a>
-      </div>
+        </h2>
+      </section>
     </div>
   )
 }
 
 export default Article
+
+const ArticleCategory = ({ name }: { name: string }) => {
+  return (
+    <div className='h-6 w-[100px] truncate rounded-sm bg-gray-200 px-2 text-sm text-gray-800 drop-shadow-[0px_0px_1px]'>
+      {name}
+    </div>
+  )
+}

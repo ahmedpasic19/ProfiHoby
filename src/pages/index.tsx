@@ -1,31 +1,23 @@
-import { CategoriesOnArticle, Category } from '@prisma/client'
 import { NextPage } from 'next'
-import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { trpcClient } from '../utils/api'
 
-import Image from 'next/image'
 import { debounce } from '../utils/debounce'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
-type TArticleProps = {
-  description: string
-  title: string
-  price: number
-  url: string
-  article_id: string
-  categories: (CategoriesOnArticle & { category: Category })[]
-}
+import Article from '../components/Article'
 
 const Home: NextPage = () => {
   const [category, setCategory] = useState('')
   const [pageIndex, setPageIndex] = useState(0)
 
+  const queryClient = useQueryClient()
+
   const { data: articleData, refetch } = useQuery(
     ['articles', { category: '', name: '', pageIndex: 0, pageSize: 100 }],
     () =>
       trpcClient.article.getAllArticles.query({
-        category: '',
+        category,
         name: '',
         pageIndex: 0,
         pageSize: 100,
@@ -43,6 +35,17 @@ const Home: NextPage = () => {
     }
     return arr
   }
+
+  useEffect(() => {
+    const trigger = async () => {
+      await refetch()
+      await queryClient.invalidateQueries([
+        'articles',
+        { category: '', name: '', pageIndex: 0, pageSize: 100 },
+      ])
+    }
+    trigger()
+  }, [category, refetch, queryClient])
 
   useEffect(() => {
     const trigger = async () => {
@@ -113,58 +116,3 @@ const Home: NextPage = () => {
 }
 
 export default Home
-
-const Article = ({
-  description,
-  title,
-  price,
-  url,
-  categories,
-  article_id,
-}: TArticleProps) => {
-  const router = useRouter()
-  return (
-    <div
-      onClick={() => router.push(`/articles/${article_id}`)}
-      className='relative h-[320px] w-[250px] cursor-pointer rounded-lg border-2 bg-white drop-shadow-[3px_3px_2px] transition duration-100 hover:scale-105 hover:transform hover:drop-shadow-[7px_7px_4px]'
-    >
-      <section className='flex w-full items-center justify-center'>
-        <Image
-          src={url}
-          alt='article image'
-          width={250}
-          height={150}
-          className='rounded-xl rounded-b-none'
-        />
-      </section>
-      <section className='mt-2 flex w-full flex-col p-2'>
-        <h3 className='text-lg font-semibold tracking-tight text-gray-800'>
-          {title}
-        </h3>
-        <p className='text-gray-400'>{description}</p>
-        <div className='mt-2 grid grid-cols-2 grid-rows-2 gap-2'>
-          {categories.map((category, i) => {
-            if (i > 2) return
-            return (
-              <ArticleCategory
-                key={Math.random().toString()}
-                name={category.category.name}
-              />
-            )
-          })}
-        </div>
-        <h2 className='absolute right-4 bottom-4 text-xl font-bold tracking-tighter text-gray-800'>
-          {price}KM
-        </h2>
-      </section>
-    </div>
-  )
-}
-
-const ArticleCategory = ({ name }: { name: string }) => {
-  return (
-    <div className='h-6 w-[100px] truncate rounded-sm bg-gray-200 px-2 text-sm text-gray-800 drop-shadow-[0px_0px_1px]'>
-      {name}
-    </div>
-  )
-}

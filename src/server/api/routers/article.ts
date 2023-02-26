@@ -43,12 +43,20 @@ export const articleRouter = createTRPCRouter({
         pageSize: z.number(),
         pageIndex: z.number(),
         category: z.string(),
+        name: z.string(),
       })
     )
     .query(async ({ input, ctx }) => {
-      const filter = input.category
-      const where = filter
+      const category = input.category
+      const name = input.name
+      const where = category
         ? { categories: { some: { category: { name: input.category } } } }
+        : name
+        ? {
+            name: {
+              contains: input.name,
+            },
+          }
         : {}
 
       const articles = await ctx.prisma.article.findMany({
@@ -113,7 +121,6 @@ export const articleRouter = createTRPCRouter({
         name: z.string(),
         description: z.string(),
         base_price: z.number(),
-        discount: z.number().nullish(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -124,7 +131,6 @@ export const articleRouter = createTRPCRouter({
           name: input.name,
           description: input.description,
           base_price: input.base_price,
-          discount: input.discount,
         },
       })
 

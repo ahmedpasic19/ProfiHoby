@@ -1,26 +1,22 @@
 import { useRouter } from 'next/router'
-import { api } from '../../utils/api'
+import { trpcClient } from '../../utils/api'
 
 import ImageCarousel from '../../components/layout/ImageCarousel'
+import { useQuery } from '@tanstack/react-query'
 
 const ArticlePage = () => {
   const router = useRouter()
   const { article_id } = router.query
 
-  const { data: article } = api.article.getArticle.useQuery(
-    { id: article_id as string },
-    {
-      enabled: article_id ? true : false,
-    }
+  const articleId = typeof article_id === 'string' ? article_id : ''
+
+  const { data: article } = useQuery(['article', { id: article_id }], () =>
+    trpcClient.article.getArticle.query({ id: articleId })
   )
 
-  const { data: artilce_images } = api.image.getAllArticleImages.useQuery(
-    {
-      id: article_id as string,
-    },
-    {
-      enabled: article_id ? true : false,
-    }
+  const { data: artilce_images } = useQuery(
+    ['image.getAllArticleImges', { id: articleId }],
+    () => trpcClient.image.getAllArticleImages.query({ id: articleId })
   )
 
   const image_uls = artilce_images?.map((image) => image.url) || []
