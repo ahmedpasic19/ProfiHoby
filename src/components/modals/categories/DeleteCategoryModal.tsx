@@ -1,9 +1,10 @@
 import { FormEvent } from 'react'
 import { Dialog } from '@headlessui/react'
-import { api } from '../../../utils/api'
+import { trpcClient } from '../../../utils/api'
 import FieldSet from '../../Fieldset'
 import * as Ai from 'react-icons/ai'
 import { Category } from '@prisma/client'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 type TProps = {
   category: Category
@@ -18,20 +19,22 @@ const DeleteCategoryModal = ({
   setIsOpen,
   setCategory,
 }: TProps) => {
-  const utils = api.useContext()
-
-  const { mutate } = api.category.deleteCategory.useMutation({
-    onSuccess: async () => {
-      setIsOpen(false)
-      setCategory({} as Category)
-      await utils.category.getAllCategories.invalidate()
-    },
-  })
+  const queryClient = useQueryClient()
+  const { mutate: deleteCategory } = useMutation(
+    (input: { id: string }) => trpcClient.category.deleteCategory.mutate(input),
+    {
+      onSuccess: async () => {
+        setIsOpen(false)
+        setCategory({} as Category)
+        await queryClient.invalidateQueries(['categories'])
+      },
+    }
+  )
 
   const handleSubmit = (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
 
-    mutate({ id: category.id })
+    deleteCategory({ id: category.id })
   }
 
   return (

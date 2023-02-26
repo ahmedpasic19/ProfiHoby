@@ -1,10 +1,12 @@
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useMemo, useState } from 'react'
-import { api } from '../../utils/api'
 
 import { ColumnDef } from '@tanstack/react-table'
 import { Article, CategoriesOnArticle, Image } from '@prisma/client'
+
+import { trpcClient } from '../../utils/api'
+import { useQuery } from '@tanstack/react-query'
 
 import MainTable from '../../components/table/MainTable'
 
@@ -37,11 +39,16 @@ const Articles: NextPage = () => {
 
   const router = useRouter()
 
-  const { data: allArticles } = api.article.getAllArticles.useQuery({
-    category: '',
-    pageIndex,
-    pageSize,
-  })
+  const { data: articleData } = useQuery(
+    ['articles', { pageSize: 100, pageIndex: 0, name: '', category: '' }],
+    () =>
+      trpcClient.article.getAllArticles.query({
+        name: '',
+        category: '',
+        pageIndex: 0,
+        pageSize: 100,
+      })
+  )
 
   const articleColumns = [
     {
@@ -110,10 +117,7 @@ const Articles: NextPage = () => {
     },
   ]
 
-  const data = useMemo(
-    () => allArticles?.articles || [],
-    [allArticles?.articles]
-  )
+  const data = useMemo(() => articleData?.articles || [], [articleData])
 
   // eslint-disable-next-line
   const columns = useMemo<ColumnDef<TArticle>[]>(() => articleColumns, [])

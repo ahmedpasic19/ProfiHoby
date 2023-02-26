@@ -1,9 +1,10 @@
 import { FormEvent, useState } from 'react'
 import { Dialog } from '@headlessui/react'
 import Select, { MultiValue } from 'react-select'
-import { api } from '../../../utils/api'
 import * as Ai from 'react-icons/ai'
 import { Article, CategoriesOnArticle, Image } from '@prisma/client'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { trpcClient } from '../../../utils/api'
 
 type TArticle = Article & {
   image: Image[]
@@ -28,32 +29,33 @@ const UpdateArticleCategoriesModal = ({
     MultiValue<{ label: string; value: string }>
   >([])
 
-  const utils = api.useContext()
+  const { data: allCategories } = useQuery(['categories'], () =>
+    trpcClient.category.getAllCategories.query()
+  )
 
-  const { data: allCategories } = api.category.getAllCategories.useQuery()
-
-  const { data: allArticleCategories } =
-    api.article_category_relation.getArticleCategories.useQuery(
-      {
+  const { data: allArticleCategories } = useQuery(
+    ['article.categoreis'],
+    () =>
+      trpcClient.article_category_relation.getArticleCategories.query({
         article_id: article?.id,
         categories: article?.categories?.map(
           (category) => category.category_id
         ),
-      },
-      {
-        enabled: Object.keys(article).length ? true : false,
-      }
-    )
+      }),
+    {
+      enabled: Object.keys(article).length ? true : false,
+    }
+  )
 
-  const { mutate: upateRelation } =
-    api.article_category_relation.updateRelation.useMutation({
-      onSuccess: async () => {
-        await utils.article_category_relation.getAllRelations.invalidate()
-        await utils.article.getAllArticles.invalidate()
-        setArticle({} as TArticle)
-        setIsOpen(false)
-      },
-    })
+  const { mutate: updateRelation } = useMutation(
+    (input: {
+      categories: {
+        article_id: string
+        category_id: string
+      }[]
+      article_id: string
+    }) => trpcClient.article_category_relation.updateRelation.mutate(input)
+  )
 
   const handleSubmit = (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
@@ -63,7 +65,7 @@ const UpdateArticleCategoriesModal = ({
       article_id: article.id,
     }))
 
-    upateRelation({ article_id: article.id, categories: newRelation })
+    updateRelation({ article_id: article.id, categories: newRelation })
   }
 
   const articleCategories = allArticleCategories?.map((category) => ({

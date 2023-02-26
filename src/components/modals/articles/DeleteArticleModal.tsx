@@ -1,9 +1,10 @@
 import { FormEvent } from 'react'
 import { Dialog } from '@headlessui/react'
-import { api } from '../../../utils/api'
 import FieldSet from '../../Fieldset'
 import * as Ai from 'react-icons/ai'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Article, CategoriesOnArticle, Image } from '@prisma/client'
+import { trpcClient } from '../../../utils/api'
 
 type TArticle = Article & {
   image: Image[]
@@ -23,19 +24,25 @@ const DeleteArticleModal = ({
   setIsOpen,
   setArticle,
 }: TProps) => {
-  const utils = api.useContext()
+  const queryClient = useQueryClient()
 
-  const { mutate: deleteArticle } = api.article.deleteArticle.useMutation({
-    onSuccess: async () => {
-      await utils.article.getAllArticles.invalidate()
-      setArticle({} as TArticle)
-      setIsOpen(false)
-    },
-  })
+  const { mutate: deleteArticle } = useMutation(
+    () => trpcClient.article.deleteArticle.mutate({ id: article.id }),
+    {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries([
+          'articles',
+          { category: '', name: '', pageIndex: 0, pageSize: 100 },
+        ])
+        setArticle({} as TArticle)
+        setIsOpen(false)
+      },
+    }
+  )
 
   const handleSubmit = (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
-    deleteArticle({ id: article.id })
+    deleteArticle()
   }
 
   return (
@@ -93,13 +100,6 @@ const DeleteArticleModal = ({
               readOnly={true}
               name='base_price'
               label='Cijena'
-              type='number'
-            />
-            <FieldSet
-              value={article?.discount || ''}
-              readOnly={true}
-              name='discount'
-              label='Rabat'
               type='number'
             />
             <section className='mt-5 flex w-full items-center justify-center'>

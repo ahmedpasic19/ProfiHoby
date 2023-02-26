@@ -1,7 +1,7 @@
 import { NextPage } from 'next'
 import { useState, useMemo } from 'react'
 import { Category } from '@prisma/client'
-import { api } from '../utils/api'
+import { trpcClient } from '../utils/api'
 
 import CreateCategoryModal from '../components/modals/categories/CreateCategoryModal'
 import UpdateCategoryModal from '../components/modals/categories/UpdateCategoryModal'
@@ -9,6 +9,7 @@ import DeleteCategoryModal from '../components/modals/categories/DeleteCategoryM
 import MainTable from '../components/table/MainTable'
 import * as Fa from 'react-icons/fa'
 import * as Ai from 'react-icons/ai'
+import { useQuery } from '@tanstack/react-query'
 
 type TRow = {
   original: Category
@@ -20,9 +21,11 @@ const Categories: NextPage = () => {
   const [openUpdate, setOpenUpdate] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
 
-  const { data: allCategories } = api.category.getAllCategories.useQuery()
+  const { data: allCategories } = useQuery(['categories'], () =>
+    trpcClient.category.getAllCategories.query()
+  )
 
-  const data = useMemo(() => allCategories, [allCategories])
+  const data = useMemo(() => allCategories || [], [allCategories])
 
   const useData = () => {
     return data ? data : ([] as Category[])

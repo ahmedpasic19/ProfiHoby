@@ -1,7 +1,8 @@
 import { useState, ChangeEvent, FormEvent, useEffect } from 'react'
-import { api } from '../../utils/api'
+import { trpcClient } from '../../utils/api'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 type TProps = {
   setPageIndex: React.Dispatch<React.SetStateAction<number>>
@@ -11,16 +12,54 @@ const UploadImageForm = ({ setPageIndex, articleId }: TProps) => {
   const [articleImage, setArticleImage] = useState<string>('')
   const [file, setFile] = useState<File | undefined>(undefined)
 
-  const utils = api.useContext()
   const router = useRouter()
 
-  const { data: articleImages } = api.image.getAllArticleImages.useQuery(
-    {
-      // eslint-disable-next-line
-      id: articleId!,
-    },
+  const queryClient = useQueryClient()
+
+  const { data: articleImages } = useQuery(
+    ['articleImages', { id: articleId }],
+    () => trpcClient.image.getAllArticleImages.query({ id: articleId! }),
     {
       enabled: articleId ? true : false,
+    }
+  )
+
+  const { mutate: addArticleImage } = useMutation(
+    (input: { name: string; article_id: string }) =>
+      trpcClient.image.createPresignedURL.mutate(input),
+    {
+      onSuccess: async (data) => {
+        setArticleImage('')
+        setFile(undefined)
+
+        if (!file) return alert('No File')
+
+        const fileds = { ...data?.fields }
+        const url = data?.url
+        const fileData = {
+          ...fileds,
+          'Content-Type': file.type,
+          file,
+        }
+
+        const formData = new FormData()
+        for (const name in fileData) {
+          formData.append(name, fileData[name])
+        }
+        if (!url) return alert('NO URL')
+
+        await fetch(url, {
+          method: 'POST',
+          body: formData,
+        })
+          .then((res) => console.log(res))
+          .catch((err) => console.log(err))
+
+        await queryClient.invalidateQueries([
+          'articleImages',
+          { id: articleId },
+        ])
+      },
     }
   )
 
@@ -30,38 +69,6 @@ const UploadImageForm = ({ setPageIndex, articleId }: TProps) => {
       setPageIndex(0)
     }
   }, [articleImages, setPageIndex, router])
-
-  const { mutateAsync: createURL } = api.image.createPresignedURL.useMutation({
-    onSuccess: async (data) => {
-      setArticleImage('')
-      setFile(undefined)
-
-      if (!file) return alert('No File')
-
-      const fileds = { ...data?.fields }
-      const url = data?.url
-      const fileData = {
-        ...fileds,
-        'Content-Type': file.type,
-        file,
-      }
-
-      const formData = new FormData()
-      for (const name in fileData) {
-        formData.append(name, fileData[name])
-      }
-      if (!url) return alert('NO URL')
-
-      await fetch(url, {
-        method: 'POST',
-        body: formData,
-      })
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err))
-
-      await utils.image.getAllArticleImages.invalidate()
-    },
-  })
 
   const onImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.currentTarget.files?.[0]) return
@@ -78,11 +85,11 @@ const UploadImageForm = ({ setPageIndex, articleId }: TProps) => {
     setArticleImage(imagesArray[0])
   }
 
-  const handleUploadImage = async (e: FormEvent<HTMLElement>) => {
+  const handleUploadImage = (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
     if (!file || !articleId) return
 
-    await createURL({ article_id: articleId, name: file.name })
+    addArticleImage({ article_id: articleId, name: file.name })
   }
 
   return (

@@ -2,9 +2,11 @@ import { CategoriesOnArticle, Category } from '@prisma/client'
 import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
-import { api } from '../utils/api'
+import { trpcClient } from '../utils/api'
 
 import Image from 'next/image'
+import { debounce } from '../utils/debounce'
+import { useQuery } from '@tanstack/react-query'
 
 type TArticleProps = {
   description: string
@@ -18,12 +20,21 @@ type TArticleProps = {
 const Home: NextPage = () => {
   const [category, setCategory] = useState('')
   const [pageIndex, setPageIndex] = useState(0)
-  const { data: articlesData, refetch } = api.article.getAllArticles.useQuery({
-    pageIndex,
-    pageSize: 50,
-    category,
-  })
-  const { data: allCategories } = api.category.getAllCategories.useQuery()
+
+  const { data: articleData, refetch } = useQuery(
+    ['articles', { category: '', name: '', pageIndex: 0, pageSize: 100 }],
+    () =>
+      trpcClient.article.getAllArticles.query({
+        category: '',
+        name: '',
+        pageIndex: 0,
+        pageSize: 100,
+      })
+  )
+
+  const { data: allCategories } = useQuery(['categories'], () =>
+    trpcClient.category.getAllCategories.query()
+  )
 
   function createRandomArray(length: number) {
     const arr = []
@@ -34,7 +45,11 @@ const Home: NextPage = () => {
   }
 
   useEffect(() => {
-    refetch()
+    const trigger = async () => {
+      await refetch()
+    }
+
+    debounce(trigger, 300)
   }, [pageIndex, refetch])
 
   return (
@@ -66,7 +81,7 @@ const Home: NextPage = () => {
         </div>
         <div className='flex w-full items-center justify-center'>
           <div className='grid h-full w-full grid-cols-4 gap-5 px-10 pt-[25vh]'>
-            {articlesData?.articles?.map((article) => (
+            {articleData?.articles?.map((article) => (
               <Article
                 key={article.id}
                 title={article.name}
@@ -80,7 +95,7 @@ const Home: NextPage = () => {
           </div>
         </div>
         <div className='col-start-2 col-end-3 flex h-full w-full items-center justify-center py-5'>
-          {createRandomArray(articlesData?.pageCount || 0).map((page) => (
+          {createRandomArray(articleData?.pageCount || 0).map((page) => (
             <button
               onClick={() => setPageIndex(page - 1)}
               key={Math.random().toString()}

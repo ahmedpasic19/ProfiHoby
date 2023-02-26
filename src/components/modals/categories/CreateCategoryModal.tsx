@@ -1,8 +1,9 @@
 import { FormEvent, useState } from 'react'
 import { Dialog } from '@headlessui/react'
-import { api } from '../../../utils/api'
 import FieldSet from '../../Fieldset'
 import * as Ai from 'react-icons/ai'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { trpcClient } from '../../../utils/api'
 
 type TProps = {
   isOpen: boolean
@@ -12,20 +13,24 @@ type TProps = {
 const CreateCategoryModal = ({ isOpen, setIsOpen }: TProps) => {
   const [name, setName] = useState('')
 
-  const utils = api.useContext()
+  const queryClient = useQueryClient()
 
-  const { mutate } = api.category.createCategory.useMutation({
-    onSuccess: async () => {
-      setIsOpen(false)
-      setName('')
-      await utils.category.getAllCategories.invalidate()
-    },
-  })
+  const { mutate: createCategory } = useMutation(
+    (input: { name: string }) =>
+      trpcClient.category.createCategory.mutate(input),
+    {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['categories'])
+        setIsOpen(false)
+        setName('')
+      },
+    }
+  )
 
   const handleSubmit = (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
 
-    mutate({ name })
+    createCategory({ name })
   }
 
   return (

@@ -1,9 +1,11 @@
 import { ChangeEvent, FormEvent } from 'react'
+import { Article, Image, CategoriesOnArticle } from '@prisma/client'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { trpcClient } from '../../../utils/api'
+
 import { Dialog } from '@headlessui/react'
-import { api } from '../../../utils/api'
 import FieldSet from '../../Fieldset'
 import * as Ai from 'react-icons/ai'
-import { Article, Image, CategoriesOnArticle } from '@prisma/client'
 
 type TArticle = Article & {
   image: Image[]
@@ -23,15 +25,26 @@ const UpdateArticleModal = ({
   setIsOpen,
   setArticle,
 }: TProps) => {
-  const utils = api.useContext()
+  const queryClient = useQueryClient()
 
-  const { mutate } = api.article.updateArticle.useMutation({
-    onSuccess: async () => {
-      await utils.article.getAllArticles.invalidate()
-      setArticle({} as TArticle)
-      setIsOpen(false)
-    },
-  })
+  const { mutate: updateArticle } = useMutation(
+    (input: {
+      id: string
+      name: string
+      description: string
+      base_price: number
+    }) => trpcClient.article.updateArticle.mutate(input),
+    {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries([
+          'articles',
+          { pageSize: 100, pageIndex: 0, category: '', name: '' },
+        ])
+        setArticle({} as TArticle)
+        setIsOpen(false)
+      },
+    }
+  )
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -44,7 +57,7 @@ const UpdateArticleModal = ({
 
   const handleSubmit = (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
-    mutate(article)
+    updateArticle(article)
   }
 
   return (
@@ -101,13 +114,6 @@ const UpdateArticleModal = ({
               value={article.base_price}
               onChange={handleChange}
               name='base_price'
-              label='Cijena'
-              type='number'
-            />
-            <FieldSet
-              value={article?.discount || ''}
-              onChange={handleChange}
-              name='discount'
               label='Cijena'
               type='number'
             />

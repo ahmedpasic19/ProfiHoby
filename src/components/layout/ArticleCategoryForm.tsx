@@ -1,8 +1,9 @@
 import { FormEvent, useState } from 'react'
-import { api } from '../../utils/api'
+import { trpcClient } from '../../utils/api'
 import { MultiValue } from 'react-select/dist/declarations/src'
 
 import Select from 'react-select'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 type TProps = {
   setPageIndex: React.Dispatch<React.SetStateAction<number>>
@@ -19,18 +20,35 @@ const ArticleCategoryForm = ({
     [] as MultiValue<{ value: string; label: string }>
   )
 
-  const utils = api.useContext()
+  const queryClient = useQueryClient()
 
-  const { data: allCategories } = api.category.getAllCategories.useQuery()
-  const { mutate: associateArticle } =
-    api.article_category_relation.createRelation.useMutation({
+  const { refetch } = useQuery(['article_category_relation'], () =>
+    trpcClient.article_category_relation.getAllRelations.query()
+  )
+
+  const { data: allCategories } = useQuery(['categories'], () =>
+    trpcClient.category.getAllCategories.query()
+  )
+
+  const { mutate: associateArticle } = useMutation(
+    (
+      input: {
+        article_id: string
+        category_id: string
+      }[]
+    ) => trpcClient.article_category_relation.createRelation.mutate(input),
+    {
       onSuccess: async () => {
         if (pageIndex !== 2) setPageIndex((prev) => prev + 1)
         else setPageIndex(0)
-        await utils.article_category_relation.getAllRelations.invalidate()
-        await utils.article.getAllArticles.invalidate()
+        await refetch()
+        await queryClient.invalidateQueries([
+          'articles',
+          { pageSize: 100, pageIndex: 0, name: '', category: '' },
+        ])
       },
-    })
+    }
+  )
 
   const options = allCategories?.map((category) => ({
     value: category.id,

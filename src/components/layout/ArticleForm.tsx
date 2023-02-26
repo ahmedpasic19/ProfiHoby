@@ -1,6 +1,7 @@
 import { Article } from '@prisma/client'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FormEvent, ChangeEvent } from 'react'
-import { api } from '../../utils/api'
+import { trpcClient } from '../../utils/api'
 import FieldSet from '../Fieldset'
 
 type TProps = {
@@ -18,17 +19,24 @@ const ArticleForm = ({
   articleData,
   pageIndex,
 }: TProps) => {
-  const utils = api.useContext()
+  const queryClient = useQueryClient()
 
-  const { mutate: postArticle } = api.article.createArticle.useMutation({
-    onSuccess: async (data) => {
-      setArticleId(data.id)
-      setArticleData({} as Article)
-      await utils.article.getAllArticles.invalidate()
-      if (pageIndex !== 2) setPageIndex((prev) => prev + 1)
-      else setPageIndex(0)
-    },
-  })
+  const { mutate: postArticle } = useMutation(
+    (input: { name: string; description: string; base_price: number }) =>
+      trpcClient.article.createArticle.mutate(input),
+    {
+      onSuccess: async (data) => {
+        setArticleId(data.id)
+        setArticleData({} as Article)
+        await queryClient.invalidateQueries([
+          'articles',
+          { category: '', name: '', pageSize: 100, pageIndex: 0 },
+        ])
+        if (pageIndex !== 2) setPageIndex((prev) => prev + 1)
+        else setPageIndex(0)
+      },
+    }
+  )
 
   const createArticle = (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
@@ -40,9 +48,7 @@ const ArticleForm = ({
     )
       return
     articleData.base_price = parseFloat(articleData.base_price.toString())
-    articleData.discount = parseFloat(
-      articleData?.discount ? articleData?.discount?.toString() : '0'
-    )
+
     postArticle(articleData)
   }
 
