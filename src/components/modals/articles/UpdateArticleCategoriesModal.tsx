@@ -3,7 +3,7 @@ import { Dialog } from '@headlessui/react'
 import Select, { MultiValue } from 'react-select'
 import * as Ai from 'react-icons/ai'
 import { Article, CategoriesOnArticle, Image } from '@prisma/client'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { trpcClient } from '../../../utils/api'
 
 type TArticle = Article & {
@@ -29,12 +29,14 @@ const UpdateArticleCategoriesModal = ({
     MultiValue<{ label: string; value: string }>
   >([])
 
+  const queryClient = useQueryClient()
+
   const { data: allCategories } = useQuery(['categories'], () =>
     trpcClient.category.getAllCategories.query()
   )
 
   const { data: allArticleCategories } = useQuery(
-    ['article.categoreis'],
+    ['article.categoreis', { id: article.id }],
     () =>
       trpcClient.article_category_relation.getArticleCategories.query({
         article_id: article?.id,
@@ -54,7 +56,17 @@ const UpdateArticleCategoriesModal = ({
         category_id: string
       }[]
       article_id: string
-    }) => trpcClient.article_category_relation.updateRelation.mutate(input)
+    }) => trpcClient.article_category_relation.updateRelation.mutate(input),
+    {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries([
+          'article.categoreis',
+          { id: article.id },
+        ])
+        setIsOpen(false)
+        setNewArticleCategories([])
+      },
+    }
   )
 
   const handleSubmit = (e: FormEvent<HTMLElement>) => {
