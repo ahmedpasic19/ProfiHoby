@@ -13,6 +13,7 @@ import MainTable from '../../components/table/MainTable'
 import DeleteArticleModal from '../../components/modals/articles/DeleteArticleModal'
 import UpdateArticleModal from '../../components/modals/articles/UpdateArticleModal'
 import UpdateArticleCategoriesModal from '../../components/modals/articles/UpdateArticleCategoriesModal'
+import UpdateArticleImagesModal from '../../components/modals/articles/UpdateArticleImagesModal'
 
 import * as Bi from 'react-icons/bi'
 import * as Bs from 'react-icons/bs'
@@ -33,6 +34,7 @@ const Articles: NextPage = () => {
   const [openDelete, setOpenDelete] = useState(false)
   const [openUpdate, setOpenUpdate] = useState(false)
   const [openUpdateCategories, setOpenUpdateCategories] = useState(false)
+  const [openUpdateImages, setOpenUpdateImages] = useState(false)
 
   const router = useRouter()
 
@@ -73,10 +75,8 @@ const Articles: NextPage = () => {
             <button
               className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
               onClick={() => {
-                const categories = row.original.categories.map(
-                  (cat) => cat.category_id
-                )
-                return categories
+                setOpenUpdateImages(true)
+                setArticle(row.original)
               }}
             >
               <Bs.BsFillImageFill className='h-8 w-8' />
@@ -159,6 +159,12 @@ const Articles: NextPage = () => {
         article={article}
         isOpen={openUpdateCategories}
         setIsOpen={setOpenUpdateCategories}
+        setArticle={setArticle}
+      />
+      <UpdateArticleImagesModal
+        article={article}
+        isOpen={openUpdateImages}
+        setIsOpen={setOpenUpdateImages}
         setArticle={setArticle}
       />
     </>

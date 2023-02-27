@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { createTRPCRouter, publicProcedure } from '../trpc'
 
 import AWS from 'aws-sdk'
+
 import { env } from '../../../env/server.mjs'
 
 const BUCKET_REGION = env.BUCKET_REGION
@@ -127,11 +128,22 @@ export const imageRouter = createTRPCRouter({
     }),
 
   deleteArticleImage: publicProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ id: z.string(), key: z.string() }))
     .mutation(async ({ input, ctx }) => {
+      const data = s3.deleteObject(
+        { Bucket: BUCKET_NAME, Key: input.key },
+        (err, data) => {
+          if (err) {
+            return err
+          } else {
+            return data
+          }
+        }
+      )
+
       const deleted_image = await ctx.prisma.image.delete({
         where: { id: input.id },
       })
-      return deleted_image
+      return { deleted_image, data }
     }),
 })

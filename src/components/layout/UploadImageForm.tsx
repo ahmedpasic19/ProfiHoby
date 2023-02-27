@@ -1,14 +1,17 @@
 import { useState, ChangeEvent, FormEvent, useEffect } from 'react'
 import { trpcClient } from '../../utils/api'
-import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+
+import Image from 'next/image'
+import * as Bs from 'react-icons/bs'
 
 type TProps = {
   setPageIndex: React.Dispatch<React.SetStateAction<number>>
   articleId: string | null
+  navigateBack?: boolean
 }
-const UploadImageForm = ({ setPageIndex, articleId }: TProps) => {
+const UploadImageForm = ({ setPageIndex, articleId, navigateBack }: TProps) => {
   const [articleImage, setArticleImage] = useState<string>('')
   const [file, setFile] = useState<File | undefined>(undefined)
 
@@ -17,8 +20,8 @@ const UploadImageForm = ({ setPageIndex, articleId }: TProps) => {
   const queryClient = useQueryClient()
 
   const { data: articleImages } = useQuery(
-    ['articleImages', { id: articleId }],
-    () => trpcClient.image.getAllArticleImages.query({ id: articleId! }),
+    ['image.getAllArricleImages', { id: articleId }],
+    () => trpcClient.image.getAllArticleImages.query({ id: articleId || '' }),
     {
       enabled: articleId ? true : false,
     }
@@ -56,7 +59,7 @@ const UploadImageForm = ({ setPageIndex, articleId }: TProps) => {
           .catch((err) => console.log(err))
 
         await queryClient.invalidateQueries([
-          'articleImages',
+          'image.getAllArricleImages',
           { id: articleId },
         ])
       },
@@ -111,14 +114,22 @@ const UploadImageForm = ({ setPageIndex, articleId }: TProps) => {
         <img src={articleImage} />
       </div>
 
-      <section className='mt-14 flex w-full items-center justify-center'>
+      <section className='mt-14 flex w-full items-center justify-evenly'>
         <button
           disabled={!file}
           onSubmit={handleUploadImage}
-          className='w-4/5 rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
+          className='w-4/5 max-w-[200px] rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
         >
           Dodaj
         </button>
+        {navigateBack && (
+          <button
+            onClick={() => setPageIndex(0)}
+            className='w-4/5 max-w-[200px] rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
+          >
+            <Bs.BsArrowRight className='h-6 w-6 rotate-180' />
+          </button>
+        )}
       </section>
 
       <div className='mt-5 grid w-full grid-cols-8 grid-rows-1 gap-2 overflow-x-auto'>
