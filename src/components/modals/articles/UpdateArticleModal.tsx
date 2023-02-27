@@ -76,7 +76,6 @@ const UpdateArticleModal = ({
             setArticle({} as TArticle)
           }}
         />
-        <Dialog.Title>Izbriši artikal</Dialog.Title>
 
         <main className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
           <form

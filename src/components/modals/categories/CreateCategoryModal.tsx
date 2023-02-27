@@ -49,7 +49,6 @@ const CreateCategoryModal = ({ isOpen, setIsOpen }: TProps) => {
             setName('')
           }}
         />
-        <Dialog.Title>Dodaj kategoriju</Dialog.Title>
 
         <main className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
           <form

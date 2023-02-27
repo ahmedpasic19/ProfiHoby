@@ -55,7 +55,6 @@ const UpdateCategoryModal = ({
             setCategory({} as Category)
           }}
         />
-        <Dialog.Title>Izmjeni kategoriju</Dialog.Title>
 
         <main className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
           <form

@@ -53,7 +53,6 @@ const DeleteCategoryModal = ({
             setCategory({} as Category)
           }}
         />
-        <Dialog.Title>Izbriši kategoriju</Dialog.Title>
 
         <main className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
           <form
