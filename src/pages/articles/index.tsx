@@ -34,9 +34,6 @@ const Articles: NextPage = () => {
   const [openUpdate, setOpenUpdate] = useState(false)
   const [openUpdateCategories, setOpenUpdateCategories] = useState(false)
 
-  const [pageIndex, setPageIndex] = useState(0)
-  const [pageSize, setPageSize] = useState(50)
-
   const router = useRouter()
 
   const { data: articleData } = useQuery(
@@ -143,15 +140,7 @@ const Articles: NextPage = () => {
         </section>
 
         <div className='relative flex w-full justify-center overflow-y-auto'>
-          <MainTable
-            pageSize={pageSize}
-            pageIndex={pageIndex}
-            setPageSize={setPageSize}
-            setPageIndex={setPageIndex}
-            data={useData()}
-            columns={columns}
-            showNavigation
-          />
+          <MainTable data={useData()} columns={columns} showNavigation />
         </div>
       </div>
       <DeleteArticleModal
