@@ -16,7 +16,10 @@ const ArticlePage = () => {
 
   const { data: artilce_images } = useQuery(
     ['image.getAllArticleImges', { id: articleId }],
-    () => trpcClient.image.getAllArticleImages.query({ id: articleId })
+    () => trpcClient.image.getAllArticleImages.query({ id: articleId }),
+    {
+      enabled: articleId ? true : false,
+    }
   )
 
   const image_uls = artilce_images?.map((image) => image.url) || []

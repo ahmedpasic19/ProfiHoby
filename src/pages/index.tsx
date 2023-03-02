@@ -44,7 +44,7 @@ const Home: NextPage = () => {
         { category: '', name: '', pageIndex: 0, pageSize: 100 },
       ])
     }
-    trigger()
+    trigger().catch(console.error)
   }, [category, refetch, queryClient])
 
   useEffect(() => {

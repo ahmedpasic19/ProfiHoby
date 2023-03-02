@@ -31,7 +31,10 @@ const UpdateArticleImagesModal = ({
 
   const { data: article_images } = useQuery(
     ['image.getAllArricleImages', { id: article.id }],
-    () => trpcClient.image.getAllArticleImages.query({ id: article.id })
+    () => trpcClient.image.getAllArticleImages.query({ id: article.id }),
+    {
+      enabled: article.id ? true : false,
+    }
   )
 
   return (

@@ -10,7 +10,14 @@ import SearchBar from '../components/SearchBar'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
 
-const client = new QueryClient()
+const client = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 10 * (60 * 1000), // 10 mins
+      cacheTime: 15 * (60 * 1000), // 15 mins
+    },
+  },
+})
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,

@@ -68,7 +68,7 @@ const UploadImageForm = ({ setPageIndex, articleId, navigateBack }: TProps) => {
 
   useEffect(() => {
     if (articleImages?.length === 8) {
-      router.push('/')
+      router.push('/').catch(console.error)
       setPageIndex(0)
     }
   }, [articleImages, setPageIndex, router])

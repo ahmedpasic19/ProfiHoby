@@ -24,7 +24,7 @@ const Article = ({
   return (
     <div
       onClick={() => router.push(`/articles/${article_id}`)}
-      className='relative h-[320px] w-[250px] cursor-pointer rounded-lg border-2 bg-white drop-shadow-[3px_3px_2px] transition duration-100 hover:scale-105 hover:transform hover:drop-shadow-[7px_7px_4px]'
+      className='relative h-[320px] w-[250px] cursor-pointer rounded-lg border-2 bg-white drop-shadow-[0px_0px_2px] hover:drop-shadow-[0px_0px_6px_rgba(0,0,0,0.7)]'
     >
       <section className='flex w-full items-center justify-center'>
         <Image
