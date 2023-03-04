@@ -9,7 +9,7 @@ import { Article } from '@prisma/client'
 
 import stringSimilarity from 'string-similarity'
 import Image from 'next/image'
-import * as Ai from 'react-icons/ai'
+import SearchComponent from './SearchComponent'
 
 type TArticle = Article & {
   image: {
@@ -97,24 +97,14 @@ const SearchBar = () => {
 
   return (
     <div className='relative flex w-full items-center bg-gray-300 py-2'>
-      <form onSubmit={searchForArticle} className='flex'>
-        <input
-          autoComplete='off'
-          placeholder='Pretraži artikle...'
-          name='name'
-          value={name || ''}
-          onChange={(e) => setName(e.target.value)}
-          className='text-md mx-10 w-full min-w-[450px] rounded-sm p-2 pl-10 outline-none'
-        />
-        <button
-          disabled={!name}
-          onSubmit={searchForArticle}
-          onClick={searchForArticle}
-          className='flex items-center justify-center rounded-md bg-gray-800 px-3 text-lg font-bold tracking-wide text-white hover:bg-gray-700'
-        >
-          <Ai.AiOutlineSearch className='mr-4 h-6 w-6' /> <p>Pretraži</p>
-        </button>
-      </form>
+      <SearchComponent
+        filter={name}
+        filter_name='name'
+        refetch={refetch}
+        search={searchForArticle}
+        displayBtn
+        handleChange={(e) => setName(e.target.value)}
+      />
       {name && (
         <div className='absolute top-12 z-10 mx-10 flex max-h-[300px] w-full items-center justify-center overflow-y-auto bg-gray-300'>
           <ul className='h-full max-h-[300px] w-4/5 overflow-y-auto'>
