@@ -1,30 +1,13 @@
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/router'
-
-import { debounce } from '../utils/debounce'
 
 import { useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../utils/api'
-import { Article } from '@prisma/client'
 
-import stringSimilarity from 'string-similarity'
 import Image from 'next/image'
 import SearchComponent from './SearchComponent'
 
-type TArticle = Article & {
-  image: {
-    url: string
-    id: string
-    name: string
-    image: string
-    article_id: string | null
-    userId: string | null
-  }[]
-}
-
-interface GroupedStrings {
-  [key: string]: TArticle[]
-}
+import useGroupSimularData from '../hooks/useGroupSimularData'
 
 type TListedArticleProps = {
   src: string
@@ -48,14 +31,6 @@ const SearchBar = () => {
       })
   )
 
-  useEffect(() => {
-    const trigger = async () => {
-      await refetch()
-    }
-
-    debounce(trigger, 1000)
-  }, [name, refetch])
-
   // Navigate to the selected article
   const navigateToArticle = async (id: string) => {
     setName('')
@@ -69,31 +44,12 @@ const SearchBar = () => {
     await router.push(`/articles/article_name/${name}`)
   }
 
-  const similarityThreshold = 0.7
-
-  const groups: GroupedStrings = (articleData?.articles || []).reduce(
-    (result: GroupedStrings, article) => {
-      // Check if the current article_name is similar to any existing group
-      const similarGroup = Object.keys(result).find((key: string) => {
-        const similarity = stringSimilarity.compareTwoStrings(key, article.name)
-        return similarity > similarityThreshold
-      })
-
-      // If the current article is similar to an existing group, add it to that group
-      if (similarGroup) {
-        result[similarGroup]?.push(article)
-      } else {
-        // Otherwise, create a new group for the current article
-        result[article.name] = [article]
-      }
-
-      return result
-    },
-    {}
-  )
-
   // Get the minimum set of article by taking the first string of each group
-  const minimum = Object.values(groups).map((group: TArticle[]) => group[0])
+  const minimum = useGroupSimularData({
+    groupBy: 'name',
+    data: articleData?.articles || [],
+    treshHold: 0.1,
+  })
 
   return (
     <div className='relative flex w-full items-center bg-gray-300 py-2'>
