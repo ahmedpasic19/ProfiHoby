@@ -67,21 +67,25 @@ model VerificationToken {
 }
 
 model Article {
-    id          String  @id @default(cuid())
+    id          String @id @default(cuid())
     name        String
     description String
     base_price  Int
-    image       Image[]
 
-    createdAt  DateTime              @default(now())
-    updatedAt  DateTime              @updatedAt
-    categories CategoriesOnArticle[]
+    image             Image[]
+    categories        CategoriesOnArticle[]
+    ArticleAction     ArticleAction?        @relation(fields: [article_action_id], references: [id])
+    article_action_id String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Image {
-    id         String   @id @default(cuid())
-    name       String
-    image      String
+    id    String @id @default(cuid())
+    name  String
+    image String
+
     Article    Article? @relation(fields: [article_id], references: [id])
     article_id String?
     User       User?    @relation(fields: [userId], references: [id])
@@ -104,4 +108,17 @@ model CategoriesOnArticle {
     assignedAt  DateTime @default(now())
 
     @@id([article_id, category_id])
+}
+
+model ArticleAction {
+    id          String    @id @default(cuid())
+    discount    Int
+    title       String
+    date        DateTime?
+    description String?
+
+    articles Article[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }

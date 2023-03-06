@@ -1,0 +1,150 @@
+import { useState, useMemo, FormEvent } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { trpcClient } from '../../../utils/api'
+import { ArticleAction, CategoriesOnArticle, Category } from '@prisma/client'
+
+import SearchComponent from '../../SearchComponent'
+import FormButton from '../../FormButton'
+import Article from '../../Article'
+import { ImCheckboxChecked } from 'react-icons/im'
+
+type TArticle = {
+  image: {
+    url: string
+    id: string
+    name: string
+    image: string
+    article_id: string | null
+    userId: string | null
+  }[]
+  id: string
+  name: string
+  description: string
+  base_price: number
+  article_action_id: string | null
+  createdAt: Date
+  updatedAt: Date
+  categories: (CategoriesOnArticle & { category: Category })[]
+}
+
+type TProps = {
+  action: ArticleAction
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setPageIndex: React.Dispatch<React.SetStateAction<number>>
+  setAction: React.Dispatch<React.SetStateAction<ArticleAction>>
+}
+
+const ArticlesForActionForm = ({
+  action,
+  setIsOpen,
+  setPageIndex,
+  setAction,
+}: TProps) => {
+  const [name, setName] = useState('')
+  const [selectedArticles, setSelectedArticles] = useState<TArticle[]>([])
+
+  const queryClient = useQueryClient()
+
+  const { data: articles, refetch } = useQuery(
+    ['articles.getArticlesByName', { name }],
+    () =>
+      trpcClient.article.getArticlesByName.query({
+        name,
+      })
+  )
+
+  const { mutate: updateAction, isLoading } = useMutation(
+    (input: {
+      id: string
+      title: string
+      discount: number
+      description: string | null
+      date: Date | undefined
+      articles: TArticle[]
+    }) => trpcClient.article_action.updateArticleAction.mutate(input),
+    {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries([
+          'article_action.getAllArticleActions',
+        ])
+        setIsOpen(false)
+        setPageIndex(0)
+        setAction({} as ArticleAction)
+      },
+    }
+  )
+
+  const data = useMemo(() => articles, [articles])
+
+  const handleSelectArticle = (article: TArticle) => {
+    const selected = selectedArticles.find((art) => article.id === art.id)
+
+    if (selected) {
+      // deselect if selected
+      const new_articles = selectedArticles.filter(
+        (art) => art.id !== article.id
+      )
+      setSelectedArticles(new_articles)
+    } else setSelectedArticles((prev) => [...prev, article])
+  }
+
+  const handleAddArticles = (e: FormEvent) => {
+    e.preventDefault()
+    const configured_articles = selectedArticles.map((art) => ({
+      ...art,
+      base_price: art.base_price.toString(),
+    }))
+    updateAction({ ...action, articles: configured_articles })
+  }
+
+  return (
+    <div className='z-10 rounded-xl bg-white p-10'>
+      <form>
+        <SearchComponent
+          filter={name}
+          filter_name='name'
+          refetch={refetch}
+          displayBtn={false}
+          handleChange={(e) => setName(e.target.value)}
+        />
+        <ul className='mt-5 grid h-[400px] w-full grid-cols-2 flex-col gap-4 overflow-y-auto border-t-2 border-gray-400 pt-5'>
+          {(data?.length ? data : selectedArticles)?.map((article) => {
+            const selected = selectedArticles.find(
+              (art) => article.id === art.id
+            )
+            return (
+              <li
+                onClick={() => handleSelectArticle(article)}
+                key={Math.random()}
+                className='relative z-10 mb-1 flex items-center justify-center'
+              >
+                <Article
+                  disableLink
+                  article_id={article.id}
+                  categories={article.categories}
+                  description={article.description}
+                  price={article.base_price}
+                  name={article.name}
+                  imageURL={article?.image[0]?.url || ''}
+                />
+                {selected && (
+                  <ImCheckboxChecked className='absolute top-10 right-5 h-8 w-8 text-blue-600' />
+                )}
+              </li>
+            )
+          })}
+        </ul>
+        <section className='flex w-full items-center justify-center'>
+          <FormButton
+            onSubmit={handleAddArticles}
+            onClick={handleAddArticles}
+            isLoading={isLoading}
+            text='Dodaj'
+          />
+        </section>
+      </form>
+    </div>
+  )
+}
+
+export default ArticlesForActionForm

@@ -4,31 +4,35 @@ import { useRouter } from 'next/router'
 import Image from 'next/image'
 
 type TArticleProps = {
+  disableLink?: boolean
   description: string
-  title: string
+  name: string
   price: number
-  url: string
+  imageURL: string
   article_id: string
   categories: (CategoriesOnArticle & { category: Category })[]
 }
 
 const Article = ({
+  disableLink,
   description,
-  title,
+  name,
   price,
-  url,
+  imageURL,
   categories,
   article_id,
 }: TArticleProps) => {
   const router = useRouter()
   return (
     <div
-      onClick={() => router.push(`/articles/${article_id}`)}
+      onClick={async () => {
+        if (!disableLink) await router.push(`/articles/${article_id}`)
+      }}
       className='relative h-[320px] w-[250px] cursor-pointer rounded-lg border-2 bg-white drop-shadow-[0px_0px_2px] hover:drop-shadow-[0px_0px_6px_rgba(0,0,0,0.7)]'
     >
       <section className='flex w-full items-center justify-center'>
         <Image
-          src={url}
+          src={imageURL}
           alt='article image'
           width={250}
           height={150}
@@ -37,7 +41,7 @@ const Article = ({
       </section>
       <section className='mt-2 flex w-full flex-col p-2'>
         <h3 className='text-lg font-semibold tracking-tight text-gray-800'>
-          {title}
+          {name}
         </h3>
         <p className='text-gray-400'>{description}</p>
         <div className='mt-2 grid grid-cols-2 grid-rows-2 gap-2'>

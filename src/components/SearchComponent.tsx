@@ -7,7 +7,7 @@ type TProps = {
   filter_name: string
   filter: string
   refetch: () => Promise<unknown>
-  search: (e: FormEvent) => Promise<void>
+  search?: (e: FormEvent) => Promise<void>
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
