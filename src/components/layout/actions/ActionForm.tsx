@@ -11,13 +11,15 @@ import * as Ai from 'react-icons/ai'
 
 type TProps = {
   isEditing?: boolean
+  isDeleting?: boolean
   action: Partial<ArticleAction>
   setAction: React.Dispatch<React.SetStateAction<ArticleAction>>
-  setPageIndex: React.Dispatch<React.SetStateAction<number>>
+  setPageIndex?: React.Dispatch<React.SetStateAction<number>>
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const ActionForm = ({
+  isDeleting,
   isEditing,
   action,
   setAction,
@@ -38,7 +40,7 @@ const ActionForm = ({
         await queryClient.invalidateQueries([
           'article_action.getAllArticleActions',
         ])
-        setPageIndex(1)
+        setPageIndex && setPageIndex(1)
         setAction(data)
       },
     }
@@ -58,8 +60,27 @@ const ActionForm = ({
         await queryClient.invalidateQueries([
           'article_action.getAllArticleActions',
         ])
-        setPageIndex(1)
+        setPageIndex && setPageIndex(1)
         setAction(data)
+      },
+    }
+  )
+
+  const { mutate: deleteAction, isLoading: loadingDelete } = useMutation(
+    (input: { id: string }) =>
+      trpcClient.article_action.deleteArticleAction.mutate(input),
+    {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries([
+          'article_action.getAllArticleActions',
+        ])
+        await queryClient.invalidateQueries([
+          'article.getArticlesByActionID',
+          { id: action.id },
+        ])
+        setPageIndex && setPageIndex(0)
+        setAction({} as ArticleAction)
+        setIsOpen(false)
       },
     }
   )
@@ -85,7 +106,7 @@ const ActionForm = ({
   const handleSubmit = (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
 
-    if (!isEditing) {
+    if (!isEditing && !isDeleting) {
       if (!action.discount || !action.title) return
       createAction({
         discount: action.discount,
@@ -93,12 +114,18 @@ const ActionForm = ({
         date: action.date || undefined,
         description: action.description || undefined,
       })
-    } else {
+    }
+    if (isEditing) {
       const configured_articles = action_articles?.map((art) => ({
         ...art,
         base_price: art.base_price.toString(),
       }))
+
       updateAction({ ...action, articles: configured_articles })
+    }
+    if (isDeleting) {
+      if (!action.id) return
+      deleteAction({ id: action.id })
     }
   }
 
@@ -108,7 +135,11 @@ const ActionForm = ({
       className='relative h-[584px] w-[450px] rounded-xl bg-white p-10 drop-shadow-2xl'
     >
       <h1 className='mb-10 w-full text-center text-2xl font-bold text-gray-800'>
-        {isEditing ? 'Izmjeni akciju' : 'Započni akciju'}
+        {isEditing
+          ? 'Izmjeni akciju'
+          : isDeleting
+          ? 'Obriši akciju'
+          : 'Započni akciju'}
       </h1>
       <FieldSet
         type='text'
@@ -142,9 +173,9 @@ const ActionForm = ({
       <section className='flex w-full items-center justify-center'>
         <FormButton
           onSubmit={handleSubmit}
-          disabled={loadingCreate || loadingUpdate}
-          isLoading={loadingCreate || loadingUpdate}
-          text={isEditing ? 'Izmjeni' : 'Dodaj'}
+          disabled={loadingCreate || loadingUpdate || loadingDelete}
+          isLoading={loadingCreate || loadingUpdate || loadingDelete}
+          text={isEditing ? 'Izmjeni' : isDeleting ? 'Obriši' : 'Dodaj'}
         />
       </section>
       <Ai.AiFillCloseCircle

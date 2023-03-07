@@ -7,6 +7,7 @@ import { trpcClient } from '../utils/api'
 import ActionArticlesModal from '../components/modals/actions/ActionArticlesModal'
 import CreateActionModal from '../components/modals/actions/CreateActionModal'
 import UpdateActionModal from '../components/modals/actions/UpdateActionModal'
+import DeleteActionModal from '../components/modals/actions/DeleteActionModal'
 
 import MainTable from '../components/table/MainTable'
 import { FaTrash } from 'react-icons/fa'
@@ -133,6 +134,12 @@ const Actions: NextPage = () => {
         action={action}
         setAction={setAction}
         setIsOpen={setOpenUpdate}
+      />
+      <DeleteActionModal
+        isOpen={openDelete}
+        action={action}
+        setAction={setAction}
+        setIsOpen={setOpenDelete}
       />
       <ActionArticlesModal
         isOpen={openArticles}

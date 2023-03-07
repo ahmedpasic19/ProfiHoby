@@ -63,7 +63,6 @@ const ArticlesForActionForm = ({
         await queryClient.invalidateQueries([
           'article.getArticlesByActionID',
           { id: action.id },
-          ,
         ])
         setIsOpen(false)
         setPageIndex && setPageIndex(0)
