@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Dialog } from '@headlessui/react'
 import { ArticleAction } from '@prisma/client'
 
-import ActionForm from '../../layout/actions/ActionForm'
+import ActionForm from '../../layout/forms/actions/ActionForm'
 import ArticlesForActionForm from '../../layout/forms/actions/ArticlesForActionForm'
 
 type TProps = {

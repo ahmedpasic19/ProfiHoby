@@ -4,7 +4,7 @@ import { Article, CategoriesOnArticle, Image } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../../utils/api'
 
-import UploadImageForm from '../../layout/UploadImageForm'
+import UploadImageForm from '../../layout/forms/articles/UploadImageForm'
 import ImageGrid from '../../layout/ImageGrid'
 import * as Ai from 'react-icons/ai'
 import * as Bs from 'react-icons/bs'

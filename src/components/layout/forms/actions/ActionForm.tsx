@@ -1,12 +1,12 @@
 import { FormEvent, ChangeEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { trpcClient } from '../../../utils/api'
+import { trpcClient } from '../../../../utils/api'
 import { ArticleAction } from '@prisma/client'
-import { TArticle } from '../../../types/article'
+import { TArticle } from '../../../../types/article'
 
-import Textarea from '../../Textarea'
-import FieldSet from '../../Fieldset'
-import FormButton from '../../FormButton'
+import Textarea from '../../../Textarea'
+import FieldSet from '../../../Fieldset'
+import FormButton from '../../../FormButton'
 import * as Ai from 'react-icons/ai'
 
 type TProps = {

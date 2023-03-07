@@ -3,8 +3,8 @@ import { NextPage } from 'next'
 import { useState } from 'react'
 
 import ArticleCategoryForm from '../../components/layout/forms/articles/ArticleCategoryForm'
-import ArticleForm from '../../components/layout/ArticleForm'
-import UploadImageForm from '../../components/layout/UploadImageForm'
+import ArticleForm from '../../components/layout/forms/articles/ArticleForm'
+import UploadImageForm from '../../components/layout/forms/articles/UploadImageForm'
 
 const CreateArticle: NextPage = () => {
   const [pageIndex, setPageIndex] = useState(0)

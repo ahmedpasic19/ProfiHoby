@@ -1,10 +1,10 @@
 import { Article } from '@prisma/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FormEvent, ChangeEvent } from 'react'
-import { trpcClient } from '../../utils/api'
+import { trpcClient } from '../../../../utils/api'
 
-import FieldSet from '../Fieldset'
-import Textarea from '../Textarea'
+import FieldSet from '../../../Fieldset'
+import Textarea from '../../../Textarea'
 
 type TProps = {
   setArticleData: React.Dispatch<React.SetStateAction<Article>>
