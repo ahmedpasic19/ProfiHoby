@@ -1,28 +1,19 @@
-import { useRouter } from 'next/router'
+import { NextPage } from 'next'
 import { useState } from 'react'
-
-import { trpcClient } from '../../../utils/api'
 import { useQuery } from '@tanstack/react-query'
+import { trpcClient } from '../utils/api'
 
-import Article from '../../../components/Article'
-import PagePagination from '../../../components/layout/PagePagination'
+import Article from '../components/Article'
+import PagePagination from '../components/layout/PagePagination'
 
-const ArticleNamePage = () => {
+const Sales: NextPage = () => {
   const [pageIndex, setPageIndex] = useState(0)
-
-  const router = useRouter()
-  const { article_name } = router.query
-
-  const name = typeof article_name === 'string' ? article_name : ''
-
-  const { data: articles } = useQuery(
-    ['articles', { name: article_name }],
+  const { data: articlesData } = useQuery(
+    ['article.getAllArticlesWithActions', { pageIndex, pageSize: 100 }],
     () =>
-      trpcClient.article.getAllArticles.query({
-        name,
-        category: '',
-        pageSize: 100,
+      trpcClient.article.getAllArticlesWithActions.query({
         pageIndex,
+        pageSize: 100,
       })
   )
 
@@ -30,7 +21,7 @@ const ArticleNamePage = () => {
     <div>
       <div className='flex w-full items-center justify-center'>
         <div className='grid h-full w-full grid-cols-4 gap-5 px-10 pt-[25vh]'>
-          {articles?.articles?.map((article) => (
+          {articlesData?.articles?.map((article) => (
             <Article
               key={article.id}
               name={article.name}
@@ -46,7 +37,7 @@ const ArticleNamePage = () => {
         </div>
       </div>
       <PagePagination
-        pageCount={articles?.pageCount || 0}
+        pageCount={articlesData?.pageCount || 0}
         pageIndex={pageIndex}
         setPageIndex={setPageIndex}
       />
@@ -54,4 +45,4 @@ const ArticleNamePage = () => {
   )
 }
 
-export default ArticleNamePage
+export default Sales

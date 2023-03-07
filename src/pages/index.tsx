@@ -6,6 +6,7 @@ import { debounce } from '../utils/debounce'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import Article from '../components/Article'
+import PagePagination from '../components/layout/PagePagination'
 
 const Home: NextPage = () => {
   const [category, setCategory] = useState('')
@@ -27,14 +28,6 @@ const Home: NextPage = () => {
   const { data: allCategories } = useQuery(['categories'], () =>
     trpcClient.category.getAllCategories.query()
   )
-
-  function createRandomArray(length: number) {
-    const arr = []
-    for (let i = 0; i < length; i++) {
-      arr.push(i + 1) // generates a random number between 0 and 99
-    }
-    return arr
-  }
 
   useEffect(() => {
     const trigger = async () => {
@@ -99,19 +92,11 @@ const Home: NextPage = () => {
             ))}
           </div>
         </div>
-        <div className='col-start-2 col-end-3 flex h-full w-full items-center justify-center py-5'>
-          {createRandomArray(articleData?.pageCount || 0).map((page) => (
-            <button
-              onClick={() => setPageIndex(page - 1)}
-              key={Math.random().toString()}
-              className={`${
-                pageIndex === page - 1 ? 'bg-gray-800' : 'bg-gray-600 '
-              } mx-1 flex h-5 w-5 items-center justify-center text-clip rounded-full p-5 text-xl font-bold text-white`}
-            >
-              <p>{page}</p>
-            </button>
-          ))}
-        </div>
+        <PagePagination
+          pageCount={articleData?.pageCount || 0}
+          pageIndex={pageIndex}
+          setPageIndex={setPageIndex}
+        />
       </div>
     </div>
   )

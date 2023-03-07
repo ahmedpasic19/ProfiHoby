@@ -1,11 +1,12 @@
-'use client'
+import { useRouter } from 'next/router'
+import { signOut, useSession } from 'next-auth/react'
+
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
-import React from 'react'
-import { signOut } from 'next-auth/react'
 
 const Navbar = () => {
+  const { status } = useSession()
+
   const navlinks = [
     {
       href: '/',
@@ -20,7 +21,7 @@ const Navbar = () => {
       label: 'Kategorije',
     },
     {
-      href: '/actions',
+      href: status === 'authenticated' ? '/actions' : '/sales',
       label: 'Akcije',
     },
   ]

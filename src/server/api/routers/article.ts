@@ -175,6 +175,56 @@ export const articleRouter = createTRPCRouter({
       return action_articles
     }),
 
+  getAllArticlesWithActions: publicProcedure
+    .input(
+      z.object({
+        pageSize: z.number(),
+        pageIndex: z.number(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const articles = await ctx.prisma.article.findMany({
+        include: {
+          action: true,
+          image: true,
+          categories: {
+            include: {
+              category: true,
+            },
+          },
+        },
+        skip: input.pageSize * input.pageIndex,
+        take: input.pageSize,
+        where: { article_action_id: { not: null } },
+        orderBy: { createdAt: 'asc' },
+      })
+
+      // Assigning an accessURL from S3
+      const action_articles = articles.map((article) => {
+        const extended_images = article.image.map((image) => ({
+          ...image,
+          url: s3.getSignedUrl('getObject', {
+            Bucket: BUCKET_NAME,
+            Key: image.image,
+          }),
+        }))
+
+        return { ...article, image: extended_images }
+      })
+
+      const totalArticles = await ctx.prisma.article.count({
+        where: { article_action_id: { not: null } },
+      })
+      const pageCount = Math.ceil(totalArticles / input.pageSize)
+
+      return {
+        articles: action_articles,
+        pageCount,
+        pageIndex: input.pageIndex,
+        pageSize: input.pageSize,
+      }
+    }),
+
   getArticle: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
