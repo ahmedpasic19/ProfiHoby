@@ -3,8 +3,9 @@ import { Article, Image, CategoriesOnArticle } from '@prisma/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { trpcClient } from '../../../utils/api'
 
-import { Dialog } from '@headlessui/react'
 import FieldSet from '../../Fieldset'
+import Textarea from '../../Textarea'
+import { Dialog } from '@headlessui/react'
 import * as Ai from 'react-icons/ai'
 
 type TArticle = Article & {
@@ -92,23 +93,15 @@ const UpdateArticleModal = ({
               value={article.name}
               onChange={handleChange}
             />
-            <fieldset className='flex w-full flex-col items-center'>
-              <label
-                htmlFor='message'
-                className='text-cl mb-2 w-3/4 text-start text-xl font-semibold text-gray-800'
-              >
-                Opis artikla
-              </label>
-              <textarea
-                rows={4}
-                id='message'
-                value={article.description}
-                onChange={handleChange}
-                name='description'
-                className='block w-4/5 rounded-lg border-2 border-gray-800 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500'
-                placeholder='Opišite artikal'
-              ></textarea>
-            </fieldset>
+            <Textarea
+              rows={4}
+              id='message'
+              label=' Opis artikla'
+              value={article.description}
+              onChange={handleChange}
+              name='description'
+              placeholder='Opišite artikal'
+            />
             <FieldSet
               value={article.base_price}
               onChange={handleChange}

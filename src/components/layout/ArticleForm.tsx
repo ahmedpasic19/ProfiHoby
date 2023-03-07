@@ -2,7 +2,9 @@ import { Article } from '@prisma/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { FormEvent, ChangeEvent } from 'react'
 import { trpcClient } from '../../utils/api'
+
 import FieldSet from '../Fieldset'
+import Textarea from '../Textarea'
 
 type TProps = {
   setArticleData: React.Dispatch<React.SetStateAction<Article>>
@@ -80,14 +82,13 @@ const ArticleForm = ({
         >
           Opis artikla
         </label>
-        <textarea
+        <Textarea
           onChange={handleChange}
           rows={4}
           id='message'
           name='description'
-          className='block w-4/5 rounded-lg border-2 border-gray-800 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500'
           placeholder='Opišite artikal'
-        ></textarea>
+        />
       </fieldset>
       <FieldSet
         value={articleData.base_price || ''}

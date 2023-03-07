@@ -1,10 +1,12 @@
 import { FormEvent } from 'react'
-import { Dialog } from '@headlessui/react'
-import FieldSet from '../../Fieldset'
-import * as Ai from 'react-icons/ai'
+import { trpcClient } from '../../../utils/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Article, CategoriesOnArticle, Image } from '@prisma/client'
-import { trpcClient } from '../../../utils/api'
+
+import Textarea from '../../Textarea'
+import FieldSet from '../../Fieldset'
+import { Dialog } from '@headlessui/react'
+import * as Ai from 'react-icons/ai'
 
 type TArticle = Article & {
   image: Image[]
@@ -77,23 +79,15 @@ const DeleteArticleModal = ({
               readOnly={true}
               value={article.name}
             />
-            <fieldset className='flex w-full flex-col items-center'>
-              <label
-                htmlFor='message'
-                className='text-cl mb-2 w-3/4 text-start text-xl font-semibold text-gray-800'
-              >
-                Opis artikla
-              </label>
-              <textarea
-                readOnly
-                rows={4}
-                id='message'
-                value={article.description}
-                name='description'
-                className='block w-4/5 rounded-lg border-2 border-gray-800 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500'
-                placeholder='Opišite artikal'
-              ></textarea>
-            </fieldset>
+            <Textarea
+              label='Opis artikla'
+              readOnly
+              rows={4}
+              id='message'
+              value={article.description}
+              name='description'
+              placeholder='Opišite artikal'
+            />
             <FieldSet
               value={article.base_price}
               readOnly={true}

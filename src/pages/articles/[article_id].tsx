@@ -1,8 +1,9 @@
 import { useRouter } from 'next/router'
 import { trpcClient } from '../../utils/api'
+import { useQuery } from '@tanstack/react-query'
 
 import ImageCarousel from '../../components/layout/ImageCarousel'
-import { useQuery } from '@tanstack/react-query'
+import Textarea from '../../components/Textarea'
 
 const ArticlePage = () => {
   const router = useRouter()
@@ -52,13 +53,7 @@ const ArticlePage = () => {
           <h3 className='w-full text-start text-lg font-semibold text-gray-800'>
             Detaljan opis
           </h3>
-          <textarea
-            cols={30}
-            rows={10}
-            value={article?.description}
-            readOnly
-            className='mt-2 w-full resize-none rounded-md border-2 border-gray-100 p-5 text-gray-800'
-          ></textarea>
+          <Textarea cols={30} rows={10} value={article?.description} readOnly />
         </section>
       </div>
     </div>
