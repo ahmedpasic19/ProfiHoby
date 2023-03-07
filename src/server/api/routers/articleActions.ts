@@ -38,7 +38,6 @@ export const articleActionRouter = createTRPCRouter({
         title: z.string(),
         discount: z.number(),
         description: z.optional(z.string()),
-        // date: z.optional(z.date()),
         articles: z.array(TTArticle),
       })
     )
@@ -50,10 +49,9 @@ export const articleActionRouter = createTRPCRouter({
         data: {
           discount: input.discount,
           title: input.title,
-          // // date: input.date,
           description: input.description,
           articles: {
-            connect: input.articles.map(({ id }) => ({ id })),
+            set: input.articles.map(({ id }) => ({ id })),
           },
         },
       })

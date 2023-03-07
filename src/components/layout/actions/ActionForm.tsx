@@ -27,7 +27,9 @@ const ActionForm = ({ action, setAction, setPageIndex, setIsOpen }: TProps) => {
     }) => trpcClient.article_action.createArticleAction.mutate(input),
     {
       onSuccess: async (data) => {
-        await queryClient.invalidateQueries(['actions'])
+        await queryClient.invalidateQueries([
+          'article_action.getAllArticleActions',
+        ])
         setPageIndex(1)
         setAction(data)
       },

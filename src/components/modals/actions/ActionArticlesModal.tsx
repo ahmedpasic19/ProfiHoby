@@ -1,13 +1,20 @@
 import { Dialog } from '@headlessui/react'
-import React from 'react'
+import { ArticleAction } from '@prisma/client'
 import ArticlesForActionForm from '../../layout/actions/ArticlesForActionForm'
 
 type TProps = {
+  action: ArticleAction
   isOpen: boolean
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+  setAction: React.Dispatch<React.SetStateAction<ArticleAction>>
 }
 
-const ActionArticlesModal = ({ isOpen, setIsOpen }: TProps) => {
+const ActionArticlesModal = ({
+  action,
+  isOpen,
+  setIsOpen,
+  setAction,
+}: TProps) => {
   return (
     <Dialog open={isOpen} onClose={() => setIsOpen(false)}>
       <Dialog.Panel className='fixed inset-0'>
@@ -18,7 +25,12 @@ const ActionArticlesModal = ({ isOpen, setIsOpen }: TProps) => {
           }}
         />
         <main className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
-          <ArticlesForActionForm />
+          <ArticlesForActionForm
+            actionArticles={true}
+            action={action}
+            setIsOpen={setIsOpen}
+            setAction={setAction}
+          />
         </main>
       </Dialog.Panel>
     </Dialog>

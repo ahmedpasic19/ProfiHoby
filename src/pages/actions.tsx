@@ -38,12 +38,12 @@ const Actions: NextPage = () => {
       accessorKey: 'title',
     },
     {
-      header: 'Optis',
-      accessorKey: 'description',
-    },
-    {
       header: 'Popust',
       accessorKey: 'discount',
+    },
+    {
+      header: 'Optis',
+      accessorKey: 'description',
     },
     {
       header: 'Artikli',
@@ -107,7 +107,12 @@ const Actions: NextPage = () => {
         </div>
       </div>
       <CreateActionModal isOpen={openCreate} setIsOpen={setOpenCreate} />
-      <ActionArticlesModal isOpen={openArticles} setIsOpen={setOpenArticles} />
+      <ActionArticlesModal
+        isOpen={openArticles}
+        setIsOpen={setOpenArticles}
+        setAction={setAction}
+        action={action}
+      />
     </>
   )
 }

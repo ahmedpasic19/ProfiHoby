@@ -1,4 +1,4 @@
-import { useState, useMemo, FormEvent } from 'react'
+import { useState, useMemo, FormEvent, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { trpcClient } from '../../../utils/api'
 import { ArticleAction, CategoriesOnArticle, Category } from '@prisma/client'
@@ -7,6 +7,7 @@ import SearchComponent from '../../SearchComponent'
 import FormButton from '../../FormButton'
 import Article from '../../Article'
 import { ImCheckboxChecked } from 'react-icons/im'
+import { AiFillCloseCircle } from 'react-icons/ai'
 
 type TArticle = {
   image: {
@@ -28,13 +29,15 @@ type TArticle = {
 }
 
 type TProps = {
+  actionArticles?: boolean
   action: ArticleAction
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-  setPageIndex: React.Dispatch<React.SetStateAction<number>>
+  setPageIndex?: React.Dispatch<React.SetStateAction<number>>
   setAction: React.Dispatch<React.SetStateAction<ArticleAction>>
 }
 
 const ArticlesForActionForm = ({
+  actionArticles,
   action,
   setIsOpen,
   setPageIndex,
@@ -53,6 +56,14 @@ const ArticlesForActionForm = ({
       })
   )
 
+  const { data: action_articles } = useQuery(
+    ['article.getArticlesByActionID', { id: action.id }],
+    () => trpcClient.article.getArticlesByActionID.query({ id: action.id }),
+    {
+      enabled: actionArticles,
+    }
+  )
+
   const { mutate: updateAction, isLoading } = useMutation(
     (input: {
       id: string
@@ -67,12 +78,22 @@ const ArticlesForActionForm = ({
         await queryClient.invalidateQueries([
           'article_action.getAllArticleActions',
         ])
+        await queryClient.invalidateQueries([
+          'article.getArticlesByActionID',
+          { id: action.id },
+          ,
+        ])
         setIsOpen(false)
-        setPageIndex(0)
+        setPageIndex && setPageIndex(0)
         setAction({} as ArticleAction)
+        setSelectedArticles([])
       },
     }
   )
+
+  useEffect(() => {
+    setSelectedArticles(action_articles || [])
+  }, [action_articles])
 
   const data = useMemo(() => articles, [articles])
 
@@ -98,15 +119,17 @@ const ArticlesForActionForm = ({
   }
 
   return (
-    <div className='z-10 rounded-xl bg-white p-10'>
+    <div className='relative z-10 rounded-xl bg-white p-10'>
       <form>
-        <SearchComponent
-          filter={name}
-          filter_name='name'
-          refetch={refetch}
-          displayBtn={false}
-          handleChange={(e) => setName(e.target.value)}
-        />
+        <div>
+          <SearchComponent
+            filter={name}
+            filter_name='name'
+            refetch={refetch}
+            displayBtn={false}
+            handleChange={(e) => setName(e.target.value)}
+          />
+        </div>
         <ul className='mt-5 grid h-[400px] w-full grid-cols-2 flex-col gap-4 overflow-y-auto border-t-2 border-gray-400 pt-5'>
           {(data?.length ? data : selectedArticles)?.map((article) => {
             const selected = selectedArticles.find(
@@ -139,10 +162,19 @@ const ArticlesForActionForm = ({
             onSubmit={handleAddArticles}
             onClick={handleAddArticles}
             isLoading={isLoading}
-            text='Dodaj'
+            text={actionArticles ? 'Izmjeni' : 'Dodaj'}
           />
         </section>
       </form>
+
+      <AiFillCloseCircle
+        onClick={() => {
+          setIsOpen(false)
+          setAction({} as ArticleAction)
+          setSelectedArticles([])
+        }}
+        className='absolute top-4 right-4 h-8 w-8 cursor-pointer rounded-full bg-gray-600 text-white hover:bg-gray-800'
+      />
     </div>
   )
 }
