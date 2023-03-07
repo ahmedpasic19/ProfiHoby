@@ -87,6 +87,8 @@ const Home: NextPage = () => {
             {articleData?.articles?.map((article) => (
               <Article
                 key={article.id}
+                action={article.article_action_id ? true : false}
+                actionPercentage={article?.action?.discount}
                 name={article.name}
                 description={article.description}
                 imageURL={article.image[0]?.url || ''}

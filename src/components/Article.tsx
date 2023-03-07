@@ -5,6 +5,8 @@ import Image from 'next/image'
 
 type TArticleProps = {
   disableLink?: boolean
+  action?: boolean
+  actionPercentage?: number
   description: string
   name: string
   price: number
@@ -21,16 +23,18 @@ const Article = ({
   imageURL,
   categories,
   article_id,
+  action,
+  actionPercentage,
 }: TArticleProps) => {
   const router = useRouter()
   return (
-    <div
+    <article
       onClick={async () => {
         if (!disableLink) await router.push(`/articles/${article_id}`)
       }}
       className='relative h-[320px] w-[250px] cursor-pointer rounded-lg border-2 bg-white drop-shadow-[0px_0px_2px] hover:drop-shadow-[0px_0px_6px_rgba(0,0,0,0.7)]'
     >
-      <section className='flex w-full items-center justify-center'>
+      <section className='relative flex w-full items-center justify-center'>
         <Image
           src={imageURL}
           alt='article image'
@@ -38,6 +42,11 @@ const Article = ({
           height={150}
           className='rounded-xl rounded-b-none'
         />
+        {action && (
+          <span className='absolute bottom-0 left-0 right-0 h-10 bg-yellow-400 pl-4 text-xl font-semibold text-black'>
+            Sniženje {actionPercentage}%
+          </span>
+        )}
       </section>
       <section className='mt-2 flex w-full flex-col p-2'>
         <h3 className='text-lg font-semibold tracking-tight text-gray-800'>
@@ -59,7 +68,7 @@ const Article = ({
           {price}KM
         </h2>
       </section>
-    </div>
+    </article>
   )
 }
 

@@ -62,6 +62,7 @@ export const articleRouter = createTRPCRouter({
       const articles = await ctx.prisma.article.findMany({
         include: {
           image: true,
+          action: true,
           categories: {
             include: {
               category: true,
@@ -139,6 +140,7 @@ export const articleRouter = createTRPCRouter({
         return arr
       }
     }),
+
   getArticlesByActionID: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
@@ -172,6 +174,7 @@ export const articleRouter = createTRPCRouter({
 
       return action_articles
     }),
+
   getArticle: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {

@@ -74,7 +74,7 @@ model Article {
 
     image             Image[]
     categories        CategoriesOnArticle[]
-    ArticleAction     ArticleAction?        @relation(fields: [article_action_id], references: [id])
+    action            ArticleAction?        @relation(fields: [article_action_id], references: [id])
     article_action_id String?
 
     createdAt DateTime @default(now())
