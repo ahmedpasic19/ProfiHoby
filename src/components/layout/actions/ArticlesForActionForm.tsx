@@ -1,32 +1,14 @@
 import { useState, useMemo, FormEvent, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { trpcClient } from '../../../utils/api'
-import { ArticleAction, CategoriesOnArticle, Category } from '@prisma/client'
+import { ArticleAction } from '@prisma/client'
+import { TArticle } from '../../../types/article'
 
 import SearchComponent from '../../SearchComponent'
 import FormButton from '../../FormButton'
 import Article from '../../Article'
 import { ImCheckboxChecked } from 'react-icons/im'
 import { AiFillCloseCircle } from 'react-icons/ai'
-
-type TArticle = {
-  image: {
-    url: string
-    id: string
-    name: string
-    image: string
-    article_id: string | null
-    userId: string | null
-  }[]
-  id: string
-  name: string
-  description: string
-  base_price: number
-  article_action_id: string | null
-  createdAt: Date
-  updatedAt: Date
-  categories: (CategoriesOnArticle & { category: Category })[]
-}
 
 type TProps = {
   actionArticles?: boolean

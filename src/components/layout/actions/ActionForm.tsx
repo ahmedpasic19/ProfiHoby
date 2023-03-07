@@ -1,7 +1,8 @@
 import { FormEvent, ChangeEvent } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { trpcClient } from '../../../utils/api'
 import { ArticleAction } from '@prisma/client'
+import { TArticle } from '../../../types/article'
 
 import Textarea from '../../Textarea'
 import FieldSet from '../../Fieldset'
@@ -9,16 +10,23 @@ import FormButton from '../../FormButton'
 import * as Ai from 'react-icons/ai'
 
 type TProps = {
+  isEditing?: boolean
   action: Partial<ArticleAction>
   setAction: React.Dispatch<React.SetStateAction<ArticleAction>>
   setPageIndex: React.Dispatch<React.SetStateAction<number>>
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const ActionForm = ({ action, setAction, setPageIndex, setIsOpen }: TProps) => {
+const ActionForm = ({
+  isEditing,
+  action,
+  setAction,
+  setPageIndex,
+  setIsOpen,
+}: TProps) => {
   const queryClient = useQueryClient()
 
-  const { mutate: createAction, isLoading } = useMutation(
+  const { mutate: createAction, isLoading: loadingCreate } = useMutation(
     (input: {
       discount: number
       title: string
@@ -36,6 +44,35 @@ const ActionForm = ({ action, setAction, setPageIndex, setIsOpen }: TProps) => {
     }
   )
 
+  const { mutate: updateAction, isLoading: loadingUpdate } = useMutation(
+    (input: {
+      id: string
+      title: string
+      discount: number
+      description: string | null
+      date: Date | undefined
+      articles: TArticle[]
+    }) => trpcClient.article_action.updateArticleAction.mutate(input),
+    {
+      onSuccess: async (data) => {
+        await queryClient.invalidateQueries([
+          'article_action.getAllArticleActions',
+        ])
+        setPageIndex(1)
+        setAction(data)
+      },
+    }
+  )
+
+  const { data: action_articles } = useQuery(
+    ['article.getArticlesByActionID', { id: action.id }],
+    () =>
+      trpcClient.article.getArticlesByActionID.query({ id: action.id || '' }),
+    {
+      enabled: isEditing,
+    }
+  )
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.name === 'discount')
       setAction((prev) => ({
@@ -47,13 +84,22 @@ const ActionForm = ({ action, setAction, setPageIndex, setIsOpen }: TProps) => {
 
   const handleSubmit = (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
-    if (!action.discount || !action.title) return
-    createAction({
-      discount: action.discount,
-      title: action.title,
-      date: action.date || undefined,
-      description: action.description || undefined,
-    })
+
+    if (!isEditing) {
+      if (!action.discount || !action.title) return
+      createAction({
+        discount: action.discount,
+        title: action.title,
+        date: action.date || undefined,
+        description: action.description || undefined,
+      })
+    } else {
+      const configured_articles = action_articles?.map((art) => ({
+        ...art,
+        base_price: art.base_price.toString(),
+      }))
+      updateAction({ ...action, articles: configured_articles })
+    }
   }
 
   return (
@@ -62,7 +108,7 @@ const ActionForm = ({ action, setAction, setPageIndex, setIsOpen }: TProps) => {
       className='relative h-[584px] w-[450px] rounded-xl bg-white p-10 drop-shadow-2xl'
     >
       <h1 className='mb-10 w-full text-center text-2xl font-bold text-gray-800'>
-        Započni akciju
+        {isEditing ? 'Izmjeni akciju' : 'Započni akciju'}
       </h1>
       <FieldSet
         type='text'
@@ -81,6 +127,7 @@ const ActionForm = ({ action, setAction, setPageIndex, setIsOpen }: TProps) => {
       <Textarea
         rows={5}
         label='Opis'
+        value={action?.description || ''}
         id='description'
         name='description'
         htmlFor='description'
@@ -95,9 +142,9 @@ const ActionForm = ({ action, setAction, setPageIndex, setIsOpen }: TProps) => {
       <section className='flex w-full items-center justify-center'>
         <FormButton
           onSubmit={handleSubmit}
-          disabled={isLoading}
-          isLoading={isLoading}
-          text='Dodaj'
+          disabled={loadingCreate || loadingUpdate}
+          isLoading={loadingCreate || loadingUpdate}
+          text={isEditing ? 'Izmjeni' : 'Dodaj'}
         />
       </section>
       <Ai.AiFillCloseCircle

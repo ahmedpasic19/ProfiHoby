@@ -4,11 +4,14 @@ import { useQuery } from '@tanstack/react-query'
 import { ArticleAction } from '@prisma/client'
 import { trpcClient } from '../utils/api'
 
-import CreateActionModal from '../components/modals/actions/CreateActionModal'
-import MainTable from '../components/table/MainTable'
-import * as Fa from 'react-icons/fa'
-import { ImPriceTags } from 'react-icons/im'
 import ActionArticlesModal from '../components/modals/actions/ActionArticlesModal'
+import CreateActionModal from '../components/modals/actions/CreateActionModal'
+import UpdateActionModal from '../components/modals/actions/UpdateActionModal'
+
+import MainTable from '../components/table/MainTable'
+import { FaTrash } from 'react-icons/fa'
+import { AiFillEdit } from 'react-icons/ai'
+import { ImPriceTags } from 'react-icons/im'
 
 type TRow = {
   original: ArticleAction
@@ -46,11 +49,30 @@ const Actions: NextPage = () => {
       accessorKey: 'description',
     },
     {
+      header: 'Izmjeni',
+      accessorKey: 'edit',
+      cell: ({ row }: { row: TRow }) => {
+        return (
+          <div className='flex justify-evenly'>
+            <button
+              className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
+              onClick={() => {
+                setOpenUpdate(true)
+                setAction(row.original)
+              }}
+            >
+              <AiFillEdit className='h-8 w-8' />
+            </button>
+          </div>
+        )
+      },
+    },
+    {
       header: 'Artikli',
       accessorKey: 'articles',
       cell: ({ row }: { row: TRow }) => {
         return (
-          <div className='flex w-full justify-evenly'>
+          <div className='flex justify-evenly'>
             <button
               className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
               onClick={() => {
@@ -64,13 +86,12 @@ const Actions: NextPage = () => {
         )
       },
     },
-
     {
-      header: 'Akcije',
-      accessorKey: 'actions',
+      header: 'Obriši',
+      accessorKey: 'delete',
       cell: ({ row }: { row: TRow }) => {
         return (
-          <div className='flex w-full justify-evenly'>
+          <div className='flex justify-evenly'>
             <button
               className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
               onClick={() => {
@@ -78,7 +99,7 @@ const Actions: NextPage = () => {
                 setAction(row.original)
               }}
             >
-              <Fa.FaTrash className='h-8 w-8' />
+              <FaTrash className='h-8 w-8' />
             </button>
           </div>
         )
@@ -107,6 +128,12 @@ const Actions: NextPage = () => {
         </div>
       </div>
       <CreateActionModal isOpen={openCreate} setIsOpen={setOpenCreate} />
+      <UpdateActionModal
+        isOpen={openUpdate}
+        action={action}
+        setAction={setAction}
+        setIsOpen={setOpenUpdate}
+      />
       <ActionArticlesModal
         isOpen={openArticles}
         setIsOpen={setOpenArticles}
