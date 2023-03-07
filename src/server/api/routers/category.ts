@@ -1,9 +1,9 @@
 import { z } from 'zod'
 
-import { createTRPCRouter, publicProcedure } from '../trpc'
+import { createTRPCRouter, adminProcedure, publicProcedure } from '../trpc'
 
 export const categoryRouter = createTRPCRouter({
-  createCategory: publicProcedure
+  createCategory: adminProcedure
     .input(z.object({ name: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const new_category = await ctx.prisma.category.create({
@@ -13,7 +13,7 @@ export const categoryRouter = createTRPCRouter({
       return new_category
     }),
 
-  updateCategory: publicProcedure
+  updateCategory: adminProcedure
     .input(z.object({ id: z.string(), name: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const updated_category = await ctx.prisma.category.update({
@@ -24,7 +24,7 @@ export const categoryRouter = createTRPCRouter({
       return updated_category
     }),
 
-  deleteCategory: publicProcedure
+  deleteCategory: adminProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const deleted_category = await ctx.prisma.category.delete({
@@ -42,7 +42,7 @@ export const categoryRouter = createTRPCRouter({
     return all_categories
   }),
 
-  getCategory: publicProcedure
+  getCategory: adminProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const category = await ctx.prisma.category.findUnique({

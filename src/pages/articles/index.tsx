@@ -8,6 +8,8 @@ import { Article, CategoriesOnArticle, Image } from '@prisma/client'
 import { trpcClient } from '../../utils/api'
 import { useQuery } from '@tanstack/react-query'
 
+import useProtectRoute from '../../hooks/useProtectRoute'
+
 import MainTable from '../../components/table/MainTable'
 
 import DeleteArticleModal from '../../components/modals/articles/DeleteArticleModal'
@@ -36,10 +38,15 @@ const Articles: NextPage = () => {
   const [openUpdateCategories, setOpenUpdateCategories] = useState(false)
   const [openUpdateImages, setOpenUpdateImages] = useState(false)
 
+  useProtectRoute()
+
   const router = useRouter()
 
   const { data: articleData } = useQuery(
-    ['articles', { pageSize: 100, pageIndex: 0, name: '', category: '' }],
+    [
+      'articles',
+      { pageSize: 100, pageIndex: 0, name: '', category: 'article.index.page' },
+    ],
     () =>
       trpcClient.article.getAllArticles.query({
         name: '',

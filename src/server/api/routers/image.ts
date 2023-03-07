@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { createTRPCRouter, publicProcedure } from '../trpc'
+import { createTRPCRouter, publicProcedure, adminProcedure } from '../trpc'
 
 import AWS from 'aws-sdk'
 
@@ -18,7 +18,7 @@ const s3 = new AWS.S3({
 })
 
 export const imageRouter = createTRPCRouter({
-  createPresignedURL: publicProcedure
+  createPresignedURL: adminProcedure
     .input(z.object({ name: z.string(), article_id: z.string() }))
     .mutation(async ({ input, ctx }) => {
       await ctx.prisma.image.create({
@@ -56,7 +56,7 @@ export const imageRouter = createTRPCRouter({
         | undefined
     }),
 
-  postArticleImage: publicProcedure
+  postArticleImage: adminProcedure
     .input(
       z.object({
         article_id: z.string(),
@@ -106,7 +106,7 @@ export const imageRouter = createTRPCRouter({
       return article_image
     }),
 
-  updateArticleImage: publicProcedure
+  updateArticleImage: adminProcedure
     .input(
       z.object({
         id: z.string(),
@@ -127,7 +127,7 @@ export const imageRouter = createTRPCRouter({
       return updated_article
     }),
 
-  deleteArticleImage: publicProcedure
+  deleteArticleImage: adminProcedure
     .input(z.object({ id: z.string(), key: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const data = s3.deleteObject(

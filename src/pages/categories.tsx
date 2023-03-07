@@ -1,15 +1,19 @@
 import { NextPage } from 'next'
 import { useState, useMemo } from 'react'
-import { Category } from '@prisma/client'
 import { trpcClient } from '../utils/api'
+import { useQuery } from '@tanstack/react-query'
+
+import useProtectRoute from '../hooks/useProtectRoute'
+
+import { Category } from '@prisma/client'
 
 import CreateCategoryModal from '../components/modals/categories/CreateCategoryModal'
 import UpdateCategoryModal from '../components/modals/categories/UpdateCategoryModal'
 import DeleteCategoryModal from '../components/modals/categories/DeleteCategoryModal'
 import MainTable from '../components/table/MainTable'
+
 import * as Fa from 'react-icons/fa'
 import * as Ai from 'react-icons/ai'
-import { useQuery } from '@tanstack/react-query'
 
 type TRow = {
   original: Category
@@ -20,6 +24,8 @@ const Categories: NextPage = () => {
   const [openCreate, setOpenCreate] = useState(false)
   const [openUpdate, setOpenUpdate] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
+
+  useProtectRoute()
 
   const { data: allCategories } = useQuery(['categories'], () =>
     trpcClient.category.getAllCategories.query()

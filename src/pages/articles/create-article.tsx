@@ -1,6 +1,9 @@
-import { Article } from '@prisma/client'
 import { NextPage } from 'next'
 import { useState } from 'react'
+
+import useProtectRoute from '../../hooks/useProtectRoute'
+
+import { Article } from '@prisma/client'
 
 import ArticleCategoryForm from '../../components/layout/forms/articles/ArticleCategoryForm'
 import ArticleForm from '../../components/layout/forms/articles/ArticleForm'
@@ -10,6 +13,9 @@ const CreateArticle: NextPage = () => {
   const [pageIndex, setPageIndex] = useState(0)
   const [articleData, setArticleData] = useState({} as Article)
   const [articleId, setArticleId] = useState<string | null>(null)
+
+  useProtectRoute()
+
   return (
     <div>
       <main className='flex h-full min-h-screen w-full flex-col items-center justify-center'>

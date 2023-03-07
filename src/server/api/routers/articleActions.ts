@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { createTRPCRouter, publicProcedure } from '../trpc'
+import { createTRPCRouter, adminProcedure } from '../trpc'
 
 const TTArticle = z.object({
   id: z.string(),
@@ -10,7 +10,7 @@ const TTArticle = z.object({
 })
 
 export const articleActionRouter = createTRPCRouter({
-  createArticleAction: publicProcedure
+  createArticleAction: adminProcedure
     .input(
       z.object({
         title: z.string(),
@@ -31,7 +31,7 @@ export const articleActionRouter = createTRPCRouter({
 
       return new_article_action
     }),
-  updateArticleAction: publicProcedure
+  updateArticleAction: adminProcedure
     .input(
       z.object({
         id: z.string(),
@@ -58,7 +58,7 @@ export const articleActionRouter = createTRPCRouter({
 
       return updated_article_action
     }),
-  deleteArticleAction: publicProcedure
+  deleteArticleAction: adminProcedure
     .input(
       z.object({
         id: z.string(),
@@ -74,12 +74,12 @@ export const articleActionRouter = createTRPCRouter({
       return deleted_article_action
     }),
 
-  getAllArticleActions: publicProcedure.query(async ({ ctx }) => {
+  getAllArticleActions: adminProcedure.query(async ({ ctx }) => {
     const all_actions = await ctx.prisma.articleAction.findMany()
     return all_actions
   }),
 
-  getArticleAction: publicProcedure
+  getArticleAction: adminProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const article_action = await ctx.prisma.articleAction.findUnique({

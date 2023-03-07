@@ -1,8 +1,11 @@
 import { NextPage } from 'next'
 import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { ArticleAction } from '@prisma/client'
 import { trpcClient } from '../utils/api'
+
+import useProtectRoute from '../hooks/useProtectRoute'
+
+import { ArticleAction } from '@prisma/client'
 
 import ActionArticlesModal from '../components/modals/actions/ActionArticlesModal'
 import CreateActionModal from '../components/modals/actions/CreateActionModal'
@@ -24,6 +27,8 @@ const Actions: NextPage = () => {
   const [openUpdate, setOpenUpdate] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
   const [openArticles, setOpenArticles] = useState(false)
+
+  useProtectRoute()
 
   const { data: allActions } = useQuery(
     ['article_action.getAllArticleActions'],

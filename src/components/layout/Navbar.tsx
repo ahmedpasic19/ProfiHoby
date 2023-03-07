@@ -5,9 +5,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 const Navbar = () => {
-  const { status } = useSession()
+  const { data, status } = useSession()
 
-  const navlinks = [
+  const authenticated = [
     {
       href: '/',
       label: 'Početna stranica',
@@ -21,19 +21,42 @@ const Navbar = () => {
       label: 'Kategorije',
     },
     {
-      href: status === 'authenticated' ? '/actions' : '/sales',
+      href: '/actions',
       label: 'Akcije',
     },
     {
-      href: '/signin',
-      label: 'Login',
+      href: '/sales',
+      label: 'Sniženja',
     },
   ]
 
+  const unauthenticated = [
+    {
+      href: '/',
+      label: 'Početna stranica',
+    },
+    {
+      href: '/sales',
+      label: 'Sniženja',
+    },
+    status === 'unauthenticated'
+      ? {
+          href: '/signin',
+          label: 'Login',
+        }
+      : {
+          href: '',
+          label: '',
+        },
+  ]
+
+  const navlinks =
+    status === 'authenticated' && data.user?.email === 'palepusac19@gmail.com'
+      ? authenticated
+      : unauthenticated
+
   const router = useRouter()
   const { article_id } = router.query
-
-  console.log(status)
 
   return (
     <nav
@@ -56,13 +79,15 @@ const Navbar = () => {
           </span>
         </Link>
         <div className='flex md:order-2'>
-          <button
-            onClick={() => signOut()}
-            type='button'
-            className='mr-3 rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 md:mr-0'
-          >
-            Log out
-          </button>
+          {status === 'authenticated' && (
+            <button
+              onClick={() => signOut()}
+              type='button'
+              className='mr-3 rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 md:mr-0'
+            >
+              Log out
+            </button>
+          )}
           <button
             data-collapse-toggle='navbar-sticky'
             type='button'

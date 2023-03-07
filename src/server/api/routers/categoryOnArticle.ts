@@ -1,9 +1,9 @@
 import { z } from 'zod'
 
-import { createTRPCRouter, publicProcedure } from '../trpc'
+import { createTRPCRouter, publicProcedure, adminProcedure } from '../trpc'
 
 export const categoryOnArticleRelationRouter = createTRPCRouter({
-  createRelation: publicProcedure
+  createRelation: adminProcedure
     .input(
       z.array(z.object({ article_id: z.string(), category_id: z.string() }))
     )
@@ -15,7 +15,7 @@ export const categoryOnArticleRelationRouter = createTRPCRouter({
       return new_relations
     }),
 
-  updateRelation: publicProcedure
+  updateRelation: adminProcedure
     .input(
       z.object({
         article_id: z.string(),
@@ -41,7 +41,7 @@ export const categoryOnArticleRelationRouter = createTRPCRouter({
       return new_relations
     }),
 
-  deleteRelation: publicProcedure
+  deleteRelation: adminProcedure
     .input(
       z.object({
         article_id: z.string(),
@@ -73,13 +73,13 @@ export const categoryOnArticleRelationRouter = createTRPCRouter({
       return article_categories
     }),
 
-  getAllRelations: publicProcedure.query(async ({ ctx }) => {
+  getAllRelations: adminProcedure.query(async ({ ctx }) => {
     const all_relations = await ctx.prisma.categoriesOnArticle.findMany()
 
     return all_relations
   }),
 
-  getRelation: publicProcedure
+  getRelation: adminProcedure
     .input(
       z.object({
         article_id: z.string(),

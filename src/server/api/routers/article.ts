@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { createTRPCRouter, publicProcedure } from '../trpc'
+import { createTRPCRouter, publicProcedure, adminProcedure } from '../trpc'
 
 import AWS from 'aws-sdk'
 import { env } from '../../../env/server.mjs'
@@ -17,7 +17,7 @@ const s3 = new AWS.S3({
 })
 
 export const articleRouter = createTRPCRouter({
-  createArticle: publicProcedure
+  createArticle: adminProcedure
     .input(
       z.object({
         name: z.string(),
@@ -241,7 +241,7 @@ export const articleRouter = createTRPCRouter({
       return article
     }),
 
-  updateArticle: publicProcedure
+  updateArticle: adminProcedure
     .input(
       z.object({
         id: z.string(),
@@ -264,7 +264,7 @@ export const articleRouter = createTRPCRouter({
       return updated_article
     }),
 
-  deleteArticle: publicProcedure
+  deleteArticle: adminProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
       // DELETE realtions
