@@ -2,7 +2,7 @@ import { Article } from '@prisma/client'
 import { NextPage } from 'next'
 import { useState } from 'react'
 
-import ArticleCategoryForm from '../../components/layout/ArticleCategoryForm'
+import ArticleCategoryForm from '../../components/layout/forms/articles/ArticleCategoryForm'
 import ArticleForm from '../../components/layout/ArticleForm'
 import UploadImageForm from '../../components/layout/UploadImageForm'
 

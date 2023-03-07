@@ -1,6 +1,6 @@
 import { Dialog } from '@headlessui/react'
 import { ArticleAction } from '@prisma/client'
-import ArticlesForActionForm from '../../layout/actions/ArticlesForActionForm'
+import ArticlesForActionForm from '../../layout/forms/actions/ArticlesForActionForm'
 
 type TProps = {
   action: ArticleAction

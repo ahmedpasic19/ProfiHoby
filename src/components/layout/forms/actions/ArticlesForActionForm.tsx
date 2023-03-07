@@ -1,12 +1,12 @@
 import { useState, useMemo, FormEvent, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { trpcClient } from '../../../utils/api'
+import { trpcClient } from '../../../../utils/api'
 import { ArticleAction } from '@prisma/client'
-import { TArticle } from '../../../types/article'
+import { TArticle } from '../../../../types/article'
 
-import SearchComponent from '../../SearchComponent'
-import FormButton from '../../FormButton'
-import Article from '../../Article'
+import SearchComponent from '../../../SearchComponent'
+import FormButton from '../../../FormButton'
+import Article from '../../../Article'
 import { ImCheckboxChecked } from 'react-icons/im'
 import { AiFillCloseCircle } from 'react-icons/ai'
 

@@ -3,7 +3,7 @@ import { Dialog } from '@headlessui/react'
 import { ArticleAction } from '@prisma/client'
 
 import ActionForm from '../../layout/actions/ActionForm'
-import ArticlesForActionForm from '../../layout/actions/ArticlesForActionForm'
+import ArticlesForActionForm from '../../layout/forms/actions/ArticlesForActionForm'
 
 type TProps = {
   isOpen: boolean
