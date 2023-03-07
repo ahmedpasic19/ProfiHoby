@@ -24,10 +24,16 @@ const Navbar = () => {
       href: status === 'authenticated' ? '/actions' : '/sales',
       label: 'Akcije',
     },
+    {
+      href: '/signin',
+      label: 'Login',
+    },
   ]
 
   const router = useRouter()
   const { article_id } = router.query
+
+  console.log(status)
 
   return (
     <nav
