@@ -1,0 +1,136 @@
+import { useState, FormEvent, useEffect } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { trpcClient } from '../../../../utils/api'
+import { Category, Group } from '@prisma/client'
+
+import Select, { SingleValue } from 'react-select'
+import FieldSet from '../../../Fieldset'
+import { AiFillCloseCircle } from 'react-icons/ai'
+
+type TProps = {
+  group?: Group & { category: Category }
+  isEditing?: boolean
+  setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>
+  setGroup?: React.Dispatch<React.SetStateAction<Group>>
+}
+
+type TInput = {
+  name: string
+  articles: []
+  category_id: string
+}
+
+type TCategoryOption = SingleValue<{ label: string; value: string }>
+
+const GroupForm = ({ group, isEditing, setIsOpen, setGroup }: TProps) => {
+  const [name, setName] = useState('')
+  const [category, setCategory] = useState({} as TCategoryOption)
+
+  const queryClient = useQueryClient()
+
+  const { data: allCategories } = useQuery(['category.getAllCategories'], () =>
+    trpcClient.category.getAllCategories.query()
+  )
+  const { mutate: createGroup } = useMutation(
+    (input: TInput) => trpcClient.group.createGroup.mutate(input),
+    {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['group.getAllGroups'])
+        setName('')
+        setCategory({} as TCategoryOption)
+      },
+    }
+  )
+  const { mutate: updateGroup } = useMutation(
+    (input: TInput & { id: string }) =>
+      trpcClient.group.updateGroup.mutate(input),
+    {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['group.getAllGroups'])
+        setName('')
+        setIsOpen && setIsOpen(false)
+        setGroup && setGroup({} as Group)
+        setCategory({} as TCategoryOption)
+      },
+    }
+  )
+
+  useEffect(() => {
+    if (group && Object.keys(group).length) {
+      setName(group.name)
+      setCategory({ label: group.category.name, value: group.category.id })
+    }
+  }, [group])
+
+  const categoryOptions = allCategories?.map((category) => ({
+    value: category.id,
+    label: category.name,
+  }))
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    if (!name || !category?.value) return
+    if (!isEditing)
+      createGroup({ name, category_id: category?.value, articles: [] })
+    if (isEditing && group?.id)
+      updateGroup({
+        id: group.id,
+        name,
+        category_id: category?.value,
+        articles: [],
+      })
+  }
+
+  return (
+    <div className='flex w-full flex-col items-center justify-center'>
+      <form
+        onSubmit={handleSubmit}
+        className='relative flex w-[500px] flex-col items-center justify-center rounded-xl bg-white py-20'
+      >
+        <h1 className='mb-10 w-full text-center text-2xl font-bold text-gray-800'>
+          {isEditing ? 'Izmjeni grupu' : 'Dodaj grupu'}
+        </h1>
+        <FieldSet
+          label='Naziv'
+          name='name'
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          type='text'
+        />
+        <div className='w-[80%]'>
+          <label className='w-full pl-4 text-xl font-medium text-gray-800'>
+            Kategorija
+          </label>
+          <Select
+            options={categoryOptions}
+            value={category?.value ? category : null}
+            placeholder='Odaberi kategoriju'
+            onChange={(option) => {
+              if (option) setCategory(option)
+            }}
+          />
+        </div>
+        <section className='mt-10 flex w-full items-center justify-center'>
+          <button
+            disabled={!name}
+            onSubmit={handleSubmit}
+            className='w-4/5 rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
+          >
+            {isEditing ? 'Izmjeni' : 'Dodaj'}
+          </button>
+        </section>
+        {isEditing && (
+          <AiFillCloseCircle
+            onClick={() => {
+              setIsOpen && setIsOpen(false)
+              setGroup && setGroup({} as Group)
+            }}
+            className='absolute top-4 right-4 h-8 w-8 cursor-pointer rounded-full bg-gray-600 text-white hover:bg-gray-800'
+          />
+        )}
+      </form>
+    </div>
+  )
+}
+
+export default GroupForm

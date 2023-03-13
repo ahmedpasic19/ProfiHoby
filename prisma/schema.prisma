@@ -74,6 +74,7 @@ model Article {
 
     image             Image[]
     categories        CategoriesOnArticle[]
+    groups            ArticleGroups[]
     action            ArticleAction?        @relation(fields: [article_action_id], references: [id])
     article_action_id String?
 
@@ -93,11 +94,14 @@ model Image {
 }
 
 model Category {
-    id        String                @id @default(cuid())
-    name      String
-    articles  CategoriesOnArticle[]
-    createdAt DateTime              @default(now())
-    updatedAt DateTime              @updatedAt
+    id   String @id @default(cuid())
+    name String
+
+    articles CategoriesOnArticle[]
+    groups   Group[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model CategoriesOnArticle {
@@ -121,4 +125,26 @@ model ArticleAction {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
+
+model Group {
+    id   String @id @default(cuid())
+    name String
+
+    category    Category        @relation(fields: [category_id], references: [id])
+    category_id String
+    articles    ArticleGroups[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model ArticleGroups {
+    article    Article  @relation(fields: [article_id], references: [id])
+    article_id String
+    group      Group    @relation(fields: [group_id], references: [id])
+    group_id   String
+    assignedAt DateTime @default(now())
+
+    @@id([article_id, group_id])
 }

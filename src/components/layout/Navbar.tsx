@@ -21,6 +21,10 @@ const Navbar = () => {
       label: 'Kategorije',
     },
     {
+      href: '/groups',
+      label: 'Grupe',
+    },
+    {
       href: '/actions',
       label: 'Akcije',
     },

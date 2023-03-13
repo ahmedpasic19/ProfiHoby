@@ -4,21 +4,42 @@ import { createTRPCRouter, adminProcedure, publicProcedure } from '../trpc'
 
 export const categoryRouter = createTRPCRouter({
   createCategory: adminProcedure
-    .input(z.object({ name: z.string() }))
+    .input(
+      z.object({
+        name: z.string(),
+        groups: z.array(z.string()),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       const new_category = await ctx.prisma.category.create({
-        data: { name: input.name },
+        data: {
+          name: input.name,
+          groups: {
+            connect: input.groups.map((id) => ({ id })),
+          },
+        },
       })
 
       return new_category
     }),
 
   updateCategory: adminProcedure
-    .input(z.object({ id: z.string(), name: z.string() }))
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        groups: z.array(z.string()).nullish(),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       const updated_category = await ctx.prisma.category.update({
         where: { id: input.id },
-        data: { name: input.name },
+        data: {
+          name: input.name,
+          groups: input.groups
+            ? { set: input.groups.map((id) => ({ id })) }
+            : {},
+        },
       })
 
       return updated_category
