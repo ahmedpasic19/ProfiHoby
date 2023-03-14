@@ -26,7 +26,7 @@ const DeleteCategoryModal = ({
       onSuccess: async () => {
         setIsOpen(false)
         setCategory({} as Category)
-        await queryClient.invalidateQueries(['categories'])
+        await queryClient.invalidateQueries(['category.getAllCategories'])
       },
     }
   )

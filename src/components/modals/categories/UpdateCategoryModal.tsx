@@ -26,7 +26,7 @@ const UpdateCategoryModal = ({
       trpcClient.category.updateCategory.mutate(input),
     {
       onSuccess: async () => {
-        await queryClient.invalidateQueries(['categories'])
+        await queryClient.invalidateQueries(['category.getAllCategories'])
         setIsOpen(false)
         setCategory({} as Category)
       },

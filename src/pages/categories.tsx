@@ -27,7 +27,7 @@ const Categories: NextPage = () => {
 
   useProtectRoute()
 
-  const { data: allCategories } = useQuery(['categories'], () =>
+  const { data: allCategories } = useQuery(['category.getAllCategories'], () =>
     trpcClient.category.getAllCategories.query()
   )
 
