@@ -6,13 +6,16 @@ import { Category, Group } from '@prisma/client'
 
 import DeleteGroupModal from '../components/modals/groups/DeleteGroupModal'
 import UpdateGroupModal from '../components/modals/groups/UpdateGroupModal'
+import GroupArticlesModal from '../components/modals/groups/GroupArticlesModal'
 
 import GroupForm from '../components/layout/forms/groups/GroupForm'
 import MainTable from '../components/table/MainTable'
 import { AiFillEdit } from 'react-icons/ai'
+import { ImPriceTags } from 'react-icons/im'
 import { FaTrash } from 'react-icons/fa'
 
 const Groups: NextPage = () => {
+  const [openArticles, setOpenArticles] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
   const [openUpdate, setOpenUpdate] = useState(false)
   const [group, setGroup] = useState({} as Group & { category: Category })
@@ -41,6 +44,15 @@ const Groups: NextPage = () => {
       }) => {
         return (
           <div className='flex w-full justify-evenly'>
+            <button
+              className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
+              onClick={() => {
+                setOpenArticles(true)
+                setGroup(row.original)
+              }}
+            >
+              <ImPriceTags className='h-8 w-8' />
+            </button>
             <button
               className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
               onClick={() => {
@@ -93,6 +105,12 @@ const Groups: NextPage = () => {
         setGroup={setGroup}
         isOpen={openUpdate}
         setIsOpen={setOpenUpdate}
+      />
+      <GroupArticlesModal
+        group={group}
+        setGroup={setGroup}
+        isOpen={openArticles}
+        setIsOpen={setOpenArticles}
       />
     </>
   )
