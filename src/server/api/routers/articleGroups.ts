@@ -6,6 +6,11 @@ export const articleGroups = createTRPCRouter({
   createRelation: adminProcedure
     .input(z.array(z.object({ article_id: z.string(), group_id: z.string() })))
     .mutation(async ({ input, ctx }) => {
+      // DELETE previous relation
+      await ctx.prisma.articleGroups.deleteMany({
+        where: { group_id: input[0]?.group_id },
+      })
+
       const new_relations = await ctx.prisma.articleGroups.createMany({
         data: input,
       })

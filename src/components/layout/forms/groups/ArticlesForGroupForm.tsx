@@ -47,7 +47,7 @@ const ArticlesForGroupForm = ({
   )
 
   // assign articles to group mutation
-  const { mutate: assignArticles, isLoading } = useMutation(
+  const { mutate: assignArticles, isLoading: loadingCreate } = useMutation(
     (input: { article_id: string; group_id: string }[]) =>
       trpcClient.articleGroups.createRelation.mutate(input),
     {
@@ -137,8 +137,8 @@ const ArticlesForGroupForm = ({
           <FormButton
             onSubmit={handleAddArticles}
             onClick={handleAddArticles}
-            isLoading={isLoading}
-            text={groupArticles ? 'Izmjeni' : 'Dodaj'}
+            isLoading={loadingCreate}
+            text={groups_articles?.length ? 'Izmjeni' : 'Dodaj'}
           />
         </section>
       </form>
