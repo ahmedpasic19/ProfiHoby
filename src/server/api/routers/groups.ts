@@ -46,6 +46,11 @@ export const groupRouter = createTRPCRouter({
   deleteGroup: adminProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
+      // Delete all relatons with articles
+      await ctx.prisma.articleGroups.deleteMany({
+        where: { group_id: input.id },
+      })
+
       const deleted_group = await ctx.prisma.group.delete({
         where: { id: input.id },
       })
