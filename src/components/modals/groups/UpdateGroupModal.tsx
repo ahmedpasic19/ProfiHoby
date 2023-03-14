@@ -6,7 +6,7 @@ type TProps = {
   group: Group & { category: Category }
   isOpen: boolean
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
-  setGroup: React.Dispatch<React.SetStateAction<Group>>
+  setGroup: React.Dispatch<React.SetStateAction<Group & { category: Category }>>
 }
 
 const UpdateGroupModal = ({ group, isOpen, setIsOpen, setGroup }: TProps) => {
@@ -15,7 +15,7 @@ const UpdateGroupModal = ({ group, isOpen, setIsOpen, setGroup }: TProps) => {
       open={isOpen}
       onClose={() => {
         setIsOpen(false)
-        setGroup({} as Group)
+        setGroup({} as Group & { category: Category })
       }}
     >
       <Dialog.Panel className='fixed inset-0'>
@@ -23,7 +23,7 @@ const UpdateGroupModal = ({ group, isOpen, setIsOpen, setGroup }: TProps) => {
           className='absolute h-full w-full bg-black/30'
           onClick={() => {
             setIsOpen(false)
-            setGroup({} as Group)
+            setGroup({} as Group & { category: Category })
           }}
         />
 

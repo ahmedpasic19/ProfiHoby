@@ -10,8 +10,11 @@ import { AiFillCloseCircle } from 'react-icons/ai'
 type TProps = {
   group?: Group & { category: Category }
   isEditing?: boolean
+  isDeleting?: boolean
   setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>
-  setGroup?: React.Dispatch<React.SetStateAction<Group>>
+  setGroup?: React.Dispatch<
+    React.SetStateAction<Group & { category: Category }>
+  >
 }
 
 type TInput = {
@@ -22,7 +25,13 @@ type TInput = {
 
 type TCategoryOption = SingleValue<{ label: string; value: string }>
 
-const GroupForm = ({ group, isEditing, setIsOpen, setGroup }: TProps) => {
+const GroupForm = ({
+  group,
+  isEditing,
+  isDeleting,
+  setIsOpen,
+  setGroup,
+}: TProps) => {
   const [name, setName] = useState('')
   const [category, setCategory] = useState({} as TCategoryOption)
 
@@ -49,7 +58,19 @@ const GroupForm = ({ group, isEditing, setIsOpen, setGroup }: TProps) => {
         await queryClient.invalidateQueries(['group.getAllGroups'])
         setName('')
         setIsOpen && setIsOpen(false)
-        setGroup && setGroup({} as Group)
+        setGroup && setGroup({} as Group & { category: Category })
+        setCategory({} as TCategoryOption)
+      },
+    }
+  )
+  const { mutate: deleteGroup } = useMutation(
+    (input: { id: string }) => trpcClient.group.deleteGroup.mutate(input),
+    {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['group.getAllGroups'])
+        setName('')
+        setIsOpen && setIsOpen(false)
+        setGroup && setGroup({} as Group & { category: Category })
         setCategory({} as TCategoryOption)
       },
     }
@@ -70,7 +91,7 @@ const GroupForm = ({ group, isEditing, setIsOpen, setGroup }: TProps) => {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     if (!name || !category?.value) return
-    if (!isEditing)
+    if (!isEditing && !isDeleting)
       createGroup({ name, category_id: category?.value, articles: [] })
     if (isEditing && group?.id)
       updateGroup({
@@ -79,6 +100,7 @@ const GroupForm = ({ group, isEditing, setIsOpen, setGroup }: TProps) => {
         category_id: category?.value,
         articles: [],
       })
+    if (isDeleting && group?.id) deleteGroup({ id: group.id })
   }
 
   return (
@@ -88,12 +110,17 @@ const GroupForm = ({ group, isEditing, setIsOpen, setGroup }: TProps) => {
         className='relative flex w-[500px] flex-col items-center justify-center rounded-xl bg-white py-20'
       >
         <h1 className='mb-10 w-full text-center text-2xl font-bold text-gray-800'>
-          {isEditing ? 'Izmjeni grupu' : 'Dodaj grupu'}
+          {isEditing
+            ? 'Izmjeni grupu'
+            : isDeleting
+            ? 'Izbriši grupu'
+            : 'Dodaj grupu'}
         </h1>
         <FieldSet
           label='Naziv'
           name='name'
           value={name}
+          readOnly={isDeleting}
           onChange={(e) => setName(e.target.value)}
           type='text'
         />
@@ -102,6 +129,7 @@ const GroupForm = ({ group, isEditing, setIsOpen, setGroup }: TProps) => {
             Kategorija
           </label>
           <Select
+            isDisabled={isDeleting}
             options={categoryOptions}
             value={category?.value ? category : null}
             placeholder='Odaberi kategoriju'
@@ -116,14 +144,14 @@ const GroupForm = ({ group, isEditing, setIsOpen, setGroup }: TProps) => {
             onSubmit={handleSubmit}
             className='w-4/5 rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
           >
-            {isEditing ? 'Izmjeni' : 'Dodaj'}
+            {isEditing ? 'Izmjeni' : isDeleting ? 'Izbriši' : 'Dodaj'}
           </button>
         </section>
         {isEditing && (
           <AiFillCloseCircle
             onClick={() => {
               setIsOpen && setIsOpen(false)
-              setGroup && setGroup({} as Group)
+              setGroup && setGroup({} as Group & { category: Category })
             }}
             className='absolute top-4 right-4 h-8 w-8 cursor-pointer rounded-full bg-gray-600 text-white hover:bg-gray-800'
           />

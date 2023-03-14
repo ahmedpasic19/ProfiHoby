@@ -15,7 +15,7 @@ import { FaTrash } from 'react-icons/fa'
 const Groups: NextPage = () => {
   const [openDelete, setOpenDelete] = useState(false)
   const [openUpdate, setOpenUpdate] = useState(false)
-  const [group, setGroup] = useState({} as Group)
+  const [group, setGroup] = useState({} as Group & { category: Category })
 
   const { data: allGroups } = useQuery(['group.getAllGroups'], () =>
     trpcClient.group.getAllGroups.query()
@@ -34,7 +34,11 @@ const Groups: NextPage = () => {
     {
       header: 'Akcije',
       accessorKey: 'actions',
-      cell: ({ row }: { row: { original: Group } }) => {
+      cell: ({
+        row,
+      }: {
+        row: { original: Group & { category: Category } }
+      }) => {
         return (
           <div className='flex w-full justify-evenly'>
             <button
