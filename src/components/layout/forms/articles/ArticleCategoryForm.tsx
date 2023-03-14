@@ -44,7 +44,12 @@ const ArticleCategoryForm = ({
         await refetch()
         await queryClient.invalidateQueries([
           'articles',
-          { pageSize: 100, pageIndex: 0, name: '', category: '' },
+          {
+            pageSize: 100,
+            pageIndex: 0,
+            name: '',
+            category: 'article.index.page',
+          },
         ])
       },
     }

@@ -32,7 +32,12 @@ const ArticleForm = ({
         setArticleData({} as Article)
         await queryClient.invalidateQueries([
           'articles',
-          { category: '', name: '', pageSize: 100, pageIndex: 0 },
+          {
+            category: 'article.index.page',
+            name: '',
+            pageSize: 100,
+            pageIndex: 0,
+          },
         ])
         if (pageIndex !== 2) setPageIndex((prev) => prev + 1)
         else setPageIndex(0)
