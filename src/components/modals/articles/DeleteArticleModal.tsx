@@ -34,7 +34,12 @@ const DeleteArticleModal = ({
       onSuccess: async () => {
         await queryClient.invalidateQueries([
           'articles',
-          { category: '', name: '', pageIndex: 0, pageSize: 100 },
+          {
+            category: 'article.index.page',
+            name: '',
+            pageIndex: 0,
+            pageSize: 100,
+          },
         ])
         setArticle({} as TArticle)
         setIsOpen(false)

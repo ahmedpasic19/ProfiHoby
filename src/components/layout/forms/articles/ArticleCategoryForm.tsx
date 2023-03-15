@@ -26,7 +26,7 @@ const ArticleCategoryForm = ({
     trpcClient.article_category_relation.getAllRelations.query()
   )
 
-  const { data: allCategories } = useQuery(['categories'], () =>
+  const { data: allCategories } = useQuery(['category.getAllCategories'], () =>
     trpcClient.category.getAllCategories.query()
   )
 
@@ -39,9 +39,10 @@ const ArticleCategoryForm = ({
     ) => trpcClient.article_category_relation.createRelation.mutate(input),
     {
       onSuccess: async () => {
-        if (pageIndex !== 2) setPageIndex((prev) => prev + 1)
+        if (pageIndex === 1) setPageIndex((prev) => prev + 1)
         else setPageIndex(0)
         await refetch()
+        setArticleCategories([] as MultiValue<{ value: string; label: string }>)
         await queryClient.invalidateQueries([
           'articles',
           {

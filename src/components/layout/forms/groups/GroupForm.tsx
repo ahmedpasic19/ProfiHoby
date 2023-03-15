@@ -45,6 +45,7 @@ const GroupForm = ({
     {
       onSuccess: async () => {
         await queryClient.invalidateQueries(['group.getAllGroups'])
+        await queryClient.invalidateQueries(['category.getAllCategories'])
         setName('')
         setCategory({} as TCategoryOption)
       },
@@ -56,6 +57,7 @@ const GroupForm = ({
     {
       onSuccess: async () => {
         await queryClient.invalidateQueries(['group.getAllGroups'])
+        await queryClient.invalidateQueries(['category.getAllCategories'])
         setName('')
         setIsOpen && setIsOpen(false)
         setGroup && setGroup({} as Group & { category: Category })
@@ -68,6 +70,7 @@ const GroupForm = ({
     {
       onSuccess: async () => {
         await queryClient.invalidateQueries(['group.getAllGroups'])
+        await queryClient.invalidateQueries(['category.getAllCategories'])
         setName('')
         setIsOpen && setIsOpen(false)
         setGroup && setGroup({} as Group & { category: Category })
