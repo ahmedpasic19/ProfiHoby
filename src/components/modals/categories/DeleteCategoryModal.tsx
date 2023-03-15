@@ -1,15 +1,18 @@
 import { FormEvent } from 'react'
-import { Dialog } from '@headlessui/react'
 import { trpcClient } from '../../../utils/api'
-import FieldSet from '../../Fieldset'
-import * as Ai from 'react-icons/ai'
-import { Category } from '@prisma/client'
+import { Category, Group } from '@prisma/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+import { Dialog } from '@headlessui/react'
+import FieldSet from '../../Fieldset'
+import * as Ai from 'react-icons/ai'
+
+type TCategory = Category & { groups: Group[] }
+
 type TProps = {
-  category: Category
+  category: TCategory
   isOpen: boolean
-  setCategory: React.Dispatch<React.SetStateAction<Category>>
+  setCategory: React.Dispatch<React.SetStateAction<TCategory>>
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
@@ -25,7 +28,7 @@ const DeleteCategoryModal = ({
     {
       onSuccess: async () => {
         setIsOpen(false)
-        setCategory({} as Category)
+        setCategory({} as TCategory)
         await queryClient.invalidateQueries(['category.getAllCategories'])
       },
     }
@@ -42,7 +45,7 @@ const DeleteCategoryModal = ({
       open={isOpen}
       onClose={() => {
         setIsOpen(false)
-        setCategory({} as Category)
+        setCategory({} as TCategory)
       }}
     >
       <Dialog.Panel className='fixed inset-0'>
@@ -50,7 +53,7 @@ const DeleteCategoryModal = ({
           className='absolute h-full w-full bg-black/30'
           onClick={() => {
             setIsOpen(false)
-            setCategory({} as Category)
+            setCategory({} as TCategory)
           }}
         />
 
@@ -80,7 +83,7 @@ const DeleteCategoryModal = ({
             <Ai.AiFillCloseCircle
               onClick={() => {
                 setIsOpen(false)
-                setCategory({} as Category)
+                setCategory({} as TCategory)
               }}
               className='absolute top-4 right-4 h-8 w-8 cursor-pointer rounded-full bg-gray-600 text-white hover:bg-gray-800'
             />

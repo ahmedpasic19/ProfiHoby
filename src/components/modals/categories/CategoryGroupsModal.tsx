@@ -1,34 +1,43 @@
-import { FormEvent } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { FormEvent, useState, useEffect } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { trpcClient } from '../../../utils/api'
-import { Category, Group } from '@prisma/client'
+import { Group, Category } from '@prisma/client'
 
+import Select, { MultiValue } from 'react-select'
 import { Dialog } from '@headlessui/react'
-import FieldSet from '../../Fieldset'
-import * as Ai from 'react-icons/ai'
+import { AiFillCloseCircle } from 'react-icons/ai'
 
 type TCategory = Category & { groups: Group[] }
 
 type TProps = {
-  category: TCategory
   isOpen: boolean
+  category: TCategory
   setCategory: React.Dispatch<React.SetStateAction<TCategory>>
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const UpdateCategoryModal = ({
+const CategoryGroupsModal = ({
   isOpen,
   category,
   setIsOpen,
   setCategory,
 }: TProps) => {
+  const [groups, setGroups] = useState<
+    MultiValue<{ label: string; value: string }>
+  >([])
+
   const queryClient = useQueryClient()
 
+  const { data: allGroups } = useQuery(['group.getAllGroups'], () =>
+    trpcClient.group.getAllGroups.query()
+  )
+
   const { mutate: updateCategory } = useMutation(
-    (input: { id: string; name: string }) =>
+    (input: Category & { groups: string[] }) =>
       trpcClient.category.updateCategory.mutate(input),
     {
       onSuccess: async () => {
+        await queryClient.invalidateQueries(['group.getAllGroups'])
         await queryClient.invalidateQueries(['category.getAllCategories'])
         setIsOpen(false)
         setCategory({} as TCategory)
@@ -36,11 +45,28 @@ const UpdateCategoryModal = ({
     }
   )
 
-  const handleSubmit = (e: FormEvent<HTMLElement>) => {
-    e.preventDefault()
+  useEffect(() => {
+    if (category?.groups) {
+      const groups = category?.groups?.map((group) => ({
+        label: group.name,
+        value: group.id,
+      }))
 
-    updateCategory({ name: category.name, id: category.id })
+      setGroups(groups)
+    }
+  }, [category, isOpen])
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    const category_groups = groups.map((group) => group.value)
+
+    updateCategory({ ...category, groups: category_groups })
   }
+
+  const options = allGroups?.map((group) => ({
+    label: group.name,
+    value: group.id,
+  }))
 
   return (
     <Dialog
@@ -58,34 +84,30 @@ const UpdateCategoryModal = ({
             setCategory({} as TCategory)
           }}
         />
-
-        <main className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
+        <main className='flex h-full min-h-screen w-full items-center justify-center '>
           <form
             onSubmit={handleSubmit}
             className='relative h-[584px] w-[450px] rounded-xl bg-white p-10 drop-shadow-2xl'
           >
             <h1 className='mb-10 w-full text-center text-2xl font-bold text-gray-800'>
-              Izmjeni kategoriju
+              Dodaj grupe
             </h1>
-            <FieldSet
-              type='text'
-              label='Naziv'
-              name='name'
-              value={category.name}
-              onChange={(e) =>
-                setCategory((prev) => ({ ...prev, name: e.target.value }))
-              }
+            <Select
+              options={options}
+              value={groups}
+              isMulti
+              placeholder='Odaberi grupe'
+              onChange={(value) => setGroups(value)}
             />
-            <section className='relative flex h-full w-full items-center justify-center'>
+            <section className='relative mt-10 flex h-full w-full items-center justify-center'>
               <button
-                disabled={!category.name}
                 onSubmit={handleSubmit}
                 className='absolute bottom-44 w-4/5 rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
               >
-                Izmjeni
+                Dodaj grupe
               </button>
             </section>
-            <Ai.AiFillCloseCircle
+            <AiFillCloseCircle
               onClick={() => {
                 setIsOpen(false)
                 setCategory({} as TCategory)
@@ -99,4 +121,4 @@ const UpdateCategoryModal = ({
   )
 }
 
-export default UpdateCategoryModal
+export default CategoryGroupsModal

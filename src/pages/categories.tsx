@@ -5,25 +5,30 @@ import { useQuery } from '@tanstack/react-query'
 
 import useProtectRoute from '../hooks/useProtectRoute'
 
-import { Category } from '@prisma/client'
+import { Category, Group } from '@prisma/client'
 
 import CreateCategoryModal from '../components/modals/categories/CreateCategoryModal'
 import UpdateCategoryModal from '../components/modals/categories/UpdateCategoryModal'
 import DeleteCategoryModal from '../components/modals/categories/DeleteCategoryModal'
+import CategoryGroupsModal from '../components/modals/categories/CategoryGroupsModal'
 import MainTable from '../components/table/MainTable'
 
-import * as Fa from 'react-icons/fa'
-import * as Ai from 'react-icons/ai'
+import { FaTrash } from 'react-icons/fa'
+import { AiFillEdit } from 'react-icons/ai'
+import { BiCategoryAlt } from 'react-icons/bi'
+
+type TCategory = Category & { groups: Group[] }
 
 type TRow = {
-  original: Category
+  original: TCategory
 }
 
 const Categories: NextPage = () => {
-  const [category, setCategory] = useState({} as Category)
+  const [category, setCategory] = useState({} as TCategory)
   const [openCreate, setOpenCreate] = useState(false)
   const [openUpdate, setOpenUpdate] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
+  const [openGroups, setOpenGroups] = useState(false)
 
   useProtectRoute()
 
@@ -34,7 +39,7 @@ const Categories: NextPage = () => {
   const data = useMemo(() => allCategories || [], [allCategories])
 
   const useData = () => {
-    return data ? data : ([] as Category[])
+    return data ? data : ([] as TCategory[])
   }
 
   const columns = [
@@ -59,7 +64,16 @@ const Categories: NextPage = () => {
                 setCategory(row.original)
               }}
             >
-              <Ai.AiFillEdit className='h-8 w-8' />
+              <AiFillEdit className='h-8 w-8' />
+            </button>
+            <button
+              className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
+              onClick={() => {
+                setOpenGroups(true)
+                setCategory(row.original)
+              }}
+            >
+              <BiCategoryAlt className='h-8 w-8' />
             </button>
             <button
               className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
@@ -68,7 +82,7 @@ const Categories: NextPage = () => {
                 setCategory(row.original)
               }}
             >
-              <Fa.FaTrash className='h-8 w-8' />
+              <FaTrash className='h-8 w-8' />
             </button>
           </div>
         )
@@ -108,6 +122,12 @@ const Categories: NextPage = () => {
         setCategory={setCategory}
         isOpen={openDelete}
         category={category}
+      />
+      <CategoryGroupsModal
+        isOpen={openGroups}
+        category={category}
+        setCategory={setCategory}
+        setIsOpen={setOpenGroups}
       />
     </>
   )
