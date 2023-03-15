@@ -264,14 +264,18 @@ export const articleRouter = createTRPCRouter({
     }),
 
   getArticle: publicProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ article_id: z.string() }))
     .query(async ({ input, ctx }) => {
       const article = await ctx.prisma.article.findUnique({
-        where: { id: input.id },
+        where: { id: input.article_id },
         include: {
           categories: {
             include: {
-              category: true,
+              category: {
+                include: {
+                  groups: true,
+                },
+              },
             },
           },
         },

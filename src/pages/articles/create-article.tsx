@@ -8,6 +8,7 @@ import { Article } from '@prisma/client'
 import ArticleCategoryForm from '../../components/layout/forms/articles/ArticleCategoryForm'
 import ArticleForm from '../../components/layout/forms/articles/ArticleForm'
 import UploadImageForm from '../../components/layout/forms/articles/UploadImageForm'
+import ArticleGroupForm from '../../components/layout/forms/articles/ArticleGroupForm'
 
 const CreateArticle: NextPage = () => {
   const [pageIndex, setPageIndex] = useState(0)
@@ -29,6 +30,12 @@ const CreateArticle: NextPage = () => {
           />
         ) : pageIndex === 1 ? (
           <ArticleCategoryForm
+            setPageIndex={setPageIndex}
+            pageIndex={pageIndex}
+            articleId={articleId}
+          />
+        ) : pageIndex === 2 ? (
+          <ArticleGroupForm
             setPageIndex={setPageIndex}
             pageIndex={pageIndex}
             articleId={articleId}
