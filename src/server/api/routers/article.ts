@@ -310,6 +310,11 @@ export const articleRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
       // DELETE realtions
+      await ctx.prisma.articleGroups.deleteMany({
+        where: {
+          article_id: input.id,
+        },
+      })
       await ctx.prisma.categoriesOnArticle.deleteMany({
         where: {
           article_id: input.id,
