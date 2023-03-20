@@ -269,6 +269,11 @@ export const articleRouter = createTRPCRouter({
       const article = await ctx.prisma.article.findUnique({
         where: { id: input.article_id },
         include: {
+          groups: {
+            include: {
+              group: true,
+            },
+          },
           categories: {
             include: {
               category: {

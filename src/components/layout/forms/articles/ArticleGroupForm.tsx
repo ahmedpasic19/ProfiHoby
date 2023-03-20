@@ -1,10 +1,11 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useState, useEffect } from 'react'
 import { trpcClient } from '../../../../utils/api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import Select, { MultiValue } from 'react-select'
 
 type TProps = {
+  setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>
   setPageIndex: React.Dispatch<React.SetStateAction<number>>
   articleId: string | null
   pageIndex: number
@@ -23,13 +24,24 @@ const ArticleGroupFrom = ({ setPageIndex, articleId, pageIndex }: TProps) => {
     trpcClient.articleGroups.getAllRelations.query()
   )
 
-  const { data: article } = useQuery(
-    ['article_category_relation.getArticleCategories'],
+  const { data: article, refetch: fetchArticle } = useQuery(
+    ['article.getArticle'],
     () =>
       trpcClient.article.getArticle.query({
         article_id: articleId || '',
-      })
+      }),
+    {
+      enabled: article.id ? true : false,
+    }
   )
+
+  // Temporary patch to deal with fetching on first load
+  useEffect(() => {
+    const fetch = async () => {
+      await fetchArticle()
+    }
+    fetch().catch(console.error)
+  }, [fetchArticle])
 
   const { mutate: associateArticle } = useMutation(
     (
@@ -55,7 +67,7 @@ const ArticleGroupFrom = ({ setPageIndex, articleId, pageIndex }: TProps) => {
       },
     }
   )
-  console.log(article)
+
   // Getting goups only from article's selected categoriesF
   const options = article?.categories?.reduce((prev, curr) => {
     const groups = curr.category.groups?.map((group) => ({

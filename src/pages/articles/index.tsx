@@ -16,11 +16,13 @@ import DeleteArticleModal from '../../components/modals/articles/DeleteArticleMo
 import UpdateArticleModal from '../../components/modals/articles/UpdateArticleModal'
 import UpdateArticleCategoriesModal from '../../components/modals/articles/UpdateArticleCategoriesModal'
 import UpdateArticleImagesModal from '../../components/modals/articles/UpdateArticleImagesModal'
+import UpdateArticleGroupsModal from '../../components/modals/articles/UpdateArticleGroupsModal'
 
-import * as Bi from 'react-icons/bi'
-import * as Bs from 'react-icons/bs'
-import * as Fa from 'react-icons/fa'
-import * as Ai from 'react-icons/ai'
+import { BiCategoryAlt } from 'react-icons/bi'
+import { BsFillImageFill } from 'react-icons/bs'
+import { FaTrash } from 'react-icons/fa'
+import { AiFillEdit } from 'react-icons/ai'
+import { HiOutlineRectangleGroup } from 'react-icons/hi2'
 
 type TArticle = Article & {
   image: Image[]
@@ -37,6 +39,7 @@ const Articles: NextPage = () => {
   const [openUpdate, setOpenUpdate] = useState(false)
   const [openUpdateCategories, setOpenUpdateCategories] = useState(false)
   const [openUpdateImages, setOpenUpdateImages] = useState(false)
+  const [openUpdateGroups, setOpenUpdateGroups] = useState(false)
 
   useProtectRoute()
 
@@ -86,7 +89,7 @@ const Articles: NextPage = () => {
                 setArticle(row.original)
               }}
             >
-              <Bs.BsFillImageFill className='h-8 w-8' />
+              <BsFillImageFill className='h-8 w-8' />
             </button>
             <button
               className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
@@ -95,7 +98,16 @@ const Articles: NextPage = () => {
                 setArticle(row.original)
               }}
             >
-              <Bi.BiCategoryAlt className='h-8 w-8' />
+              <BiCategoryAlt className='h-8 w-8' />
+            </button>
+            <button
+              className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
+              onClick={() => {
+                setOpenUpdateGroups(true)
+                setArticle(row.original)
+              }}
+            >
+              <HiOutlineRectangleGroup className='h-8 w-8' />
             </button>
             <button
               className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
@@ -104,7 +116,7 @@ const Articles: NextPage = () => {
                 setArticle(row.original)
               }}
             >
-              <Ai.AiFillEdit className='h-8 w-8' />
+              <AiFillEdit className='h-8 w-8' />
             </button>
             <button
               className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
@@ -113,7 +125,7 @@ const Articles: NextPage = () => {
                 setArticle(row.original)
               }}
             >
-              <Fa.FaTrash className='h-8 w-8' />
+              <FaTrash className='h-8 w-8' />
             </button>
           </div>
         )
@@ -172,6 +184,12 @@ const Articles: NextPage = () => {
         article={article}
         isOpen={openUpdateImages}
         setIsOpen={setOpenUpdateImages}
+        setArticle={setArticle}
+      />
+      <UpdateArticleGroupsModal
+        article={article}
+        isOpen={openUpdateGroups}
+        setIsOpen={setOpenUpdateGroups}
         setArticle={setArticle}
       />
     </>
