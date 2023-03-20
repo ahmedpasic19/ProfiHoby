@@ -60,8 +60,8 @@ const UpdateArticleCategoriesModal = ({
     const fetch = async () => {
       await fetchArticle()
     }
-    fetch().catch(console.error)
-  }, [fetchArticle])
+    if (article.id) fetch().catch(console.error)
+  }, [fetchArticle, article.id])
 
   const { mutate: updateRelation } = useMutation(
     (input: {

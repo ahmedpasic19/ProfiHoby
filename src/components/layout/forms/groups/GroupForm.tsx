@@ -37,6 +37,21 @@ const GroupForm = ({
 
   const queryClient = useQueryClient()
 
+  // Invalidate all queries
+  const invalidateQueries = async () => {
+    await queryClient.invalidateQueries(['group.getAllGroups'])
+    await queryClient.invalidateQueries(['category.getAllCategories'])
+    await queryClient.invalidateQueries([
+      'articles',
+      {
+        pageSize: 100,
+        pageIndex: 0,
+        name: '',
+        category: 'article.index.page',
+      },
+    ])
+  }
+
   const { data: allCategories } = useQuery(['category.getAllCategories'], () =>
     trpcClient.category.getAllCategories.query()
   )
@@ -44,8 +59,7 @@ const GroupForm = ({
     (input: TInput) => trpcClient.group.createGroup.mutate(input),
     {
       onSuccess: async () => {
-        await queryClient.invalidateQueries(['group.getAllGroups'])
-        await queryClient.invalidateQueries(['category.getAllCategories'])
+        await invalidateQueries()
         setName('')
         setCategory({} as TCategoryOption)
       },
@@ -56,8 +70,7 @@ const GroupForm = ({
       trpcClient.group.updateGroup.mutate(input),
     {
       onSuccess: async () => {
-        await queryClient.invalidateQueries(['group.getAllGroups'])
-        await queryClient.invalidateQueries(['category.getAllCategories'])
+        await invalidateQueries()
         setName('')
         setIsOpen && setIsOpen(false)
         setGroup && setGroup({} as Group & { category: Category })
@@ -69,8 +82,7 @@ const GroupForm = ({
     (input: { id: string }) => trpcClient.group.deleteGroup.mutate(input),
     {
       onSuccess: async () => {
-        await queryClient.invalidateQueries(['group.getAllGroups'])
-        await queryClient.invalidateQueries(['category.getAllCategories'])
+        await invalidateQueries()
         setName('')
         setIsOpen && setIsOpen(false)
         setGroup && setGroup({} as Group & { category: Category })
