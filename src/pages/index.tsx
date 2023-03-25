@@ -7,6 +7,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import Article from '../components/Article'
 import PagePagination from '../components/layout/PagePagination'
+import SidebarCategory from '../components/SidebarCategory'
 
 const Home: NextPage = () => {
   const [category, setCategory] = useState('')
@@ -25,7 +26,7 @@ const Home: NextPage = () => {
       })
   )
 
-  const { data: allCategories } = useQuery(['categories'], () =>
+  const { data: allCategories } = useQuery(['category.getAllCategories'], () =>
     trpcClient.category.getAllCategories.query()
   )
 
@@ -56,22 +57,12 @@ const Home: NextPage = () => {
             Kategorije
           </h2>
           <ul className='flex h-full w-full flex-col'>
-            {allCategories?.map((cat) => (
-              <li
-                className={`${
-                  category === cat.name ? 'bg-gray-400' : 'bg-gray-300'
-                } mb-[1px] h-8 w-full cursor-pointer pl-4 text-lg font-semibold hover:bg-gray-400`}
-                onClick={() => {
-                  if (category === cat.name) setCategory('')
-                  else {
-                    setCategory(cat.name)
-                    setPageIndex(0)
-                  }
-                }}
-                key={cat.id}
-              >
-                {cat.name}
-              </li>
+            {allCategories?.map((category) => (
+              <SidebarCategory
+                key={category.id}
+                name={category.name}
+                groups={category.groups}
+              />
             ))}
           </ul>
         </div>
