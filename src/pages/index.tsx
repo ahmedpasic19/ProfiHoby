@@ -3,23 +3,23 @@ import { useState, useEffect } from 'react'
 import { trpcClient } from '../utils/api'
 
 import { debounce } from '../utils/debounce'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 
 import Article from '../components/Article'
 import PagePagination from '../components/layout/PagePagination'
 import SidebarCategory from '../components/SidebarCategory'
 
 const Home: NextPage = () => {
-  const [category, setCategory] = useState('')
   const [pageIndex, setPageIndex] = useState(0)
 
-  const queryClient = useQueryClient()
-
   const { data: articleData, refetch } = useQuery(
-    ['articles', { category: '', name: '', pageIndex: 0, pageSize: 100 }],
+    [
+      'articles',
+      { category: 'article.index.page', name: '', pageIndex: 0, pageSize: 100 },
+    ],
     () =>
       trpcClient.article.getAllArticles.query({
-        category,
+        category: '',
         name: '',
         pageIndex: 0,
         pageSize: 100,
@@ -29,17 +29,6 @@ const Home: NextPage = () => {
   const { data: allCategories } = useQuery(['category.getAllCategories'], () =>
     trpcClient.category.getAllCategories.query()
   )
-
-  useEffect(() => {
-    const trigger = async () => {
-      await refetch()
-      await queryClient.invalidateQueries([
-        'articles',
-        { category: '', name: '', pageIndex: 0, pageSize: 100 },
-      ])
-    }
-    trigger().catch(console.error)
-  }, [category, refetch, queryClient])
 
   useEffect(() => {
     const trigger = async () => {
@@ -60,6 +49,7 @@ const Home: NextPage = () => {
             {allCategories?.map((category) => (
               <SidebarCategory
                 key={category.id}
+                id={category.id}
                 name={category.name}
                 groups={category.groups}
               />

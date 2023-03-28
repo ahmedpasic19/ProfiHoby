@@ -5,11 +5,12 @@ import { AiFillCaretDown } from 'react-icons/ai'
 import Link from 'next/link'
 
 interface TProps extends React.ComponentPropsWithoutRef<'li'> {
+  id: string
   name: string
   groups: Group[]
 }
 
-const SidebarCategory = ({ name, groups }: TProps) => {
+const SidebarCategory = ({ id, name, groups }: TProps) => {
   const [openCategory, setOpenCategory] = useState(false)
 
   return (
@@ -17,7 +18,7 @@ const SidebarCategory = ({ name, groups }: TProps) => {
       <div className='flex w-full items-center pb-2'>
         <label className='ml-5 w-full text-lg font-semibold text-gray-200'>
           <Link
-            href='/categories/:categoryid'
+            href={`/categories/${id}`}
             className='underline underline-offset-4'
           >
             {name}
