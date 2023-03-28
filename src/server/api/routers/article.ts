@@ -37,6 +37,7 @@ export const articleRouter = createTRPCRouter({
       return new_article
     }),
 
+  // GET all articles and filter by category if category is provided
   getAllArticles: publicProcedure
     .input(
       z.object({
@@ -75,7 +76,72 @@ export const articleRouter = createTRPCRouter({
         orderBy: { createdAt: 'desc' },
       })
 
-      const totalArticles = await ctx.prisma.article.count({ where })
+      const totalArticles = await ctx.prisma.article.count({
+        where,
+      })
+      const pageCount = Math.ceil(totalArticles / input.pageSize)
+
+      // Assigning an accessURL from S3
+      const arr = articles.map((article) => {
+        const extended_images = article.image.map((image) => ({
+          ...image,
+          url: s3.getSignedUrl('getObject', {
+            Bucket: BUCKET_NAME,
+            Key: image.image,
+          }),
+        }))
+
+        return { ...article, image: extended_images }
+      })
+
+      return {
+        articles: arr,
+        pageCount,
+        pageIndex: input.pageIndex,
+        pageSize: input.pageSize,
+      }
+    }),
+
+  getAllArticleByCategoryID: publicProcedure
+    .input(
+      z.object({
+        pageSize: z.number(),
+        pageIndex: z.number(),
+        category_id: z.string(),
+        name: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const category = input.category_id
+      const name = input.name
+      const where = category
+        ? { categories: { some: { category: { id: input.category_id } } } }
+        : name
+        ? {
+            name: {
+              contains: input.name,
+            },
+          }
+        : {}
+
+      const articles = await ctx.prisma.article.findMany({
+        include: {
+          image: true,
+          action: true,
+          categories: {
+            include: {
+              category: true,
+            },
+          },
+        },
+        where,
+        skip: input.pageSize * input.pageIndex,
+        take: input.pageSize,
+      })
+
+      const totalArticles = await ctx.prisma.article.count({
+        where,
+      })
       const pageCount = Math.ceil(totalArticles / input.pageSize)
 
       // Assigning an accessURL from S3
@@ -213,6 +279,7 @@ export const articleRouter = createTRPCRouter({
       return action_articles
     }),
 
+  // GET only articles that have an action (sale🤑)
   getAllArticlesWithActions: publicProcedure
     .input(
       z.object({

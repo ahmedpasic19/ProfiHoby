@@ -1,4 +1,4 @@
-import { CategoriesOnArticle, Category } from '@prisma/client'
+import { ArticleAction, CategoriesOnArticle, Category } from '@prisma/client'
 
 export type TArticle = {
   image: {
@@ -17,4 +17,5 @@ export type TArticle = {
   createdAt: Date
   updatedAt: Date
   categories: (CategoriesOnArticle & { category: Category })[]
+  action: ArticleAction | null
 }

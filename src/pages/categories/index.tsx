@@ -1,17 +1,17 @@
 import { NextPage } from 'next'
 import { useState, useMemo } from 'react'
-import { trpcClient } from '../utils/api'
+import { trpcClient } from '../../utils/api'
 import { useQuery } from '@tanstack/react-query'
 
-import useProtectRoute from '../hooks/useProtectRoute'
+import useProtectRoute from '../../hooks/useProtectRoute'
 
 import { Category, Group } from '@prisma/client'
 
-import CreateCategoryModal from '../components/modals/categories/CreateCategoryModal'
-import UpdateCategoryModal from '../components/modals/categories/UpdateCategoryModal'
-import DeleteCategoryModal from '../components/modals/categories/DeleteCategoryModal'
-import CategoryGroupsModal from '../components/modals/categories/CategoryGroupsModal'
-import MainTable from '../components/table/MainTable'
+import CreateCategoryModal from '../../components/modals/categories/CreateCategoryModal'
+import UpdateCategoryModal from '../../components/modals/categories/UpdateCategoryModal'
+import DeleteCategoryModal from '../../components/modals/categories/DeleteCategoryModal'
+import CategoryGroupsModal from '../../components/modals/categories/CategoryGroupsModal'
+import MainTable from '../../components/table/MainTable'
 
 import { FaTrash } from 'react-icons/fa'
 import { AiFillEdit } from 'react-icons/ai'
