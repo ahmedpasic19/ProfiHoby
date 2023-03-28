@@ -31,7 +31,7 @@ const ArticleGroupFrom = ({ setPageIndex, articleId, pageIndex }: TProps) => {
         article_id: articleId || '',
       }),
     {
-      enabled: article.id ? true : false,
+      enabled: articleId ? true : false,
     }
   )
 

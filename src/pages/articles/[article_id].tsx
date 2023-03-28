@@ -12,7 +12,7 @@ const ArticlePage = () => {
   const articleId = typeof article_id === 'string' ? article_id : ''
 
   const { data: article } = useQuery(['article', { id: article_id }], () =>
-    trpcClient.article.getArticle.query({ id: articleId })
+    trpcClient.article.getArticle.query({ article_id: articleId })
   )
 
   const { data: artilce_images } = useQuery(
