@@ -52,7 +52,7 @@ const ArticlesForActionForm = ({
       title: string
       discount: number
       description: string | null
-      date: Date | undefined
+      date: Date | null
       articles: TArticle[]
     }) => trpcClient.article_action.updateArticleAction.mutate(input),
     {
@@ -64,9 +64,8 @@ const ArticlesForActionForm = ({
           'article.getArticlesByActionID',
           { id: action.id },
         ])
-        setIsOpen(false)
-        setPageIndex && setPageIndex(0)
-        setAction({} as ArticleAction)
+
+        setPageIndex && setPageIndex((prev) => prev + 1)
         setSelectedArticles([])
       },
     }
@@ -92,11 +91,8 @@ const ArticlesForActionForm = ({
 
   const handleAddArticles = (e: FormEvent) => {
     e.preventDefault()
-    const configured_articles = selectedArticles.map((art) => ({
-      ...art,
-      base_price: art.base_price.toString(),
-    }))
-    updateAction({ ...action, articles: configured_articles })
+
+    updateAction({ ...action, articles: selectedArticles })
   }
 
   return (

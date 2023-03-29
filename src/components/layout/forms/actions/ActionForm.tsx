@@ -12,7 +12,7 @@ import * as Ai from 'react-icons/ai'
 type TProps = {
   isEditing?: boolean
   isDeleting?: boolean
-  action: Partial<ArticleAction>
+  action: ArticleAction
   setAction: React.Dispatch<React.SetStateAction<ArticleAction>>
   setPageIndex?: React.Dispatch<React.SetStateAction<number>>
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
@@ -32,7 +32,7 @@ const ActionForm = ({
     (input: {
       discount: number
       title: string
-      date: Date | undefined
+      date: Date | null
       description: string | undefined
     }) => trpcClient.article_action.createArticleAction.mutate(input),
     {
@@ -52,7 +52,7 @@ const ActionForm = ({
       title: string
       discount: number
       description: string | null
-      date: Date | undefined
+      date: Date | null
       articles: TArticle[]
     }) => trpcClient.article_action.updateArticleAction.mutate(input),
     {
@@ -111,18 +111,13 @@ const ActionForm = ({
       createAction({
         discount: action.discount,
         title: action.title,
-        date: action.date || undefined,
+        date: action.date || null,
         description: action.description || undefined,
       })
     }
-    if (isEditing) {
-      const configured_articles = action_articles?.map((art) => ({
-        ...art,
-        base_price: art.base_price.toString(),
-      }))
 
-      updateAction({ ...action, articles: configured_articles })
-    }
+    if (isEditing) updateAction({ ...action, articles: action_articles || [] })
+
     if (isDeleting) {
       if (!action.id) return
       deleteAction({ id: action.id })
