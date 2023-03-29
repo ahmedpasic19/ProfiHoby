@@ -30,11 +30,11 @@ const UpdateArticleImagesModal = ({
   const [pageIndex, setPageIndex] = useState(0)
 
   const { data: article_images } = useQuery(
-    ['image.getAllArricleImages', { article_id: article.id, action_id: null }],
+    ['image.getAllRelatedImages', { article_id: article.id, action_id: '' }],
     () =>
       trpcClient.image.getAllRelatedImages.query({
         article_id: article.id,
-        action_id: null, // null because articleImage is NOT assigned with action
+        action_id: null,
       }),
     {
       enabled: article.id ? true : false,
@@ -57,14 +57,6 @@ const UpdateArticleImagesModal = ({
         }}
       />
       <Dialog.Panel className='fixed inset-0'>
-        <div
-          className='absolute h-full w-full bg-black/30'
-          onClick={() => {
-            setIsOpen(false)
-            setArticle({} as TArticle)
-          }}
-        />
-
         {pageIndex === 0 ? (
           <main className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
             <div className='flex h-[85%] w-4/5 flex-col justify-evenly rounded-xl bg-white p-10 drop-shadow-2xl'>
@@ -75,7 +67,8 @@ const UpdateArticleImagesModal = ({
               <section className='h-[450px] w-full'>
                 <ImageGrid
                   images={article_images || []}
-                  articleId={article.id}
+                  article_id={article.id}
+                  action_id=''
                   isDelete
                 />
               </section>
