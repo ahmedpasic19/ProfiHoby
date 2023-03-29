@@ -87,10 +87,12 @@ model Image {
     name  String
     image String
 
-    Article    Article? @relation(fields: [article_id], references: [id])
-    article_id String?
-    User       User?    @relation(fields: [userId], references: [id])
-    userId     String?
+    Article       Article?       @relation(fields: [article_id], references: [id])
+    article_id    String?
+    ArticleAction ArticleAction? @relation(fields: [action_id], references: [id])
+    action_id     String?
+    User          User?          @relation(fields: [userId], references: [id])
+    userId        String?
 }
 
 model Category {
@@ -122,6 +124,7 @@ model ArticleAction {
     description String?
 
     articles Article[]
+    image    Image[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

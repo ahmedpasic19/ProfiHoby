@@ -8,10 +8,16 @@ import * as Bs from 'react-icons/bs'
 
 type TProps = {
   setPageIndex: React.Dispatch<React.SetStateAction<number>>
-  articleId: string | null
+  article_id: string | null
+  action_id: string | null
   navigateBack?: boolean
 }
-const UploadImageForm = ({ setPageIndex, articleId, navigateBack }: TProps) => {
+const UploadImageForm = ({
+  setPageIndex,
+  article_id,
+  action_id,
+  navigateBack,
+}: TProps) => {
   const [articleImage, setArticleImage] = useState<string>('')
   const [file, setFile] = useState<File | undefined>(undefined)
 
@@ -19,16 +25,20 @@ const UploadImageForm = ({ setPageIndex, articleId, navigateBack }: TProps) => {
 
   const queryClient = useQueryClient()
 
-  const { data: articleImages } = useQuery(
-    ['image.getAllArricleImages', { id: articleId }],
-    () => trpcClient.image.getAllArticleImages.query({ id: articleId || '' }),
+  const { data: images } = useQuery(
+    ['image.getAllRelatedImages', { article_id, action_id }],
+    () =>
+      trpcClient.image.getAllRelatedImages.query({
+        article_id: article_id || null,
+        action_id: action_id || null,
+      }),
     {
-      enabled: articleId ? true : false,
+      enabled: article_id ? true : false,
     }
   )
 
-  const { mutate: addArticleImage } = useMutation(
-    (input: { name: string; article_id: string }) =>
+  const { mutate: createImage } = useMutation(
+    (input: { name: string; article_id: string; action_id: string }) =>
       trpcClient.image.createPresignedURL.mutate(input),
     {
       onSuccess: async (data) => {
@@ -37,9 +47,10 @@ const UploadImageForm = ({ setPageIndex, articleId, navigateBack }: TProps) => {
 
         if (!file) return alert('No File')
 
-        const fileds = { ...data?.fields }
-        const url = data?.url
-        const fileData = {
+        // fileds returned from S3 presigned URL
+        const fileds: Record<string, unknown> = { ...data?.fields }
+        const url: string | undefined = data?.url
+        const fileData: Record<string, unknown> = {
           ...fileds,
           'Content-Type': file.type,
           file,
@@ -47,7 +58,10 @@ const UploadImageForm = ({ setPageIndex, articleId, navigateBack }: TProps) => {
 
         const formData = new FormData()
         for (const name in fileData) {
-          formData.append(name, fileData[name])
+          const value = fileData[name]
+          if (typeof value === 'string' || value instanceof Blob) {
+            formData.append(name, value)
+          }
         }
         if (!url) return alert('NO URL')
 
@@ -59,19 +73,20 @@ const UploadImageForm = ({ setPageIndex, articleId, navigateBack }: TProps) => {
           .catch((err) => console.log(err))
 
         await queryClient.invalidateQueries([
-          'image.getAllArricleImages',
-          { id: articleId },
+          'image.getAllRelatedImages',
+          { article_id, action_id },
         ])
       },
     }
   )
 
+  // Navigate user of the page if he has uploaded 8 images
   useEffect(() => {
-    if (articleImages?.length === 8) {
+    if (images?.length === 8) {
       router.push('/').catch(console.error)
       setPageIndex(0)
     }
-  }, [articleImages, setPageIndex, router])
+  }, [images, setPageIndex, router])
 
   const onImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.currentTarget.files?.[0]) return
@@ -90,9 +105,21 @@ const UploadImageForm = ({ setPageIndex, articleId, navigateBack }: TProps) => {
 
   const handleUploadImage = (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
-    if (!file || !articleId) return
 
-    addArticleImage({ article_id: articleId, name: file.name })
+    if (
+      !file ||
+      article_id === null ||
+      article_id === undefined ||
+      action_id === null ||
+      action_id === undefined
+    )
+      return console.log('empty')
+
+    createImage({
+      article_id,
+      action_id,
+      name: file.name,
+    })
   }
 
   return (
@@ -122,6 +149,7 @@ const UploadImageForm = ({ setPageIndex, articleId, navigateBack }: TProps) => {
         >
           Dodaj
         </button>
+        {/* Used in update images modal */}
         {navigateBack && (
           <button
             onClick={() => setPageIndex(0)}
@@ -133,7 +161,7 @@ const UploadImageForm = ({ setPageIndex, articleId, navigateBack }: TProps) => {
       </section>
 
       <div className='mt-5 grid w-full grid-cols-8 grid-rows-1 gap-2 overflow-x-auto'>
-        {articleImages?.map((image) => (
+        {images?.map((image) => (
           <div
             key={Math.random().toString()}
             className='flex h-full w-full items-center justify-center'

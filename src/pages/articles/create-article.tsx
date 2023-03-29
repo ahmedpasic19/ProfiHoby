@@ -41,7 +41,11 @@ const CreateArticle: NextPage = () => {
             articleId={articleId}
           />
         ) : (
-          <UploadImageForm setPageIndex={setPageIndex} articleId={articleId} />
+          <UploadImageForm
+            setPageIndex={setPageIndex}
+            article_id={articleId}
+            action_id=''
+          />
         )}
       </main>
     </div>

@@ -20,9 +20,9 @@ type TProps = {
 const ImageGrid = ({ images, articleId, isDelete }: TProps) => {
   const queryClient = useQueryClient()
 
-  const { mutate: deleteImage } = useMutation(
+  const { mutate: deleteImageMutation } = useMutation(
     (input: { key: string; id: string }) =>
-      trpcClient.image.deleteArticleImage.mutate(input),
+      trpcClient.image.deleteImage.mutate(input),
     {
       onSuccess: async () => {
         await queryClient.invalidateQueries([
@@ -49,7 +49,9 @@ const ImageGrid = ({ images, articleId, isDelete }: TProps) => {
           <Image src={image.url} width={300} height={200} alt='article image' />
           {isDelete && (
             <Ai.AiFillCloseCircle
-              onClick={() => deleteImage({ id: image.id, key: image.image })}
+              onClick={() =>
+                deleteImageMutation({ id: image.id, key: image.image })
+              }
               className='absolute top-2 right-2 h-8 w-8 cursor-pointer text-red-500 hover:text-red-600'
             />
           )}

@@ -30,8 +30,12 @@ const UpdateArticleImagesModal = ({
   const [pageIndex, setPageIndex] = useState(0)
 
   const { data: article_images } = useQuery(
-    ['image.getAllArricleImages', { id: article.id }],
-    () => trpcClient.image.getAllArticleImages.query({ id: article.id }),
+    ['image.getAllArricleImages', { article_id: article.id, action_id: null }],
+    () =>
+      trpcClient.image.getAllRelatedImages.query({
+        article_id: article.id,
+        action_id: null, // null because articleImage is NOT assigned with action
+      }),
     {
       enabled: article.id ? true : false,
     }
@@ -100,7 +104,8 @@ const UpdateArticleImagesModal = ({
           <main className='flex h-full w-full items-center justify-center'>
             <UploadImageForm
               navigateBack
-              articleId={article.id}
+              article_id={article.id}
+              action_id=''
               setPageIndex={setPageIndex}
             />
           </main>

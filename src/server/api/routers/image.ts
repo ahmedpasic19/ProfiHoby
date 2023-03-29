@@ -19,21 +19,32 @@ const s3 = new AWS.S3({
 
 export const imageRouter = createTRPCRouter({
   createPresignedURL: adminProcedure
-    .input(z.object({ name: z.string(), article_id: z.string() }))
+    .input(
+      z.object({
+        name: z.string(),
+        article_id: z.string(),
+        action_id: z.string(),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
+      // Key for S3
+      const image = `${input.name}-${input.article_id || input.action_id}`
+      // POST image to DB
       await ctx.prisma.image.create({
         data: {
-          article_id: input.article_id,
+          action_id: input.action_id || null,
+          article_id: input.article_id || null,
           name: input.name,
-          image: `${input.name}-${input.article_id}`,
+          image,
         },
       })
 
+      // GET presigned URL from S3
       let data
       s3.createPresignedPost(
         {
           Fields: {
-            key: `${input.name}-${input.article_id}`,
+            key: image,
           },
           Conditions: [
             ['starts-with', '$Content-Type', 'image/'],
@@ -56,32 +67,16 @@ export const imageRouter = createTRPCRouter({
         | undefined
     }),
 
-  postArticleImage: adminProcedure
+  getAllRelatedImages: publicProcedure
     .input(
       z.object({
-        article_id: z.string(),
-        name: z.string(),
-        image: z.string(),
-        formData: z.any(),
+        article_id: z.string().nullable(),
+        action_id: z.string().nullable(),
       })
     )
-    .mutation(async ({ input, ctx }) => {
-      const new_image = await ctx.prisma.image.create({
-        data: {
-          article_id: input.article_id,
-          name: input.name,
-          image: input.image,
-        },
-      })
-
-      return new_image
-    }),
-
-  getAllArticleImages: publicProcedure
-    .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const article_images = await ctx.prisma.image.findMany({
-        where: { article_id: input.id },
+        where: { article_id: input.article_id, action_id: input.action_id },
       })
 
       const extended_images = await Promise.all(
@@ -89,7 +84,7 @@ export const imageRouter = createTRPCRouter({
           ...image,
           url: await s3.getSignedUrlPromise('getObject', {
             Bucket: BUCKET_NAME,
-            Key: image.image,
+            Key: image.image, // "image" is key (name) to fech by on S3
           }),
         }))
       )
@@ -127,7 +122,7 @@ export const imageRouter = createTRPCRouter({
       return updated_article
     }),
 
-  deleteArticleImage: adminProcedure
+  deleteImage: adminProcedure
     .input(z.object({ id: z.string(), key: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const data = s3.deleteObject(
