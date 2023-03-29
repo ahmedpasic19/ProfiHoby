@@ -11,11 +11,13 @@ import ActionArticlesModal from '../components/modals/actions/ActionArticlesModa
 import CreateActionModal from '../components/modals/actions/CreateActionModal'
 import UpdateActionModal from '../components/modals/actions/UpdateActionModal'
 import DeleteActionModal from '../components/modals/actions/DeleteActionModal'
+import UpdateActionImagesModal from '../components/modals/actions/UpdateActionImagesModal'
 
 import MainTable from '../components/table/MainTable'
 import { FaTrash } from 'react-icons/fa'
 import { AiFillEdit } from 'react-icons/ai'
 import { ImPriceTags } from 'react-icons/im'
+import { BsFillImageFill } from 'react-icons/bs'
 
 type TRow = {
   original: ArticleAction
@@ -27,6 +29,7 @@ const Actions: NextPage = () => {
   const [openUpdate, setOpenUpdate] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
   const [openArticles, setOpenArticles] = useState(false)
+  const [openUpdateImages, setOpenUpdateImages] = useState(false)
 
   useProtectRoute()
 
@@ -53,6 +56,25 @@ const Actions: NextPage = () => {
     {
       header: 'Optis',
       accessorKey: 'description',
+    },
+    {
+      header: 'Slike',
+      accessorKey: 'images',
+      cell: ({ row }: { row: TRow }) => {
+        return (
+          <div className='flex justify-evenly'>
+            <button
+              className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
+              onClick={() => {
+                setOpenUpdateImages(true)
+                setAction(row.original)
+              }}
+            >
+              <BsFillImageFill className='h-8 w-8' />
+            </button>
+          </div>
+        )
+      },
     },
     {
       header: 'Izmjeni',
@@ -151,6 +173,12 @@ const Actions: NextPage = () => {
         setIsOpen={setOpenArticles}
         setAction={setAction}
         action={action}
+      />
+      <UpdateActionImagesModal
+        action={action}
+        isOpen={openUpdateImages}
+        setIsOpen={setOpenUpdateImages}
+        setAction={setAction}
       />
     </>
   )

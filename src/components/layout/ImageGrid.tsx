@@ -14,10 +14,11 @@ type TProps = {
     userId: string | null
   }[]
   isDelete?: boolean
-  articleId?: string
+  article_id?: string
+  action_id?: string
 }
 
-const ImageGrid = ({ images, articleId, isDelete }: TProps) => {
+const ImageGrid = ({ images, article_id, action_id, isDelete }: TProps) => {
   const queryClient = useQueryClient()
 
   const { mutate: deleteImageMutation } = useMutation(
@@ -26,14 +27,14 @@ const ImageGrid = ({ images, articleId, isDelete }: TProps) => {
     {
       onSuccess: async () => {
         await queryClient.invalidateQueries([
-          'image.getAllArricleImages',
-          { id: articleId },
+          'image.getAllRelatedImages',
+          { article_id, action_id },
         ])
       },
       onError: async () => {
         await queryClient.invalidateQueries([
-          'image.getAllArricleImages',
-          { id: articleId },
+          'image.getAllRelatedImages',
+          { article_id, action_id },
         ])
       },
     }

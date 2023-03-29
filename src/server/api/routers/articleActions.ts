@@ -6,7 +6,7 @@ const TTArticle = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string(),
-  base_price: z.string(),
+  base_price: z.number(),
 })
 
 export const articleActionRouter = createTRPCRouter({
@@ -16,7 +16,7 @@ export const articleActionRouter = createTRPCRouter({
         title: z.string(),
         discount: z.number(),
         description: z.optional(z.string()),
-        date: z.optional(z.date()),
+        date: z.date().nullable(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -37,7 +37,7 @@ export const articleActionRouter = createTRPCRouter({
         id: z.string(),
         title: z.string(),
         discount: z.number(),
-        description: z.optional(z.string()),
+        description: z.string().nullable(),
         articles: z.array(TTArticle),
       })
     )

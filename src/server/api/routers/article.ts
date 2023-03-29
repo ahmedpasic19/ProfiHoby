@@ -182,6 +182,7 @@ export const articleRouter = createTRPCRouter({
           },
           include: {
             image: true,
+            action: true,
             categories: {
               include: {
                 category: true,
@@ -216,6 +217,7 @@ export const articleRouter = createTRPCRouter({
         },
         include: {
           image: true,
+          action: true,
           categories: {
             include: {
               category: true,

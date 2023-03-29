@@ -7,6 +7,7 @@ export type TArticle = {
     name: string
     image: string
     article_id: string | null
+    action_id: string | null
     userId: string | null
   }[]
   id: string

@@ -4,6 +4,7 @@ import { ArticleAction } from '@prisma/client'
 
 import ActionForm from '../../layout/forms/actions/ActionForm'
 import ArticlesForActionForm from '../../layout/forms/actions/ArticlesForActionForm'
+import UploadImageForm from '../../layout/forms/articles/UploadImageForm'
 
 type TProps = {
   isOpen: boolean
@@ -39,11 +40,17 @@ const CreateActionModal = ({ isOpen, setIsOpen }: TProps) => {
               setIsOpen={setIsOpen}
               setPageIndex={setPageIndex}
             />
-          ) : (
+          ) : pageIndex === 1 ? (
             <ArticlesForActionForm
               action={action}
               setAction={setAction}
               setIsOpen={setIsOpen}
+              setPageIndex={setPageIndex}
+            />
+          ) : (
+            <UploadImageForm
+              action_id={action.id}
+              article_id=''
               setPageIndex={setPageIndex}
             />
           )}
