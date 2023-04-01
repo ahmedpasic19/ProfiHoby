@@ -74,7 +74,7 @@ const CategoryArticles: NextPage<TProps> = ({ initialData }) => {
   }, [isVisible, fetchNextPage])
 
   return (
-    <div className='flex h-full w-full flex-col px-10 pt-[25vh]'>
+    <div className='flex h-full w-full flex-col px-10 pt-[8vh]'>
       <div className='grid grid-cols-4 gap-5 pb-20'>
         {isSuccess &&
           data.pages.map((page) =>
@@ -118,36 +118,15 @@ export async function getServerSideProps(context: {
 
   const res = await trpcClient.article.getAllArticleByCategoryID.query({
     category_id,
-    pageIndex: 1,
+    pageIndex: 0,
     name: '',
     pageSize: 3,
   })
 
-  // Date has to be serialized
-  const modified_articles = res.articles.map((article) => ({
-    ...article,
-    createdAt: article.createdAt.toISOString(),
-    updatedAt: article.updatedAt.toISOString(),
-    categories: article.categories.map((articleCategory) => ({
-      ...articleCategory,
-      assignedAt: articleCategory.assignedAt.toISOString(),
-      category: {
-        ...articleCategory.category,
-        createdAt: articleCategory.category.createdAt.toISOString(),
-        updatedAt: articleCategory.category.updatedAt.toISOString(),
-      },
-    })),
-    action: article.action && {
-      ...article.action,
-      createdAt: article.action?.createdAt.toISOString(),
-      updatedAt: article.action?.updatedAt.toISOString(),
-    },
-  }))
-
   const initialData = {
     pages: [
       {
-        articles: modified_articles,
+        articles: res.articles,
         pageIndex: res.pageIndex,
         pageCount: res.pageCount,
         pageSize: res.pageSize,
@@ -158,7 +137,7 @@ export async function getServerSideProps(context: {
 
   return {
     props: {
-      initialData,
+      initialData: JSON.parse(JSON.stringify(initialData)),
     },
   }
 }
