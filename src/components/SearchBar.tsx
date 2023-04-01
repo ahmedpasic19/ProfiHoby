@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useState, useMemo } from 'react'
 import { useRouter } from 'next/router'
 
 import { useQuery } from '@tanstack/react-query'
@@ -44,10 +44,15 @@ const SearchBar = () => {
     await router.push(`/articles/article_name/${name}`)
   }
 
+  const articles = useMemo(
+    () => articleData?.articles || [],
+    [articleData?.articles]
+  )
+
   // Get the minimum set of article by taking the first string of each group
   const minimum = useGroupSimularData({
     groupBy: 'name',
-    data: articleData?.articles || [],
+    data: articles,
     treshHold: 0.1,
   })
 

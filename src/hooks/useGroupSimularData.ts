@@ -9,7 +9,7 @@ const useGroupSimularData = <T>({
 }: {
   data: T[]
   treshHold: number
-  groupBy: keyof T
+  groupBy: Extract<keyof T, string>
 }) => {
   const [groupedData, setGroupedData] = useState<T[]>([])
 
@@ -17,7 +17,10 @@ const useGroupSimularData = <T>({
     const groups = data.reduce((result, obj) => {
       // Check if the current article_name is similar to any existing group
       const similarGroup = Object.keys(result).find((key: string) => {
-        const similarity = stringSimilarity.compareTwoStrings(key, obj[groupBy])
+        const similarity = stringSimilarity.compareTwoStrings(
+          key,
+          obj[groupBy] as string
+        )
         return similarity > treshHold
       })
 
