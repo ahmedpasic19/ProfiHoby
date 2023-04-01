@@ -9,6 +9,7 @@ import SidebarCategory from '../components/SidebarCategory'
 import { THopePageData } from '../types/index_data'
 import Spinner from '../components/Spinner'
 import Image from 'next/image'
+import { TArticle } from '../types/article'
 
 const Home: NextPage<THopePageData> = ({
   actions,
@@ -19,13 +20,13 @@ const Home: NextPage<THopePageData> = ({
 
   const { data, fetchNextPage, isFetchingNextPage, isSuccess } =
     useInfiniteQuery(
-      ['article.getAllArticles.query'],
+      // This is correct queryKey to use.
+      // This queryKey is the one invalidated whenever any article is updated.
+      ['article.index.page'],
       ({ pageParam = 1 }) =>
-        trpcClient.article.getAllArticles.query({
+        trpcClient.article.getAllArticlesForHomePage.query({
           pageSize: 3,
           pageIndex: pageParam as number,
-          category: '',
-          name: '',
         }),
       {
         // Fetch next page based on prev response
@@ -106,21 +107,40 @@ const Home: NextPage<THopePageData> = ({
       </section>
       {/* Articles */}
       <div className='flex w-full items-center justify-center'>
-        <div className='mt-[8em] grid h-full w-full grid-cols-4 gap-5 px-10'>
+        <div className='mt-[4em] h-full w-full flex-col p-2 pl-0'>
           {isSuccess &&
             data.pages.map((page) =>
-              page.articles.map((article) => (
-                <Article
-                  key={article.id}
-                  action={article.article_action_id ? true : false}
-                  actionPercentage={article?.action?.discount}
-                  name={article.name}
-                  description={article.description}
-                  imageURL={article.image[0]?.url || ''}
-                  price={article.base_price}
-                  categories={article.categories}
-                  article_id={article.id}
-                />
+              page.group_articles.map((group) => (
+                <div
+                  key={Math.random()}
+                  className='mb-14 flex w-full flex-col bg-white py-4 drop-shadow-2xl'
+                >
+                  <label className='pl-10 pb-4 text-2xl font-bold tracking-tight'>
+                    {group.name}
+                  </label>
+                  <ul className='flex gap-4 pl-10'>
+                    {group.articles.map(
+                      ({ article }: { article: TArticle }) => {
+                        return (
+                          <Article
+                            key={Math.random()}
+                            action={article.article_action_id ? true : false}
+                            actionPercentage={article?.action?.discount}
+                            name={article.name}
+                            description={article.description}
+                            imageURL={article.image[0]?.url || ''}
+                            price={article.base_price}
+                            categories={article.categories}
+                            article_id={article.id}
+                          />
+                        )
+                      }
+                      // (
+                      //   <Article key={Math.random() } article_id={article.}/>
+                      // )
+                    )}
+                  </ul>
+                </div>
               ))
             )}
         </div>
@@ -148,20 +168,19 @@ export async function getServerSideProps() {
 
   const categories = await trpcClient.category.getAllCategories.query()
 
-  const article_data = await trpcClient.article.getAllArticles.query({
-    category: '',
-    pageIndex: 0,
-    name: '',
-    pageSize: 3,
-  })
+  const group_articles =
+    await trpcClient.article.getAllArticlesForHomePage.query({
+      pageIndex: 0,
+      pageSize: 3,
+    })
 
   const initial_article_data = {
     pages: [
       {
-        articles: article_data.articles,
-        pageIndex: article_data.pageIndex,
-        pageCount: article_data.pageCount,
-        pageSize: article_data.pageSize,
+        group_articles: group_articles.group_articles,
+        pageIndex: group_articles.pageIndex,
+        pageCount: group_articles.pageCount,
+        pageSize: group_articles.pageSize,
       },
     ],
     pageParams: [null],

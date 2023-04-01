@@ -38,6 +38,67 @@ export const articleRouter = createTRPCRouter({
     }),
 
   // GET all articles and filter by category if category is provided
+  getAllArticlesForHomePage: publicProcedure
+    .input(
+      z.object({
+        pageSize: z.number(),
+        pageIndex: z.number(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const groups_with_articles = await ctx.prisma.group.findMany({
+        include: {
+          articles: {
+            take: 20,
+            include: {
+              article: {
+                include: {
+                  image: true,
+                  action: true,
+                  categories: {
+                    include: {
+                      category: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        // where: { articles: { some: { article_id: { not: '' } } } },
+        skip: input.pageSize * input.pageIndex,
+        take: input.pageSize,
+        orderBy: { createdAt: 'desc' },
+      })
+
+      const total_groups = await ctx.prisma.group.count()
+
+      const pageCount = Math.ceil(total_groups / input.pageSize)
+
+      // Assigning an accessURL from S3
+      for (const group of groups_with_articles) {
+        for (const article of group.articles) {
+          const extended_images = article.article.image.map((image) => ({
+            ...image,
+            url: s3.getSignedUrl('getObject', {
+              Bucket: BUCKET_NAME,
+              Key: image.image,
+            }),
+          }))
+
+          article.article.image = extended_images
+        }
+      }
+
+      return {
+        group_articles: groups_with_articles,
+        pageCount,
+        pageIndex: input.pageIndex,
+        pageSize: input.pageSize,
+      }
+    }),
+
+  // GET all articles and filter by category if category is provided
   getAllArticles: publicProcedure
     .input(
       z.object({
@@ -70,7 +131,7 @@ export const articleRouter = createTRPCRouter({
             },
           },
         },
-        where,
+        // where,
         skip: input.pageSize * input.pageIndex,
         take: input.pageSize,
         orderBy: { createdAt: 'desc' },
