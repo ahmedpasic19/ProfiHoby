@@ -305,41 +305,60 @@ export const articleRouter = createTRPCRouter({
     }),
 
   getArticlesByGroupID: publicProcedure
-    .input(z.object({ id: z.string() }))
+    .input(
+      z.object({
+        group_id: z.string(),
+        pageSize: z.number(),
+        pageIndex: z.number(),
+      })
+    )
     .query(async ({ input, ctx }) => {
-      const articles = await ctx.prisma.article.findMany({
-        where: {
-          groups: {
-            some: {
-              group_id: input.id,
-            },
-          },
-        },
+      const group = await ctx.prisma.group.findUnique({
+        where: { id: input.group_id },
         include: {
-          image: true,
-          categories: {
+          articles: {
+            skip: input.pageSize * input.pageIndex,
+            take: input.pageSize,
             include: {
-              category: true,
+              article: {
+                include: {
+                  image: true,
+                  action: true,
+                  categories: { include: { category: true } },
+                },
+              },
             },
           },
         },
-        orderBy: { createdAt: 'asc' },
       })
 
-      // Assigning an accessURL from S3
-      const action_articles = articles.map((article) => {
-        const extended_images = article.image.map((image) => ({
-          ...image,
-          url: s3.getSignedUrl('getObject', {
-            Bucket: BUCKET_NAME,
-            Key: image.image,
-          }),
-        }))
-
-        return { ...article, image: extended_images }
+      const totalArticles = await ctx.prisma.article.count({
+        where: { groups: { some: { group_id: input.group_id } } },
       })
+      const pageCount = Math.ceil(totalArticles / input.pageSize)
 
-      return action_articles
+      if (group) {
+        for (const article of group.articles) {
+          if (article.article.image) {
+            const extended_images = article.article.image.map((image) => ({
+              ...image,
+              url: s3.getSignedUrl('getObject', {
+                Bucket: BUCKET_NAME,
+                Key: image.image,
+              }),
+            }))
+
+            article.article.image = extended_images
+          }
+        }
+      }
+
+      return {
+        group,
+        pageCount,
+        pageIndex: input.pageIndex,
+        pageSize: input.pageSize,
+      }
     }),
 
   // GET only articles that have an action (sale🤑)

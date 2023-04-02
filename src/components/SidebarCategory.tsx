@@ -36,7 +36,7 @@ const SidebarCategory = ({ id, name, groups }: TProps) => {
           {groups.map((group) => (
             <Link
               key={group.id}
-              href='/group/:groupid'
+              href={`/groups/${group.id}`}
               className='text-md bg-gray-500 py-1 pl-5 text-gray-300 underline underline-offset-4 hover:bg-gray-400'
             >
               {group.name}
