@@ -64,7 +64,9 @@ const ArticlesForActionForm = ({
           'article.getArticlesByActionID',
           { id: action.id },
         ])
-
+        await queryClient.invalidateQueries([
+          'article.getAllArticlesWithActions',
+        ])
         setPageIndex && setPageIndex((prev) => prev + 1)
         setSelectedArticles([])
       },

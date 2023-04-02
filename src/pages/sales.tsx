@@ -1,48 +1,131 @@
 import { NextPage } from 'next'
-import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useState, useEffect, useRef } from 'react'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { trpcClient } from '../utils/api'
 
 import Article from '../components/Article'
-import PagePagination from '../components/layout/PagePagination'
+import Spinner from '../components/Spinner'
 
-const Sales: NextPage = () => {
-  const [pageIndex, setPageIndex] = useState(0)
-  const { data: articlesData } = useQuery(
-    ['article.getAllArticlesWithActions', { pageIndex, pageSize: 100 }],
-    () =>
-      trpcClient.article.getAllArticlesWithActions.query({
-        pageIndex,
-        pageSize: 100,
-      })
-  )
+import { TArticle } from '../types/article'
+
+type TProps = {
+  initialData: {
+    pages: {
+      articles: TArticle[]
+      pageIndex: number
+      pageCount: number
+      pageSize: number
+    }[]
+    pageParams: null[]
+  }
+}
+
+const Sales: NextPage<TProps> = ({ initialData }) => {
+  const [isVisible, setIsVisible] = useState(false)
+
+  const { data, fetchNextPage, isSuccess, isFetchingNextPage } =
+    useInfiniteQuery(
+      ['article.getAllArticlesWithActions'],
+      ({ pageParam = 1 }) =>
+        trpcClient.article.getAllArticlesWithActions.query({
+          pageIndex: pageParam as number,
+          pageSize: 3,
+        }),
+      {
+        getNextPageParam: (data) =>
+          data.pageIndex === data.pageCount ? undefined : data.pageIndex + 1,
+        initialData,
+      }
+    )
+
+  // ref to the div at the bottom of the page
+  const ref = useRef<HTMLDivElement>(null)
+
+  // Check if div at the bottom of the page is in view
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry?.isIntersecting) {
+        setIsVisible(true)
+      } else {
+        setIsVisible(false)
+      }
+    })
+
+    if (ref.current) {
+      observer.observe(ref.current)
+    }
+  }, [])
+
+  // Fetch new data if the div in the bottom of the page is in view
+  useEffect(() => {
+    if (isVisible) {
+      // execute the desired function here
+      fetchNextPage().catch(console.error)
+    }
+  }, [isVisible, fetchNextPage])
 
   return (
-    <div>
-      <div className='flex w-full items-center justify-center'>
-        <div className='grid h-full w-full grid-cols-4 gap-5 px-10 pt-[25vh]'>
-          {articlesData?.articles?.map((article) => (
-            <Article
-              key={article.id}
-              name={article.name}
-              action={article.article_action_id ? true : false}
-              actionPercentage={article?.action?.discount}
-              description={article.description}
-              imageURL={article.image[0]?.url || ''}
-              price={article.base_price}
-              categories={article.categories}
-              article_id={article.id}
-            />
-          ))}
-        </div>
+    <div className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
+      <div className='grid h-full w-full grid-cols-4 gap-5 px-10 pt-[5vh]'>
+        {isSuccess &&
+          data.pages.map((page) =>
+            page.articles.map((article) => (
+              <Article
+                key={Math.random()}
+                article_id={article.id}
+                categories={article.categories}
+                description={article.description}
+                imageURL={article.image[0]?.url || ''}
+                name={article.name}
+                price={article.base_price}
+                action={article.article_action_id ? true : false}
+                actionPercentage={article.action?.discount}
+              />
+            ))
+          )}
       </div>
-      <PagePagination
-        pageCount={articlesData?.pageCount || 0}
-        pageIndex={pageIndex}
-        setPageIndex={setPageIndex}
-      />
+
+      {!data?.pages.length ||
+        (!data.pages[0]?.articles?.length && (
+          <div className='flex w-full items-center justify-center text-center'>
+            Nema artikala
+          </div>
+        ))}
+      {isFetchingNextPage && (
+        <div className='flex w-full items-center justify-center text-center'>
+          <Spinner />
+          Učitavanje...
+        </div>
+      )}
+      {/* Fetch more when this div is in view */}
+      <div ref={ref} className='z-[100] text-transparent'>
+        BOTTOM ELEMENT
+      </div>
     </div>
   )
 }
 
 export default Sales
+
+export async function getServerSideProps() {
+  const res = await trpcClient.article.getAllArticlesWithActions.query({
+    pageIndex: 0,
+    pageSize: 3,
+  })
+
+  const initialData = {
+    pages: [
+      {
+        articles: res.articles,
+        pageIndex: res.pageIndex,
+        pageCount: res.pageCount,
+        pageSize: res.pageSize,
+      },
+    ],
+    pageParams: [null],
+  }
+
+  return {
+    props: { initialData: JSON.parse(JSON.stringify(initialData)) },
+  }
+}

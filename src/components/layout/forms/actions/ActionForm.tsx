@@ -40,6 +40,9 @@ const ActionForm = ({
         await queryClient.invalidateQueries([
           'article_action.getAllArticleActions',
         ])
+        await queryClient.invalidateQueries([
+          'article.getAllArticlesWithActions',
+        ])
         setPageIndex && setPageIndex(1)
         setAction(data)
       },
