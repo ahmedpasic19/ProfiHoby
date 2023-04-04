@@ -238,7 +238,8 @@ export const articleRouter = createTRPCRouter({
         const articles = await ctx.prisma.article.findMany({
           where: {
             name: {
-              contains: input.name,
+              contains: input.name.toLowerCase(),
+              mode: 'insensitive',
             },
           },
           include: {
