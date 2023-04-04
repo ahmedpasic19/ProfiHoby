@@ -74,15 +74,7 @@ const UpdateArticleCategoriesModal = ({
     {
       onSuccess: async () => {
         await refetch()
-        await queryClient.invalidateQueries([
-          'articles',
-          {
-            pageSize: 100,
-            pageIndex: 0,
-            name: '',
-            category: 'article.index.page',
-          },
-        ])
+        await queryClient.invalidateQueries(['article.getArticlesByGroupID'])
         await refetch()
         await queryClient.invalidateQueries([
           'article.getArticle',

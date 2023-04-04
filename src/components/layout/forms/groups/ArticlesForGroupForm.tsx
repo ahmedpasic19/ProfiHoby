@@ -39,8 +39,17 @@ const ArticlesForGroupForm = ({
   )
 
   const { data: groups_articles } = useQuery(
-    ['article.getArticlesByGroupID', { id: group.id }],
-    () => trpcClient.article.getArticlesByGroupID.query({ id: group.id }),
+    [
+      'article.getArticlesByGroupID',
+      { id: group.id },
+      'article.getArticlesByGroupID',
+    ],
+    () =>
+      trpcClient.article.getArticlesByGroupID.query({
+        group_id: group.id,
+        pageIndex: 0,
+        pageSize: 10,
+      }),
     {
       enabled: groupArticles,
     }
@@ -53,6 +62,7 @@ const ArticlesForGroupForm = ({
     {
       onSuccess: async () => {
         await queryClient.invalidateQueries(['group.getAllGroups'])
+        await queryClient.invalidateQueries(['article.getArticle'])
         await queryClient.invalidateQueries([
           'article.getArticlesByGroupID',
           { id: group.id },
@@ -66,7 +76,10 @@ const ArticlesForGroupForm = ({
   )
 
   useEffect(() => {
-    setSelectedArticles(groups_articles || [])
+    const articles =
+      groups_articles?.group?.articles.map((article) => article.article) || []
+
+    setSelectedArticles((articles as TArticle[]) || [])
   }, [groups_articles])
 
   const data = useMemo(() => articles, [articles])
@@ -138,7 +151,9 @@ const ArticlesForGroupForm = ({
             onSubmit={handleAddArticles}
             onClick={handleAddArticles}
             isLoading={loadingCreate}
-            text={groups_articles?.length ? 'Izmjeni' : 'Dodaj'}
+            text={
+              groups_articles?.group?.articles?.length ? 'Izmjeni' : 'Dodaj'
+            }
           />
         </section>
       </form>
