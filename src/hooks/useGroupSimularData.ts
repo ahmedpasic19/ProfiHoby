@@ -14,7 +14,7 @@ const useGroupSimularData = <T>({
   const [groupedData, setGroupedData] = useState<T[]>([])
 
   useEffect(() => {
-    const groups = data.reduce((result, obj) => {
+    const groups = data.reduce((result: { [key: string]: T[] }, obj) => {
       // Check if the current article_name is similar to any existing group
       const similarGroup = Object.keys(result).find((key: string) => {
         const similarity = stringSimilarity.compareTwoStrings(
@@ -29,14 +29,16 @@ const useGroupSimularData = <T>({
         result[similarGroup]?.push(obj)
       } else {
         // Otherwise, create a new group for the current obj
-        result[obj[groupBy]] = [obj]
+        result[obj[groupBy] as string] = [obj]
       }
 
       return result
     }, {})
 
     // Get the minimum set of article by taking the first string of each group
-    const minimum = Object.values(groups).map((group: T[]) => group[0])
+    const minimum = Object.values(groups)
+      .map((group: T[]) => group[0])
+      .filter(Boolean)
 
     setGroupedData(minimum)
   }, [data, groupBy, treshHold])
