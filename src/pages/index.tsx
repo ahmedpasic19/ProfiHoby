@@ -126,8 +126,8 @@ const Home: NextPage = () => {
                         actionPercentage={article?.action?.discount}
                         name={article.name}
                         description={article.description}
-                        //@ts-ignore // url does exist on obj
-                        imageURL={article.image[0]?.url || ''}
+                        //@ts-ignore // Error: "url doesn't exits on image", but it does exits
+                        imageURL={(article.image[0]?.url as string) || ''}
                         price={article.base_price}
                         categories={article.categories}
                         article_id={article.id}
