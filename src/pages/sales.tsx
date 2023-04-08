@@ -6,27 +6,13 @@ import { trpcClient } from '../utils/api'
 import Article from '../components/Article'
 import Spinner from '../components/Spinner'
 
-import { TArticle } from '../types/article'
-
-type TProps = {
-  initialData: {
-    pages: {
-      articles: TArticle[]
-      pageIndex: number
-      pageCount: number
-      pageSize: number
-    }[]
-    pageParams: null[]
-  }
-}
-
-const Sales: NextPage<TProps> = ({ initialData }) => {
+const Sales: NextPage = () => {
   const [isVisible, setIsVisible] = useState(false)
 
   const { data, fetchNextPage, isSuccess, isFetchingNextPage } =
     useInfiniteQuery(
       ['article.getAllArticlesWithActions'],
-      ({ pageParam = 1 }) =>
+      ({ pageParam = 0 }) =>
         trpcClient.article.getAllArticlesWithActions.query({
           pageIndex: pageParam as number,
           pageSize: 3,
@@ -34,7 +20,6 @@ const Sales: NextPage<TProps> = ({ initialData }) => {
       {
         getNextPageParam: (data) =>
           data.pageIndex === data.pageCount ? undefined : data.pageIndex + 1,
-        initialData,
       }
     )
 
@@ -106,26 +91,3 @@ const Sales: NextPage<TProps> = ({ initialData }) => {
 }
 
 export default Sales
-
-export async function getServerSideProps() {
-  const res = await trpcClient.article.getAllArticlesWithActions.query({
-    pageIndex: 0,
-    pageSize: 3,
-  })
-
-  const initialData = {
-    pages: [
-      {
-        articles: res.articles,
-        pageIndex: res.pageIndex,
-        pageCount: res.pageCount,
-        pageSize: res.pageSize,
-      },
-    ],
-    pageParams: [null],
-  }
-
-  return {
-    props: { initialData: JSON.parse(JSON.stringify(initialData)) },
-  }
-}

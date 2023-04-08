@@ -1,21 +1,14 @@
 import { NextPage } from 'next'
 import { useEffect, useRef, useState } from 'react'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../utils/api'
 
-import { useInfiniteQuery } from '@tanstack/react-query'
-
-import Article from '../components/Article'
 import SidebarCategory from '../components/SidebarCategory'
-import { THopePageData } from '../types/index_data'
+import Article from '../components/Article'
 import Spinner from '../components/Spinner'
 import Image from 'next/image'
-import { TArticle } from '../types/article'
 
-const Home: NextPage<THopePageData> = ({
-  actions,
-  categories,
-  initial_article_data,
-}) => {
+const Home: NextPage = () => {
   const [isVisible, setIsVisible] = useState(false)
 
   const { data, fetchNextPage, isFetchingNextPage, isSuccess } =
@@ -23,22 +16,29 @@ const Home: NextPage<THopePageData> = ({
       // This is correct queryKey to use.
       // This queryKey is the one invalidated whenever any article is updated.
       ['article.index.page'],
-      ({ pageParam = 1 }) =>
+      ({ pageParam = 0 }) =>
         trpcClient.article.getAllArticlesForHomePage.query({
           pageSize: 3,
           pageIndex: pageParam as number,
         }),
       {
         // Fetch next page based on prev response
-        getNextPageParam: (data: (typeof initial_article_data)['pages']) => {
+        getNextPageParam: (data) => {
           return data.pageIndex === data.pageCount
             ? undefined
             : data.pageIndex + 1
         },
-        //@ts-ignore
-        initialData: initial_article_data,
       }
     )
+
+  const { data: categories } = useQuery(['category.getAllCategories'], () =>
+    trpcClient.category.getAllCategories.query()
+  )
+
+  const { data: actions } = useQuery(
+    ['article_action.getAllArticleActions'],
+    () => trpcClient.article_action.getAllArticleActions.query()
+  )
 
   // ref to the div at the bottom of the page
   const ref = useRef<HTMLDivElement>(null)
@@ -87,7 +87,7 @@ const Home: NextPage<THopePageData> = ({
         </div>
         {/* Action images */}
         <div className='relative min-h-[50vh] w-4/5 overflow-x-auto'>
-          {actions.map((action) => (
+          {actions?.map((action) => (
             <div key={action.id}>
               <Image
                 style={{
@@ -119,26 +119,20 @@ const Home: NextPage<THopePageData> = ({
                     {group.name}
                   </label>
                   <ul className='flex gap-4 pl-10'>
-                    {group.articles.map(
-                      ({ article }: { article: TArticle }) => {
-                        return (
-                          <Article
-                            key={Math.random()}
-                            action={article.article_action_id ? true : false}
-                            actionPercentage={article?.action?.discount}
-                            name={article.name}
-                            description={article.description}
-                            imageURL={article.image[0]?.url || ''}
-                            price={article.base_price}
-                            categories={article.categories}
-                            article_id={article.id}
-                          />
-                        )
-                      }
-                      // (
-                      //   <Article key={Math.random() } article_id={article.}/>
-                      // )
-                    )}
+                    {group.articles.map(({ article }) => (
+                      <Article
+                        key={Math.random()}
+                        action={article.article_action_id ? true : false}
+                        actionPercentage={article?.action?.discount}
+                        name={article.name}
+                        description={article.description}
+                        //@ts-ignore // url does exist on obj
+                        imageURL={article.image[0]?.url || ''}
+                        price={article.base_price}
+                        categories={article.categories}
+                        article_id={article.id}
+                      />
+                    ))}
                   </ul>
                 </div>
               ))
@@ -162,35 +156,3 @@ const Home: NextPage<THopePageData> = ({
 }
 
 export default Home
-
-export async function getServerSideProps() {
-  const actions = await trpcClient.article_action.getAllArticleActions.query()
-
-  const categories = await trpcClient.category.getAllCategories.query()
-
-  const group_articles =
-    await trpcClient.article.getAllArticlesForHomePage.query({
-      pageIndex: 0,
-      pageSize: 3,
-    })
-
-  const initial_article_data = {
-    pages: [
-      {
-        group_articles: group_articles.group_articles,
-        pageIndex: group_articles.pageIndex,
-        pageCount: group_articles.pageCount,
-        pageSize: group_articles.pageSize,
-      },
-    ],
-    pageParams: [null],
-  }
-
-  return {
-    props: {
-      initial_article_data: JSON.parse(JSON.stringify(initial_article_data)),
-      actions: JSON.parse(JSON.stringify(actions)),
-      categories: JSON.parse(JSON.stringify(categories)),
-    },
-  }
-}

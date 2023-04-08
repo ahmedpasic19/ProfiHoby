@@ -7,39 +7,8 @@ import { trpcClient } from '../../utils/api'
 
 import Article from '../../components/Article'
 import Spinner from '../../components/Spinner'
-import {
-  Article as ArticleModel,
-  ArticleAction,
-  ArticleGroups,
-  CategoriesOnArticle,
-  Category,
-  Group,
-  Image,
-} from '@prisma/client'
 
-type TProps = {
-  initialData: {
-    pages: {
-      group:
-        | (Group & {
-            articles: (ArticleGroups & {
-              article: ArticleModel & {
-                image: Image[]
-                categories: (CategoriesOnArticle & { category: Category })[]
-                action: ArticleAction | null
-              }
-            })[]
-          })
-        | null
-      pageIndex: number
-      pageCount: number
-      pageSize: number
-    }[]
-    pageParams: null[]
-  }
-}
-
-const GroupArticles: NextPage<TProps> = ({ initialData }) => {
+const GroupArticles: NextPage = () => {
   const [isVisible, setIsVisible] = useState(false)
   const router = useRouter()
 
@@ -48,7 +17,7 @@ const GroupArticles: NextPage<TProps> = ({ initialData }) => {
   const { data, fetchNextPage, isFetchingNextPage, isSuccess } =
     useInfiniteQuery(
       [group_id],
-      ({ pageParam = 1 }) =>
+      ({ pageParam = 0 }) =>
         trpcClient.article.getArticlesByGroupID.query({
           group_id: typeof group_id === 'string' ? group_id : '',
           pageSize: 3,
@@ -57,7 +26,6 @@ const GroupArticles: NextPage<TProps> = ({ initialData }) => {
       {
         getNextPageParam: (data) =>
           data.pageIndex === data.pageCount ? undefined : data.pageIndex + 1,
-        initialData,
       }
     )
 
@@ -130,33 +98,3 @@ const GroupArticles: NextPage<TProps> = ({ initialData }) => {
 }
 
 export default GroupArticles
-
-export async function getServerSideProps(context: {
-  params: { group_id: string }
-}) {
-  const group_id = context.params.group_id
-
-  const res = await trpcClient.article.getArticlesByGroupID.query({
-    group_id,
-    pageIndex: 0,
-    pageSize: 3,
-  })
-
-  const initialData = {
-    pages: [
-      {
-        group: res.group,
-        pageIndex: res.pageIndex,
-        pageCount: res.pageCount,
-        pageSize: res.pageSize,
-      },
-    ],
-    pageParams: [null],
-  }
-
-  return {
-    props: {
-      initialData: JSON.parse(JSON.stringify(initialData)),
-    },
-  }
-}

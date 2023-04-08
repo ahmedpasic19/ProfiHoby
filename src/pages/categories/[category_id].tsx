@@ -6,41 +6,8 @@ import { trpcClient } from '../../utils/api'
 
 import Article from '../../components/Article'
 import Spinner from '../../components/Spinner'
-import {
-  Article as ArticleModel,
-  ArticleAction,
-  ArticleGroups,
-  CategoriesOnArticle,
-  Category,
-  Group,
-  Image,
-} from '@prisma/client'
 
-type TProps = {
-  initialData: {
-    pages: {
-      category:
-        | (Category & {
-            groups: (Group & {
-              articles: (ArticleGroups & {
-                article: ArticleModel & {
-                  image: Image[]
-                  categories: (CategoriesOnArticle & { category: Category })[]
-                  action: ArticleAction | null
-                }
-              })[]
-            })[]
-          })
-        | null
-      pageIndex: number
-      pageCount: number
-      pageSize: number
-    }[]
-    pageParams: string[]
-  }
-}
-
-const CategoryArticles: NextPage<TProps> = ({ initialData }) => {
+const CategoryArticles: NextPage = () => {
   const [isVisible, setIsVisible] = useState(false)
   const router = useRouter()
 
@@ -49,7 +16,7 @@ const CategoryArticles: NextPage<TProps> = ({ initialData }) => {
   const { data, fetchNextPage, isFetchingNextPage, isSuccess } =
     useInfiniteQuery(
       [category_id],
-      ({ pageParam = 1 }) =>
+      ({ pageParam = 0 }) =>
         trpcClient.category.getAllCategoryWithGroupsAndArticles.query({
           category_id: typeof category_id === 'string' ? category_id : '',
           pageIndex: pageParam as number,
@@ -58,7 +25,6 @@ const CategoryArticles: NextPage<TProps> = ({ initialData }) => {
       {
         getNextPageParam: (data) =>
           data.pageIndex === data.pageCount ? undefined : data.pageIndex + 1,
-        initialData,
       }
     )
 
@@ -133,34 +99,3 @@ const CategoryArticles: NextPage<TProps> = ({ initialData }) => {
 }
 
 export default CategoryArticles
-
-export async function getServerSideProps(context: {
-  params: { category_id: string }
-}) {
-  const category_id = context.params.category_id
-
-  const res =
-    await trpcClient.category.getAllCategoryWithGroupsAndArticles.query({
-      category_id,
-      pageIndex: 0,
-      pageSize: 3,
-    })
-
-  const initialData = {
-    pages: [
-      {
-        category: res.category,
-        pageIndex: res.pageIndex,
-        pageCount: res.pageCount,
-        pageSize: res.pageSize,
-      },
-    ],
-    pageParams: [category_id],
-  }
-
-  return {
-    props: {
-      initialData: JSON.parse(JSON.stringify(initialData)),
-    },
-  }
-}
