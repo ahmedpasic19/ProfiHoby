@@ -39,6 +39,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           router.pathname != '/categories' &&
           router.pathname != '/signin' &&
           router.pathname != '/groups' &&
+          router.pathname != '/actions' &&
           !article_id &&
           router.pathname != '/articles/create-article' && <SearchBar />}
         <Component {...pageProps} />

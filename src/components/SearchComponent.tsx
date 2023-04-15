@@ -35,7 +35,7 @@ const SearchComponent = ({
         name={filter_name}
         value={filter || ''}
         onChange={handleChange}
-        className='text-md mx-10 w-full min-w-[450px] rounded-sm p-2 pl-10 outline-none'
+        className='text-md mx-10 w-full min-w-[5em] rounded-sm p-2 pl-10 outline-none'
       />
       {displayBtn && (
         <button

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
 
@@ -5,6 +6,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 const Navbar = () => {
+  const [openDropDown, setOpenDropDown] = useState(false)
+
   const { data, status } = useSession()
 
   const authenticated = [
@@ -69,7 +72,7 @@ const Navbar = () => {
     <nav
       className={
         (article_id ? 'sticky' : 'fixed') +
-        'top-0 left-0 z-20 w-full border-b border-gray-200 bg-white px-2 py-2.5 sm:px-4'
+        'relative top-0 left-0 z-20 w-full border-b border-gray-200 bg-white px-2 py-2.5 sm:px-4'
       }
     >
       <div className='container mx-auto flex flex-wrap items-center justify-between'>
@@ -96,6 +99,7 @@ const Navbar = () => {
             </button>
           )}
           <button
+            onClick={() => setOpenDropDown(true)}
             data-collapse-toggle='navbar-sticky'
             type='button'
             className='inline-flex items-center rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 md:hidden'
@@ -129,6 +133,22 @@ const Navbar = () => {
           </ul>
         </div>
       </div>
+      {/* Dropdown */}
+      {openDropDown && (
+        <div className='absolute right-0 top-0 z-10 flex h-full w-[50%] items-start justify-center bg-gray-600 pt-40'>
+          <ul>
+            {navlinks.map((link) => (
+              <li
+                key={Math.random()}
+                onClick={() => setOpenDropDown(false)}
+                className='w-full bg-gray-50 p-5 text-lg text-gray-800'
+              >
+                <Link href={link.href}>{link.label}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </nav>
   )
 }
