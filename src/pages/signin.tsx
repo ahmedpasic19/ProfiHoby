@@ -9,11 +9,6 @@ const Signin = () => {
 
     await signIn('google')
   }
-  const handleGitHubSignin = async (e: FormEvent) => {
-    e.preventDefault()
-
-    await signIn('github')
-  }
 
   const session = useSession()
   const router = useRouter()
@@ -42,13 +37,6 @@ const Signin = () => {
             className=' w-4/5 rounded-xl bg-gray-100 p-4 px-16 text-center text-[1.1rem] font-bold text-gray-800 drop-shadow-[0px_0px_2px] hover:bg-gray-200'
           >
             Sign in with Google
-          </button>
-          <button
-            onClick={handleGitHubSignin}
-            className='mt-8 w-4/5 rounded-xl bg-gray-800 p-4 px-16 text-center text-[1.1rem] 
-          font-bold text-gray-100 drop-shadow-[0px_0px_2px] hover:bg-gray-700'
-          >
-            Sign in with GitHub
           </button>
           <Link
             href='/signin/credentials'
