@@ -116,7 +116,7 @@ const adminMiddleware = t.middleware(({ ctx, next }) => {
   const valid_email =
     ctx?.session?.user?.email === 'trgovinamulabdic@gmail.com'
       ? true
-      : ctx?.session?.user?.email !== 'palepusac19@gmail.com'
+      : ctx?.session?.user?.email === 'palepusac19@gmail.com'
       ? true
       : false
   if (!ctx.session || !ctx.session.user || !valid_email) {

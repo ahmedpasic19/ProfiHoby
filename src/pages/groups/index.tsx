@@ -4,6 +4,8 @@ import { trpcClient } from '../../utils/api'
 import { useQuery } from '@tanstack/react-query'
 import { Category, Group } from '@prisma/client'
 
+import useProtectRoute from '../../hooks/useProtectRoute'
+
 import DeleteGroupModal from '../../components/modals/groups/DeleteGroupModal'
 import UpdateGroupModal from '../../components/modals/groups/UpdateGroupModal'
 import GroupArticlesModal from '../../components/modals/groups/GroupArticlesModal'
@@ -19,6 +21,8 @@ const Groups: NextPage = () => {
   const [openDelete, setOpenDelete] = useState(false)
   const [openUpdate, setOpenUpdate] = useState(false)
   const [group, setGroup] = useState({} as Group & { category: Category })
+
+  useProtectRoute()
 
   const { data: allGroups } = useQuery(['group.getAllGroups'], () =>
     trpcClient.group.getAllGroups.query()
