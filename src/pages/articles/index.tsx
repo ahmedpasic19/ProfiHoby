@@ -1,5 +1,4 @@
 import { NextPage } from 'next'
-import { useRouter } from 'next/router'
 import { useMemo, useState } from 'react'
 
 import { ColumnDef } from '@tanstack/react-table'
@@ -17,6 +16,7 @@ import UpdateArticleModal from '../../components/modals/articles/UpdateArticleMo
 import UpdateArticleCategoriesModal from '../../components/modals/articles/UpdateArticleCategoriesModal'
 import UpdateArticleImagesModal from '../../components/modals/articles/UpdateArticleImagesModal'
 import UpdateArticleGroupsModal from '../../components/modals/articles/UpdateArticleGroupsModal'
+import ArticleMultiformModal from '../../components/layout/forms/articles/ArticleMultiform'
 
 import { BiCategoryAlt } from 'react-icons/bi'
 import { BsFillImageFill } from 'react-icons/bs'
@@ -40,10 +40,9 @@ const Articles: NextPage = () => {
   const [openUpdateCategories, setOpenUpdateCategories] = useState(false)
   const [openUpdateImages, setOpenUpdateImages] = useState(false)
   const [openUpdateGroups, setOpenUpdateGroups] = useState(false)
+  const [openAddArticle, setOpenAddArticle] = useState(false)
 
   useProtectRoute()
-
-  const router = useRouter()
 
   const { data: articleData } = useQuery(
     [
@@ -151,7 +150,8 @@ const Articles: NextPage = () => {
 
         <section className='flex w-4/5 items-center py-10'>
           <button
-            onClick={() => router.push('/articles/create-article')}
+            // onClick={() => router.push('/articles/create-article')}
+            onClick={() => setOpenAddArticle(true)}
             className='w-[250px] rounded-xl bg-blue-500 p-4 text-xl font-semibold text-white hover:bg-blue-600'
           >
             Dodaj artikal
@@ -162,6 +162,11 @@ const Articles: NextPage = () => {
           <MainTable data={useData()} columns={columns} showNavigation />
         </div>
       </div>
+      <ArticleMultiformModal
+        isOpen={openAddArticle}
+        setIsOpen={setOpenAddArticle}
+        setOpenAddArticle={setOpenAddArticle}
+      />
       <DeleteArticleModal
         article={article}
         isOpen={openDelete}

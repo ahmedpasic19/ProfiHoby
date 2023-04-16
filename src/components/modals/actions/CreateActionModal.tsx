@@ -4,7 +4,7 @@ import { ArticleAction } from '@prisma/client'
 
 import ActionForm from '../../layout/forms/actions/ActionForm'
 import ArticlesForActionForm from '../../layout/forms/actions/ArticlesForActionForm'
-import UploadImageForm from '../../layout/forms/articles/UploadImageForm'
+import UploadImageForm from '../../layout/forms/UploadImageForm'
 
 type TProps = {
   isOpen: boolean

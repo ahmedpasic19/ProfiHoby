@@ -95,10 +95,7 @@ const ArticleGroupFrom = ({ setPageIndex, articleId, pageIndex }: TProps) => {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className='relative min-h-[484px] w-[550px] rounded-xl bg-white p-10 drop-shadow-2xl'
-    >
+    <form onSubmit={handleSubmit} className='relative w-3/4 p-10'>
       <h1 className='mt-4 w-full text-center text-2xl font-bold text-gray-800'>
         Odaberi grupe artikla
       </h1>

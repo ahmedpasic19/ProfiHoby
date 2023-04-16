@@ -66,10 +66,7 @@ const ArticleForm = ({
   }
 
   return (
-    <form
-      onSubmit={createArticle}
-      className='relative w-[500px] rounded-md bg-white p-10 drop-shadow-2xl'
-    >
+    <form onSubmit={createArticle} className='relative h-full w-3/4 p-10'>
       <h1 className='w-full text-center text-2xl font-bold text-gray-800'>
         Dodaj artikal
       </h1>
