@@ -60,7 +60,7 @@ const MainTable = <T extends object>({
                   <tr key={row.id} className='border-b" bg-white'>
                     {row.getVisibleCells().map((cell) => (
                       <td
-                        className='whitespace-nowrap px-6 py-4 text-sm font-light text-gray-900'
+                        className='max-w-[10rem] overflow-hidden overflow-ellipsis whitespace-nowrap px-6 py-4 text-sm font-light text-gray-900'
                         key={cell.id}
                       >
                         {flexRender(
