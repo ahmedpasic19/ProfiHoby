@@ -41,22 +41,16 @@ const UpdateArticleImagesModal = ({
     }
   )
 
+  const onClose = () => {
+    setIsOpen(false)
+    setArticle({} as TArticle)
+    setPageIndex(0)
+  }
+
   return (
-    <Dialog
-      open={isOpen}
-      onClose={() => {
-        setIsOpen(false)
-        setArticle({} as TArticle)
-      }}
-    >
-      <div
-        className='absolute h-full w-full bg-black/30'
-        onClick={() => {
-          setIsOpen(false)
-          setArticle({} as TArticle)
-        }}
-      />
+    <Dialog open={isOpen} onClose={onClose}>
       <Dialog.Panel className='fixed inset-0'>
+        <div className='absolute h-full w-full bg-black/30' onClick={onClose} />
         {pageIndex === 0 ? (
           <main className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
             <div className='flex h-[85%] w-4/5 flex-col justify-evenly rounded-xl bg-white p-10 drop-shadow-2xl'>
@@ -85,10 +79,7 @@ const UpdateArticleImagesModal = ({
                 </button>
               </section>
               <Ai.AiFillCloseCircle
-                onClick={() => {
-                  setIsOpen(false)
-                  setArticle({} as TArticle)
-                }}
+                onClick={onClose}
                 className='absolute top-4 right-4 h-8 w-8 cursor-pointer rounded-full bg-gray-600 text-white hover:bg-gray-800'
               />
             </div>
