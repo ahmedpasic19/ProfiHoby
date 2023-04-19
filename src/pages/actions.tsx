@@ -137,7 +137,7 @@ const Actions: NextPage = () => {
 
   return (
     <>
-      <div className='flex h-full min-h-screen w-full flex-col items-center px-20 py-0 pt-24'>
+      <div className='flex h-full min-h-screen w-full flex-col items-center px-20 py-0 pt-0'>
         <h1 className='w-full text-center text-[3em] font-bold text-gray-800'>
           Akcije
         </h1>

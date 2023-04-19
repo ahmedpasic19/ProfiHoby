@@ -56,11 +56,13 @@ const MainTable = <T extends object>({
                 ))}
               </thead>
               <tbody>
-                {table.getRowModel().rows.map((row) => (
+                {table.getRowModel().rows.map((row, index) => (
                   <tr key={row.id} className='border-b" bg-white'>
                     {row.getVisibleCells().map((cell) => (
                       <td
-                        className='max-w-[10rem] overflow-hidden overflow-ellipsis whitespace-nowrap px-6 py-4 text-sm font-light text-gray-900'
+                        className={`max-w-[10rem] overflow-hidden overflow-ellipsis whitespace-nowrap px-6 py-2 text-sm font-light text-gray-900 ${
+                          index % 2 === 0 ? 'bg-white' : 'bg-gray-200'
+                        }`}
                         key={cell.id}
                       >
                         {flexRender(

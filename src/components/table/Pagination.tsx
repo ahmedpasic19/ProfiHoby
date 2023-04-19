@@ -11,30 +11,30 @@ interface ReactTableProps<T extends object> {
 
 const Pagination = <T extends object>({ table }: ReactTableProps<T>) => {
   return (
-    <div className='sticky flex h-12 w-full min-w-[1400px] items-center justify-center gap-2 bg-white'>
+    <div className='sticky flex h-12 w-full min-w-[1400px] items-center justify-center gap-2 bg-gray-100'>
       <button
-        className='min-w-[40px] cursor-pointer rounded border p-1'
+        className='min-w-[2.5rem] cursor-pointer rounded border bg-white p-1'
         onClick={() => table.setPageIndex(0)}
         disabled={!table.getCanPreviousPage()}
       >
         <Bi.BiChevronsLeft className='h-8 w-8 text-gray-800' />
       </button>
       <button
-        className='min-w-[40px] cursor-pointer rounded border p-1'
+        className='min-w-[2.5rem] cursor-pointer rounded border bg-white p-1'
         onClick={() => table.previousPage()}
         disabled={!table.getCanPreviousPage()}
       >
         <Bi.BiChevronLeft className='h-8 w-8 text-gray-800' />
       </button>
       <button
-        className='min-w-[40px] cursor-pointer rounded border p-1'
+        className='min-w-[2.5rem] cursor-pointer rounded border bg-white p-1'
         onClick={() => table.nextPage()}
         disabled={!table.getCanNextPage()}
       >
         <Bi.BiChevronRight className='h-8 w-8 text-gray-800' />
       </button>
       <button
-        className='min-w-[40px] cursor-pointer rounded border p-1'
+        className='min-w-[2.5rem] cursor-pointer rounded border bg-white p-1'
         onClick={() => table.setPageIndex(table.getPageCount() - 1)}
         disabled={!table.getCanNextPage()}
       >

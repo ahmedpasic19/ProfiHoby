@@ -89,7 +89,7 @@ const Groups: NextPage = () => {
 
   return (
     <>
-      <div className='flex h-full min-h-screen w-full flex-col items-center px-20 py-24'>
+      <div className='flex h-full min-h-screen w-full flex-col items-center px-20 py-0'>
         <h1 className='w-full text-center text-[3em] font-bold text-gray-800'>
           Grupe
         </h1>
