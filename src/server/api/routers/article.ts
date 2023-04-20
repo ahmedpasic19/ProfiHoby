@@ -47,6 +47,9 @@ export const articleRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       const groups_with_articles = await ctx.prisma.group.findMany({
+        where: {
+          articles: { some: {} },
+        },
         include: {
           articles: {
             take: 20,
@@ -65,7 +68,6 @@ export const articleRouter = createTRPCRouter({
             },
           },
         },
-        // where: { articles: { some: { article_id: { not: '' } } } },
         skip: input.pageSize * input.pageIndex,
         take: input.pageSize,
         orderBy: { createdAt: 'desc' },
