@@ -59,7 +59,6 @@ const Sales: NextPage = () => {
                 key={Math.random()}
                 article_id={article.id}
                 categories={article.categories}
-                description={article.description}
                 imageURL={article.image[0]?.url || ''}
                 name={article.name}
                 price={article.base_price}

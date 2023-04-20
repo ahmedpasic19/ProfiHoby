@@ -71,10 +71,10 @@ const Home: NextPage = () => {
       <section className='relative grid h-[50vh] w-full grid-cols-[20%_80%] grid-rows-1 items-center justify-center border-b-4 border-r-gray-500'>
         {/* Categories */}
         <div className='flex h-full w-full flex-col border-r-2 border-gray-600'>
-          <h2 className='w-full py-5 text-center text-xl font-bold tracking-tighter'>
+          <h2 className='w-full py-5 text-center text-xl font-bold tracking-tighter text-gray-800'>
             Kategorije
           </h2>
-          <ul className='flex h-full w-full flex-col'>
+          <ul className='flex h-full w-full flex-col overflow-y-auto'>
             {categories?.map((category) => (
               <SidebarCategory
                 key={category.id}
@@ -106,14 +106,14 @@ const Home: NextPage = () => {
         </div>
       </section>
       {/* Articles */}
-      <div className='flex w-full items-center justify-center'>
+      <div className='flex w-full flex-col items-center justify-center'>
         <div className='mt-[4em] h-full w-full flex-col p-2 pl-0'>
           {isSuccess &&
             data.pages.map((page) =>
               page.group_articles.map((group) => (
                 <div
                   key={Math.random()}
-                  className='mb-14 flex w-full flex-col bg-white py-4 drop-shadow-2xl'
+                  className='mb-14 flex w-full flex-col overflow-x-auto bg-white py-4 drop-shadow-2xl'
                 >
                   <label className='pl-10 pb-4 text-2xl font-bold tracking-tight'>
                     {group.name}
@@ -125,7 +125,6 @@ const Home: NextPage = () => {
                         action={article.article_action_id ? true : false}
                         actionPercentage={article?.action?.discount}
                         name={article.name}
-                        description={article.description}
                         //@ts-ignore // Error: "url doesn't exits on image", but it does exits
                         imageURL={(article.image[0]?.url as string) || ''}
                         price={article.base_price}

@@ -73,7 +73,6 @@ const CategoryArticles: NextPage = () => {
                       //@ts-ignore // Error: "url doesn't exits on image", but it does exits
                       imageURL={(article.article.image[0]?.url as string) || ''}
                       price={article.article.base_price}
-                      description={article.article.description}
                       article_id={article.article_id}
                     />
                   ))}
