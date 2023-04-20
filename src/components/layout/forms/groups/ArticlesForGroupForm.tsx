@@ -134,7 +134,6 @@ const ArticlesForGroupForm = ({
                   disableLink
                   article_id={article.id}
                   categories={article.categories}
-                  description={article.description}
                   price={article.base_price}
                   name={article.name}
                   imageURL={article?.image[0]?.url || ''}
