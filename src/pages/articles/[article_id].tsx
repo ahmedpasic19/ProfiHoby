@@ -3,7 +3,7 @@ import { trpcClient } from '../../utils/api'
 import { useQuery } from '@tanstack/react-query'
 
 import ImageCarousel from '../../components/layout/ImageCarousel'
-import Textarea from '../../components/Textarea'
+import Image from 'next/image'
 
 const ArticlePage = () => {
   const router = useRouter()
@@ -30,34 +30,47 @@ const ArticlePage = () => {
   const image_uls = artilce_images?.map((image) => image.url) || []
 
   return (
-    <div className='flex h-full min-h-screen w-full flex-col items-center justify-center bg-gray-200'>
-      <div className='flex w-[600px] flex-col items-center justify-center bg-white p-10'>
-        <section className='mb-5 flex w-full items-center justify-center'>
-          <h2 className='w-full text-start text-2xl font-semibold text-gray-800'>
-            {article?.name}
-          </h2>
-          <h1 className='w-full text-start text-2xl font-bold text-gray-800'>
-            {article?.base_price}KM
-          </h1>
-        </section>
-        <ImageCarousel images={image_uls} />
-        <section className='mt-5 flex w-full flex-col'>
-          <div className='mt-2 grid grid-cols-2 grid-rows-2 gap-2'>
-            {article?.categories?.map((category) => {
-              return (
-                <Category
+    <div className='flex h-full min-h-screen w-full flex-col pt-20'>
+      <div className='flex w-full flex-col items-center'>
+        {/* Images and detail */}
+        <section className='flex'>
+          <div className='inset-0 flex w-full max-w-[50%] flex-col items-center justify-center overflow-hidden rounded-sm border-2 border-gray-100 p-5'>
+            {/* Selected image preveiw */}
+            <div className='flex h-96 w-96 items-center justify-center overflow-hidden'>
+              <ImageCarousel images={image_uls} />
+            </div>
+            {/* List of all article images */}
+            <div className='mt-5 flex w-full gap-2 overflow-x-auto bg-white shadow-md'>
+              {image_uls?.map((image) => (
+                <div
                   key={Math.random().toString()}
-                  name={category.category.name}
-                />
-              )
-            })}
+                  className='flex h-28 w-28 items-center justify-center overflow-hidden'
+                >
+                  <Image
+                    alt='article image'
+                    src={image}
+                    width={300}
+                    height={300}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className='jucenter flex h-full w-full max-w-[50%] flex-col items-center'>
+            <h2 className='w-full bg-gray-600 p-5 text-center text-2xl font-semibold text-white'>
+              {article?.name}
+            </h2>
+            <h1 className='p-10 text-[4em] font-extrabold tracking-tight text-gray-600'>
+              {article?.base_price}KM
+            </h1>
           </div>
         </section>
-        <section className='mt-5 flex w-full flex-col items-center'>
-          <h3 className='w-full text-start text-lg font-semibold text-gray-800'>
-            Detaljan opis
-          </h3>
-          <Textarea cols={30} rows={10} value={article?.description} readOnly />
+
+        {/* Article description */}
+        <section className='flex w-full max-w-[80%] flex-col items-center'>
+          <h2 className='text-xl font-bold'>Opis artikla</h2>
+          <p className='text-lg'>{article?.description}</p>
         </section>
       </div>
     </div>
