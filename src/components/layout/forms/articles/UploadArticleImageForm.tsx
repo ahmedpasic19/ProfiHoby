@@ -178,7 +178,10 @@ const UploadArticleImageForm = ({
           Dodaj
         </button>
         <button
-          onClick={() => setOpenAddArticle(false)}
+          onClick={() => {
+            setPageIndex(0)
+            setOpenAddArticle(false)
+          }}
           className='w-4/5 max-w-[200px] rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
         >
           Završi

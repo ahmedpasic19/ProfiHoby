@@ -28,6 +28,7 @@ const Home: NextPage = () => {
             ? undefined
             : data.pageIndex + 1
         },
+        cacheTime: 0,
       }
     )
 
