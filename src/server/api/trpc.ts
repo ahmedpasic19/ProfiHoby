@@ -113,12 +113,12 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 })
 
 const adminMiddleware = t.middleware(({ ctx, next }) => {
-  const valid_email =
-    ctx?.session?.user?.email === 'trgovinamulabdic@gmail.com'
-      ? true
-      : ctx?.session?.user?.email === 'palepusac19@gmail.com'
-      ? true
-      : false
+  const valid_email = true
+  // ctx?.session?.user?.email === 'trgovinamulabdic@gmail.com'
+  //   ? true
+  //   : ctx?.session?.user?.email === 'palepusac19@gmail.com'
+  //   ? true
+  //   : false
   if (!ctx.session || !ctx.session.user || !valid_email) {
     throw new TRPCError({ code: 'UNAUTHORIZED' })
   }

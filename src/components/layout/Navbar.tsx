@@ -58,11 +58,12 @@ const Navbar = () => {
   ]
 
   const navlinks =
-    (status === 'authenticated' &&
-      data.user?.email === 'palepusac19@gmail.com') ||
-    (status === 'authenticated' &&
-      data.user?.email === 'trgovinamulabdic@gmail.com')
-      ? authenticated
+    // (
+    status === 'authenticated'
+      ? // && data.user?.email === 'palepusac19@gmail.com') ||
+        // (status === 'authenticated' &&
+        //   data.user?.email === 'trgovinamulabdic@gmail.com')
+        authenticated
       : unauthenticated
 
   const router = useRouter()
