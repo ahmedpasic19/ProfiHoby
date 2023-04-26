@@ -4,12 +4,19 @@ import { signOut, useSession } from 'next-auth/react'
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useQuery } from '@tanstack/react-query'
+import { trpcClient } from '../../utils/api'
 
 const Navbar = () => {
   const [openDropDown, setOpenDropDown] = useState(false)
 
+  const { data: allWorkers } = useQuery(['workers.getAllWorkers'], () =>
+    trpcClient.workers.getAllWorkers.query()
+  )
+
   const { data, status } = useSession()
 
+  // For admin/worker users
   const authenticated = [
     {
       href: '/',
@@ -41,6 +48,7 @@ const Navbar = () => {
     },
   ]
 
+  // For non-admin/non-worker users
   const unauthenticated = [
     {
       href: '/',
@@ -61,14 +69,13 @@ const Navbar = () => {
         },
   ]
 
+  // find if user is a worker
+  const worker = allWorkers?.find(
+    (worker) => worker.user.email === data?.user?.email
+  )
+
   const navlinks =
-    // (
-    status === 'authenticated'
-      ? // && data.user?.email === 'palepusac19@gmail.com') ||
-        // (status === 'authenticated' &&
-        //   data.user?.email === 'trgovinamulabdic@gmail.com')
-        authenticated
-      : unauthenticated
+    status === 'authenticated' && worker ? authenticated : unauthenticated
 
   const router = useRouter()
   const { article_id } = router.query

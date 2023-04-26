@@ -112,14 +112,17 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   })
 })
 
-const adminMiddleware = t.middleware(({ ctx, next }) => {
-  const valid_email = true
-  // ctx?.session?.user?.email === 'trgovinamulabdic@gmail.com'
-  //   ? true
-  //   : ctx?.session?.user?.email === 'palepusac19@gmail.com'
-  //   ? true
-  //   : false
-  if (!ctx.session || !ctx.session.user || !valid_email) {
+const adminMiddleware = t.middleware(async ({ ctx, next }) => {
+  const allWorkers = await ctx.prisma.worker.findMany({
+    include: { user: true },
+  })
+
+  // find if user is a worker
+  const worker = allWorkers.find(
+    (worker) => worker.user.email === ctx.session?.user?.email
+  )
+
+  if (!ctx.session || !ctx.session.user || !worker) {
     throw new TRPCError({ code: 'UNAUTHORIZED' })
   }
   return next({
