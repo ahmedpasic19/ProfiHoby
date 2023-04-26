@@ -56,6 +56,8 @@ model User {
     accounts      Account[]
     sessions      Session[]
     Image         Image[]
+    Worker        Worker?
+    is_employed   Boolean   @default(false)
 }
 
 model VerificationToken {
@@ -150,4 +152,11 @@ model ArticleGroups {
     assignedAt DateTime @default(now())
 
     @@id([article_id, group_id])
+}
+
+model Worker {
+    id String @id @default(cuid())
+
+    user    User   @relation(fields: [user_id], references: [id])
+    user_id String @unique
 }

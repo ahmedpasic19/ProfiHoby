@@ -38,10 +38,10 @@ const MainTable = <T extends object>({
             <table className='w-full min-w-[1400px] text-center'>
               <thead className='sticky top-0 border-b bg-gray-50'>
                 {table.getHeaderGroups().map((headerGroup) => (
-                  <tr key={headerGroup.id}>
+                  <tr key={Math.random()}>
                     {headerGroup.headers.map((header) => (
                       <th
-                        key={header.id}
+                        key={Math.random()}
                         className='px-6 py-4 text-lg font-medium text-gray-900'
                       >
                         {header.isPlaceholder
@@ -57,13 +57,13 @@ const MainTable = <T extends object>({
               </thead>
               <tbody>
                 {table.getRowModel().rows.map((row, index) => (
-                  <tr key={row.id} className='border-b" bg-white'>
+                  <tr key={Math.random()} className='border-b" bg-white'>
                     {row.getVisibleCells().map((cell) => (
                       <td
                         className={`max-w-[10rem] overflow-hidden overflow-ellipsis whitespace-nowrap px-6 py-2 text-sm font-light text-gray-900 ${
                           index % 2 === 0 ? 'bg-white' : 'bg-gray-200'
                         }`}
-                        key={cell.id}
+                        key={Math.random()}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

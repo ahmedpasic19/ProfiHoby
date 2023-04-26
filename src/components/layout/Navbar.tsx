@@ -28,6 +28,10 @@ const Navbar = () => {
       label: 'Grupe',
     },
     {
+      href: '/workers',
+      label: 'Radnici',
+    },
+    {
       href: '/actions',
       label: 'Akcije',
     },
