@@ -33,7 +33,6 @@ const ArticleForm = ({
         await queryClient.invalidateQueries([
           'articles',
           {
-            category: 'article.index.page',
             name: '',
             pageSize: 100,
             pageIndex: 0,

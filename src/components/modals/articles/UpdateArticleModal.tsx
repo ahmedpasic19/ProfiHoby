@@ -39,7 +39,7 @@ const UpdateArticleModal = ({
       onSuccess: async () => {
         await queryClient.invalidateQueries([
           'articles',
-          { pageSize: 100, pageIndex: 0, category: '', name: '' },
+          { pageSize: 100, pageIndex: 0, name: '' },
         ])
         setArticle({} as TArticle)
         setIsOpen(false)

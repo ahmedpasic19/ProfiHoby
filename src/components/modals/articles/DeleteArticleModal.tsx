@@ -35,7 +35,6 @@ const DeleteArticleModal = ({
         await queryClient.invalidateQueries([
           'articles',
           {
-            category: 'article.index.page',
             name: '',
             pageIndex: 0,
             pageSize: 100,

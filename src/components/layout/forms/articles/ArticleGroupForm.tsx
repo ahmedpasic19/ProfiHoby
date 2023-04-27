@@ -61,7 +61,6 @@ const ArticleGroupFrom = ({ setPageIndex, articleId, pageIndex }: TProps) => {
             pageSize: 100,
             pageIndex: 0,
             name: '',
-            category: 'article.index.page',
           },
         ])
       },

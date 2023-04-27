@@ -49,7 +49,6 @@ const ArticleCategoryForm = ({
             pageSize: 100,
             pageIndex: 0,
             name: '',
-            category: 'article.index.page',
           },
         ])
       },
