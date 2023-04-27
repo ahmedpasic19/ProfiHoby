@@ -8,7 +8,10 @@ export const articleGroups = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       // DELETE previous relation
       await ctx.prisma.articleGroups.deleteMany({
-        where: { group_id: input[0]?.group_id },
+        where: {
+          group_id: input[0]?.group_id,
+          article_id: input[0]?.article_id,
+        },
       })
 
       const new_relations = await ctx.prisma.articleGroups.createMany({
