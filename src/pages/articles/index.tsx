@@ -45,14 +45,10 @@ const Articles: NextPage = () => {
   useProtectRoute()
 
   const { data: articleData } = useQuery(
-    [
-      'articles',
-      { pageSize: 100, pageIndex: 0, name: '', category: 'article.index.page' },
-    ],
+    ['articles', { pageSize: 100, pageIndex: 0, name: '' }],
     () =>
       trpcClient.article.getAllArticles.query({
         name: '',
-        category: '',
         pageIndex: 0,
         pageSize: 100,
       })

@@ -21,10 +21,9 @@ const SearchBar = () => {
   const router = useRouter()
 
   const { data: articleData, refetch } = useQuery(
-    ['articles', { category: '', name, pageIndex: 0, pageSize: 100 }],
+    ['articles', { name, pageIndex: 0, pageSize: 100 }],
     () =>
       trpcClient.article.getAllArticles.query({
-        category: '',
         name: '',
         pageIndex: 0,
         pageSize: 100,

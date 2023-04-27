@@ -106,16 +106,12 @@ export const articleRouter = createTRPCRouter({
       z.object({
         pageSize: z.number(),
         pageIndex: z.number(),
-        category: z.string(),
         name: z.string(),
       })
     )
     .query(async ({ input, ctx }) => {
-      const category = input.category
       const name = input.name
-      const where = category
-        ? { categories: { some: { category: { name: input.category } } } }
-        : name
+      const where = name
         ? {
             name: {
               contains: input.name,
