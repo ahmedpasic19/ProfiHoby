@@ -59,26 +59,28 @@ const GroupArticles: NextPage = () => {
     <div className='flex h-full w-full flex-col px-10 pt-[8vh]'>
       <div>
         {isSuccess &&
-          data.pages.map((page) => (
-            <div key={Math.random()} className='mt-[5vh] flex flex-col'>
-              <label>{page.group?.name}</label>
-              <ul className='flex w-full gap-4'>
-                {page.group?.articles.map((article) => (
-                  <Article
-                    key={Math.random()}
-                    action={article.article.article_action_id ? true : false}
-                    actionPercentage={article.article.action?.discount}
-                    categories={article.article.categories}
-                    //@ts-ignore // Error: "url doesn't exits on image", but it does exits
-                    imageURL={(article.article.image[0]?.url as string) || ''}
-                    price={article.article.base_price}
-                    article_id={article.article_id}
-                    name={article.article.name}
-                  />
-                ))}
-              </ul>
-            </div>
-          ))}
+          data.pages.map((page) =>
+            !page?.group?.articles.length ? null : (
+              <div key={Math.random()} className='mt-[5vh] flex flex-col'>
+                <label>{page.group?.name}</label>
+                <ul className='flex w-full gap-4'>
+                  {page.group?.articles.map((article) => (
+                    <Article
+                      key={Math.random()}
+                      action={article.article.article_action_id ? true : false}
+                      actionPercentage={article.article.action?.discount}
+                      categories={article.article.categories}
+                      //@ts-ignore // Error: "url doesn't exits on image", but it does exits
+                      imageURL={(article.article.image[0]?.url as string) || ''}
+                      price={article.article.base_price}
+                      article_id={article.article_id}
+                      name={article.article.name}
+                    />
+                  ))}
+                </ul>
+              </div>
+            )
+          )}
       </div>
 
       {isFetchingNextPage && (
