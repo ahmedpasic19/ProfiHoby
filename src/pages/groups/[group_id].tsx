@@ -2,7 +2,7 @@ import { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState, useRef } from 'react'
 
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../utils/api'
 
 import Article from '../../components/Article'
@@ -13,6 +13,12 @@ const GroupArticles: NextPage = () => {
   const router = useRouter()
 
   const { group_id } = router.query
+
+  const groupId = typeof group_id === 'string' ? group_id : ''
+
+  const { data: group } = useQuery(['group', { id: groupId }], () =>
+    trpcClient.group.getGroup.query({ id: groupId })
+  )
 
   const { data, fetchNextPage, isFetchingNextPage, isSuccess } =
     useInfiniteQuery(
@@ -57,25 +63,39 @@ const GroupArticles: NextPage = () => {
 
   return (
     <div className='flex h-full w-full flex-col px-10 pt-[8vh]'>
+      <h1 className='mb-10 w-full text-center text-[3em] font-bold text-gray-800'>
+        {group?.name}
+      </h1>
       <div>
         {isSuccess &&
           data.pages.map((page) =>
             !page?.group?.articles.length ? null : (
-              <div key={Math.random()} className='mt-[5vh] flex flex-col'>
-                <label>{page.group?.name}</label>
-                <ul className='flex w-full gap-4'>
+              <div
+                key={Math.random()}
+                className='mt-[5vh] flex w-full overflow-x-auto bg-white py-4 drop-shadow-2xl'
+              >
+                {/* <label>{page.group?.name}</label> */}
+                <ul className='flex w-full gap-4 px-5'>
                   {page.group?.articles.map((article) => (
-                    <Article
+                    <li
                       key={Math.random()}
-                      action={article.article.article_action_id ? true : false}
-                      actionPercentage={article.article.action?.discount}
-                      categories={article.article.categories}
-                      //@ts-ignore // Error: "url doesn't exits on image", but it does exits
-                      imageURL={(article.article.image[0]?.url as string) || ''}
-                      price={article.article.base_price}
-                      article_id={article.article_id}
-                      name={article.article.name}
-                    />
+                      className='flex w-full items-center justify-center'
+                    >
+                      <Article
+                        action={
+                          article.article.article_action_id ? true : false
+                        }
+                        actionPercentage={article.article.action?.discount}
+                        categories={article.article.categories}
+                        imageURL={
+                          //@ts-ignore // Error: "url doesn't exits on image", but it does exits
+                          (article.article.image[0]?.url as string) || ''
+                        }
+                        price={article.article.base_price}
+                        article_id={article.article_id}
+                        name={article.article.name}
+                      />
+                    </li>
                   ))}
                 </ul>
               </div>

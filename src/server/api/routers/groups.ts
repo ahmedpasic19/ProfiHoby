@@ -67,7 +67,7 @@ export const groupRouter = createTRPCRouter({
     return all_categories
   }),
 
-  getGroups: adminProcedure
+  getGroup: adminProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const group = await ctx.prisma.group.findUnique({

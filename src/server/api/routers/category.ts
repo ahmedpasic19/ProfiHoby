@@ -96,6 +96,7 @@ export const categoryRouter = createTRPCRouter({
             take: input.pageSize,
             include: {
               articles: {
+                orderBy: { article: { action: { createdAt: 'asc' } } },
                 include: {
                   article: {
                     include: {

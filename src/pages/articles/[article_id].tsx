@@ -78,11 +78,3 @@ const ArticlePage = () => {
 }
 
 export default ArticlePage
-
-const Category = ({ name }: { name: string }) => {
-  return (
-    <div className='h-6 w-[100px] truncate rounded-sm bg-gray-200 px-2 text-sm text-gray-800 drop-shadow-[0px_0px_1px]'>
-      {name}
-    </div>
-  )
-}

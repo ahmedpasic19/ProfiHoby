@@ -119,19 +119,23 @@ const Home: NextPage = () => {
                   <label className='pl-10 pb-4 text-2xl font-bold tracking-tight'>
                     {group.name}
                   </label>
-                  <ul className='flex gap-4 pl-10'>
+                  <ul className='flex gap-4 px-5'>
                     {group.articles.map(({ article }) => (
-                      <Article
+                      <li
                         key={Math.random()}
-                        action={article.article_action_id ? true : false}
-                        actionPercentage={article?.action?.discount}
-                        name={article.name}
-                        //@ts-ignore // Error: "url doesn't exits on image", but it does exits
-                        imageURL={(article.image[0]?.url as string) || ''}
-                        price={article.base_price}
-                        categories={article.categories}
-                        article_id={article.id}
-                      />
+                        className='flex w-full items-center justify-center'
+                      >
+                        <Article
+                          action={article.article_action_id ? true : false}
+                          actionPercentage={article?.action?.discount}
+                          name={article.name}
+                          //@ts-ignore // Error: "url doesn't exits on image", but it does exits
+                          imageURL={(article.image[0]?.url as string) || ''}
+                          price={article.base_price}
+                          categories={article.categories}
+                          article_id={article.id}
+                        />
+                      </li>
                     ))}
                   </ul>
                 </div>
