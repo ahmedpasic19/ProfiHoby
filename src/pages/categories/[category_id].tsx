@@ -20,7 +20,7 @@ const CategoryArticles: NextPage = () => {
         trpcClient.category.getAllCategoryWithGroupsAndArticles.query({
           category_id: typeof category_id === 'string' ? category_id : '',
           pageIndex: pageParam as number,
-          pageSize: 3,
+          pageSize: 10,
         }),
       {
         getNextPageParam: (data) =>

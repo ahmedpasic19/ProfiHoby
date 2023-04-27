@@ -20,7 +20,7 @@ const GroupArticles: NextPage = () => {
       ({ pageParam = 0 }) =>
         trpcClient.article.getArticlesByGroupID.query({
           group_id: typeof group_id === 'string' ? group_id : '',
-          pageSize: 3,
+          pageSize: 10,
           pageIndex: pageParam as number,
         }),
       {
