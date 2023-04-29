@@ -4,9 +4,9 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../utils/api'
 
 import SidebarCategory from '../components/SidebarCategory'
-import Article from '../components/Article'
 import Spinner from '../components/Spinner'
 import Image from 'next/image'
+import ArticleCarouselContainer from '../components/layout/articles/ArticleCarouselContainer'
 
 const Home: NextPage = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -18,7 +18,7 @@ const Home: NextPage = () => {
       ['article.index.page'],
       ({ pageParam = 0 }) =>
         trpcClient.article.getAllArticlesForHomePage.query({
-          pageSize: 10,
+          pageSize: 25,
           pageIndex: pageParam as number,
         }),
       {
@@ -112,33 +112,12 @@ const Home: NextPage = () => {
           {isSuccess &&
             data.pages.map((page) =>
               page.group_articles.map((group) => (
-                <div
+                <ArticleCarouselContainer
                   key={Math.random()}
-                  className='mb-14 flex w-full flex-col overflow-x-auto bg-white py-4 drop-shadow-2xl'
-                >
-                  <label className='pl-10 pb-4 text-2xl font-bold tracking-tight'>
-                    {group.name}
-                  </label>
-                  <ul className='flex gap-4 px-5'>
-                    {group.articles.map(({ article }) => (
-                      <li
-                        key={Math.random()}
-                        className='flex w-full items-center justify-center'
-                      >
-                        <Article
-                          action={article.article_action_id ? true : false}
-                          actionPercentage={article?.action?.discount}
-                          name={article.name}
-                          //@ts-ignore // Error: "url doesn't exits on image", but it does exits
-                          imageURL={(article.image[0]?.url as string) || ''}
-                          price={article.base_price}
-                          categories={article.categories}
-                          article_id={article.id}
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                  group_name={group.name}
+                  // @ts-ignore // "url" is provided to the Image in the api query
+                  articles={group.articles.map(({ article }) => article)}
+                />
               ))
             )}
         </div>

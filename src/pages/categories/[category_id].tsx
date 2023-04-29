@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../utils/api'
 
-import Article from '../../components/Article'
 import Spinner from '../../components/Spinner'
+import ArticleCarouselContainer from '../../components/layout/articles/ArticleCarouselContainer'
 
 const CategoryArticles: NextPage = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -26,7 +26,7 @@ const CategoryArticles: NextPage = () => {
         trpcClient.category.getAllCategoryWithGroupsAndArticles.query({
           category_id: typeof category_id === 'string' ? category_id : '',
           pageIndex: pageParam as number,
-          pageSize: 10,
+          pageSize: 25,
         }),
       {
         getNextPageParam: (data) =>
@@ -61,7 +61,7 @@ const CategoryArticles: NextPage = () => {
   }, [isVisible, fetchNextPage])
 
   return (
-    <div className='flex h-full w-full flex-col px-10 pt-[8vh]'>
+    <div className='flex h-full w-full flex-col pt-[8vh]'>
       <h1 className='mb-10 w-full text-center text-[3em] font-bold text-gray-800'>
         {category?.name}
       </h1>
@@ -69,37 +69,12 @@ const CategoryArticles: NextPage = () => {
         {isSuccess &&
           data.pages.map((page) =>
             page.category?.groups.map((group) => (
-              <div
+              <ArticleCarouselContainer
                 key={Math.random()}
-                className='mb-14 flex w-full flex-col overflow-x-auto bg-white py-4 drop-shadow-2xl'
-              >
-                <label className='pl-10 pb-4 text-2xl font-bold tracking-tight'>
-                  {group.name}
-                </label>
-                <ul className='flex gap-4 px-5'>
-                  {group.articles.map((article) => (
-                    <li
-                      key={Math.random()}
-                      className='flex w-full items-center justify-center'
-                    >
-                      <Article
-                        action={
-                          article.article.article_action_id ? true : false
-                        }
-                        actionPercentage={article.article.action?.discount}
-                        name={article.article.name}
-                        categories={article.article.categories}
-                        imageURL={
-                          //@ts-ignore // Error: "url doesn't exits on image", but it does exits
-                          (article.article.image[0]?.url as string) || ''
-                        }
-                        price={article.article.base_price}
-                        article_id={article.article_id}
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                group_name={group.name}
+                // @ts-ignore // "url" is provided to the Image in the api query
+                articles={group.articles.map(({ article }) => article)}
+              />
             ))
           )}
       </div>

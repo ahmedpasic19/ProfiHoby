@@ -26,7 +26,7 @@ const GroupArticles: NextPage = () => {
       ({ pageParam = 0 }) =>
         trpcClient.article.getArticlesByGroupID.query({
           group_id: typeof group_id === 'string' ? group_id : '',
-          pageSize: 10,
+          pageSize: 25,
           pageIndex: pageParam as number,
         }),
       {
@@ -62,45 +62,37 @@ const GroupArticles: NextPage = () => {
   }, [isVisible, fetchNextPage])
 
   return (
-    <div className='flex h-full w-full flex-col px-10 pt-[8vh]'>
+    <div className='flex h-full w-full flex-col pt-[8vh]'>
       <h1 className='mb-10 w-full text-center text-[3em] font-bold text-gray-800'>
         {group?.name}
       </h1>
-      <div>
+
+      {/* Article list */}
+      <div className='grid w-full grid-cols-7 gap-4 px-5'>
         {isSuccess &&
-          data.pages.map((page) =>
-            !page?.group?.articles.length ? null : (
-              <div
-                key={Math.random()}
-                className='mt-[5vh] flex w-full overflow-x-auto bg-white py-4 drop-shadow-2xl'
-              >
-                {/* <label>{page.group?.name}</label> */}
-                <ul className='flex w-full gap-4 px-5'>
-                  {page.group?.articles.map((article) => (
-                    <li
-                      key={Math.random()}
-                      className='flex w-full items-center justify-center'
-                    >
-                      <Article
-                        action={
-                          article.article.article_action_id ? true : false
-                        }
-                        actionPercentage={article.article.action?.discount}
-                        categories={article.article.categories}
-                        imageURL={
-                          //@ts-ignore // Error: "url doesn't exits on image", but it does exits
-                          (article.article.image[0]?.url as string) || ''
-                        }
-                        price={article.article.base_price}
-                        article_id={article.article_id}
-                        name={article.article.name}
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )
-          )}
+          data.pages.map((page) => {
+            return page.group?.articles.map((article) => {
+              return (
+                <li
+                  key={Math.random()}
+                  className='flex w-full items-center justify-center'
+                >
+                  <Article
+                    action={article.article.article_action_id ? true : false}
+                    actionPercentage={article.article.action?.discount}
+                    categories={article.article.categories}
+                    imageURL={
+                      //@ts-ignore // Error: "url doesn't exits on image", but it does exits
+                      (article.article.image[0]?.url as string) || ''
+                    }
+                    price={article.article.base_price}
+                    article_id={article.article_id}
+                    name={article.article.name}
+                  />
+                </li>
+              )
+            })
+          })}
       </div>
 
       {isFetchingNextPage && (
