@@ -56,20 +56,19 @@ const SearchBar = () => {
   })
 
   return (
-    <div className='relative flex w-full items-center bg-gray-300 py-2'>
+    <div className='relative flex w-full items-center bg-gray-300'>
       <SearchComponent
         filter={name}
         filter_name='name'
         refetch={refetch}
         search={searchForArticle}
-        displayBtn
         handleChange={(e) => setName(e.target.value)}
       />
       {name && (
-        <div className='absolute top-12 z-10 mx-10 flex max-h-[300px] w-full items-center justify-center overflow-y-auto bg-gray-300'>
-          <ul className='h-full max-h-[300px] w-4/5 overflow-y-auto'>
+        <div className='absolute top-14 z-[9] flex w-full items-center justify-center overflow-y-auto bg-gray-300 px-2'>
+          <ul className='h-full max-h-[20em] w-full overflow-y-auto'>
             {minimum?.map((article) => (
-              <ul
+              <li
                 onClick={() => navigateToArticle(article?.id || '')}
                 key={Math.random().toString()}
               >
@@ -78,7 +77,7 @@ const SearchBar = () => {
                   article_name={article?.name || ''}
                   article_price={article?.base_price || ''}
                 />
-              </ul>
+              </li>
             ))}
           </ul>
         </div>
@@ -95,15 +94,25 @@ const ListedArticle = ({
   article_price,
 }: TListedArticleProps) => {
   return (
-    <article className='mb-1 flex h-[100px] cursor-pointer  border-2 border-black  bg-gray-300 hover:bg-gray-400'>
-      <Image src={src} alt='article image' height={100} width={100} />
-      <div className='mx-10 flex h-full items-center justify-center'>
-        <h3 className='text-xl font-semibold text-gray-800'>{article_name}</h3>
+    <article className='mb-1 flex h-[5em] cursor-pointer justify-evenly border-2 border-black/30  bg-gray-300 hover:bg-gray-400'>
+      <div className='relative flex w-full items-center justify-center overflow-hidden'>
+        <Image
+          src={src}
+          alt='article image'
+          height={100}
+          width={100}
+          className='absolute object-contain'
+        />
+      </div>
+      <div className='mx-5 flex h-full w-full items-center justify-center'>
+        <h3 className='text-md w-full text-start font-medium uppercase text-gray-800'>
+          {article_name}
+        </h3>
       </div>
       <div className='flex h-full w-full items-center justify-center'>
-        <h2 className='text-2xl font-extrabold tracking-tight'>
-          <b>{article_price}</b>
-          {'  KM'}
+        <h2 className='mr-2 w-full text-end text-xl font-semibold tracking-tighter'>
+          {article_price}
+          {' KM'}
         </h2>
       </div>
     </article>

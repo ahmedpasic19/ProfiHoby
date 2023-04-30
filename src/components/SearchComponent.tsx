@@ -1,6 +1,5 @@
 import { useEffect, FormEvent, ChangeEvent } from 'react'
 import { debounce } from '../utils/debounce'
-import { AiOutlineSearch } from 'react-icons/ai'
 
 type TProps = {
   displayBtn?: boolean
@@ -12,7 +11,6 @@ type TProps = {
 }
 
 const SearchComponent = ({
-  displayBtn,
   filter_name,
   filter,
   refetch,
@@ -28,25 +26,15 @@ const SearchComponent = ({
   }, [filter, refetch])
 
   return (
-    <form onSubmit={search} className='flex'>
+    <form onSubmit={search} className='flex w-full p-2 sm:max-w-[15em]'>
       <input
         autoComplete='off'
         placeholder='Pretraži artikle...'
         name={filter_name}
         value={filter || ''}
         onChange={handleChange}
-        className='text-md mx-10 w-full min-w-[5em] rounded-sm p-2 pl-10 outline-none'
+        className='sm:text-md w-full min-w-[5em] rounded-sm p-2 pl-3 text-lg outline-none'
       />
-      {displayBtn && (
-        <button
-          disabled={!filter}
-          onSubmit={search}
-          onClick={search}
-          className='flex items-center justify-center rounded-md bg-gray-800 px-3 text-lg font-bold tracking-wide text-white hover:bg-gray-700'
-        >
-          <AiOutlineSearch className='mr-4 h-6 w-6' /> <p>Pretraži</p>
-        </button>
-      )}
     </form>
   )
 }
