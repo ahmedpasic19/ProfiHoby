@@ -8,6 +8,7 @@ import { trpcClient } from '../../utils/api'
 import Image from 'next/image'
 import Link from 'next/link'
 import DropdownMenu from './navbar/DropdownMenu'
+import { AiFillHome } from 'react-icons/ai'
 
 const Navbar = () => {
   const [openDropDown, setOpenDropDown] = useState(false)
@@ -101,18 +102,18 @@ const Navbar = () => {
           'relative top-0 left-0 z-20 w-full border-b border-gray-200 bg-white px-2 py-2.5 sm:px-4'
         }
       >
-        <div className='mx-auto flex items-center justify-between'>
-          <Link href='/' className='flex items-center'>
+        <div className='mx-auto flex justify-evenly'>
+          <Link href='/' className='flex items-center justify-center'>
             <Image
               src='https://flowbite.com/docs/images/logo.svg'
-              width={200}
-              height={100}
+              width={50}
+              height={50}
               className='mr-3 h-6 sm:h-9'
               alt='Flowbite Logo'
             />
-            <span className='self-center whitespace-nowrap text-xl font-semibold'>
+            <h2 className='w-full text-center text-2xl font-bold tracking-tighter'>
               Profihoby
-            </span>
+            </h2>
           </Link>
           <div className='flex md:order-2'>
             {/* Log out btn */}
@@ -120,7 +121,7 @@ const Navbar = () => {
               <button
                 onClick={() => signOut()}
                 type='button'
-                className='rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 sm:hidden md:mr-0 lg:visible lg:bg-red-600'
+                className='hidden rounded-lg bg-gray-800 px-5 text-center text-sm font-medium text-white hover:bg-gray-700 md:block'
               >
                 Log out
               </button>
@@ -129,11 +130,10 @@ const Navbar = () => {
               onClick={() => setOpenDropDown(true)}
               data-collapse-toggle='navbar-sticky'
               type='button'
-              className='inline-flex items-center rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600 md:hidden'
+              className='inline-flex items-center rounded-lg p-2 text-sm text-gray-500 md:hidden'
               aria-controls='navbar-sticky'
               aria-expanded='false'
             >
-              <span className='sr-only'>Open main menu</span>
               <svg
                 className='h-6 w-6'
                 aria-hidden='true'
@@ -154,10 +154,20 @@ const Navbar = () => {
             className='hidden w-full items-center justify-between md:order-1 md:flex md:w-auto'
             id='navbar-sticky'
           >
-            <ul className='mt-4 flex flex-col rounded-lg border border-gray-100 bg-gray-50 p-4 md:mt-0 md:flex-row md:space-x-8 md:border-0 md:bg-white md:text-sm md:font-medium'>
-              {navlinks.map((link) => (
-                <NavLink key={link.label} href={link.href} label={link.label} />
-              ))}
+            <ul className='flex flex-col rounded-lg border border-gray-100 p-4 md:mt-0 md:flex-row md:space-x-8 md:border-0 md:text-sm md:font-medium'>
+              {navlinks.map((link) =>
+                link.label === 'Početna stranica' ? (
+                  <Link key={link.label} href={link.href}>
+                    <AiFillHome className='h-5 w-5' />
+                  </Link>
+                ) : (
+                  <NavLink
+                    key={link.label}
+                    href={link.href}
+                    label={link.label}
+                  />
+                )
+              )}
             </ul>
           </div>
           {/* Dropdown */}
