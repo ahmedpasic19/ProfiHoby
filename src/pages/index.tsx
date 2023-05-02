@@ -69,10 +69,10 @@ const Home: NextPage = () => {
 
   return (
     <div className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
-      <section className='relative grid h-[50vh] w-full grid-cols-[20%_80%] grid-rows-1 items-center justify-center border-b-4 border-r-gray-500'>
+      <section className='relative flex h-[50vh] w-full flex-col-reverse items-center justify-center border-b-4 border-r-gray-500 sm:grid sm:grid-cols-[minmax(20em,20%)_1fr] sm:grid-rows-1'>
         {/* Categories */}
-        <div className='flex h-full w-full flex-col border-r-2 border-gray-600'>
-          <h2 className='w-full py-5 text-center text-xl font-bold tracking-tighter text-gray-800'>
+        <div className='hidden h-full w-full flex-col border-r-2 border-gray-800/30 sm:flex'>
+          <h2 className='w-full py-5 text-center text-2xl font-bold tracking-tighter text-gray-800 sm:text-xl'>
             Kategorije
           </h2>
           <ul className='flex h-full w-full flex-col overflow-y-auto'>
@@ -87,20 +87,19 @@ const Home: NextPage = () => {
           </ul>
         </div>
         {/* Action images */}
-        <div className='relative min-h-[50vh] w-4/5 overflow-x-auto'>
+        <div className='relative flex min-h-[50vh] w-4/5 items-center justify-center overflow-x-auto'>
           {actions?.map((action) => (
-            <div key={action.id}>
+            <div
+              key={action.id}
+              className='absolute flex items-center justify-center overflow-hidden'
+            >
               <Image
-                style={{
-                  objectFit: 'contain',
-                  width: '100%',
-                  height: '100%',
-                }}
-                className='h-auto w-auto'
+                height={100}
+                width={100}
+                className='object-contain'
                 src={action.image[0]?.url || ''}
                 alt='Article action'
                 priority
-                fill
               />
             </div>
           ))}
@@ -108,7 +107,7 @@ const Home: NextPage = () => {
       </section>
       {/* Articles */}
       <div className='flex w-full flex-col items-center justify-center'>
-        <div className='mt-[4em] h-full w-full flex-col p-2 pl-0'>
+        <div className='h-full w-full flex-col p-2 pl-0 sm:mt-[4em]'>
           {isSuccess &&
             data.pages.map((page) =>
               page.group_articles.map((group) => (

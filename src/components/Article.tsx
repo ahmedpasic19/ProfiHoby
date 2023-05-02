@@ -19,7 +19,6 @@ const Article = ({
   name,
   price,
   imageURL,
-  categories,
   article_id,
   action,
   actionPercentage,
@@ -31,7 +30,7 @@ const Article = ({
       onClick={async () => {
         if (!disableLink) await router.push(`/articles/${article_id}`)
       }}
-      className='flex h-80 w-60 cursor-pointer flex-col items-center bg-white drop-shadow-[0px_0px_1px_rgba(0,0,0,0.5)] hover:drop-shadow-[0px_0px_6px_rgba(0,0,0,0.3)]'
+      className='flex h-48 w-36 cursor-pointer flex-col items-center bg-white drop-shadow-[0px_0px_1px_rgba(0,0,0,0.5)] hover:drop-shadow-[0px_0px_6px_rgba(0,0,0,0.3)] sm:h-80 sm:w-60'
     >
       <section className='relative flex h-3/5 w-full overflow-hidden border-b-[1px] border-r-gray-100'>
         <div className='absolute top-0'>
@@ -50,18 +49,10 @@ const Article = ({
         )}
       </section>
       <section className='flex h-2/5 w-full flex-col'>
-        <ul className='flex gap-1 px-4 pt-2'>
-          {categories.map((category) => (
-            <ArticleCategory
-              key={Math.random()}
-              name={category.category.name}
-            />
-          ))}
-        </ul>
         <h1 className='h-full w-full text-ellipsis break-words px-2 pt-2 text-sm'>
           {name}
         </h1>
-        <h2 className='w-full pr-4 pb-2 text-end text-xl font-bold text-gray-800'>
+        <h2 className='w-full pr-4 pb-2 text-end text-lg font-bold text-gray-800 sm:text-xl'>
           {price} KM
         </h2>
       </section>
@@ -70,11 +61,3 @@ const Article = ({
 }
 
 export default Article
-
-const ArticleCategory = ({ name }: { name: string }) => {
-  return (
-    <div className='h-6 w-[100px] truncate rounded-sm bg-gray-200 px-2 text-sm text-gray-800 drop-shadow-[0px_0px_1px]'>
-      {name}
-    </div>
-  )
-}

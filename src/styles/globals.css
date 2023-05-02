@@ -30,6 +30,7 @@ input[type='number'] {
   background: #555;
 }
 
+/* Dropdown slide in & out */
 @keyframes slideIn {
   from {
     transform: translateX(100%);
@@ -57,4 +58,38 @@ input[type='number'] {
 .animate-slide-out {
   animation: slideOut 0.5s ease-out;
   animation-fill-mode: forwards;
+}
+
+/* ------------------------------------- */
+
+@keyframes slideInGroup {
+  from {
+    transform: scaleY(0);
+    transform-origin: 100% 0%;
+  }
+  to {
+    transform: scaleY(100%);
+    transform-origin: 100% 0%;
+  }
+}
+
+.animate-slide-in-group {
+  animation: slideInGroup 0.1s ease-in;
+  animation-fill-mode: forwards;
+}
+
+@keyframes slideOutGroup {
+  from {
+    transform: scaleY(100%);
+    transform-origin: 90% 10%;
+  }
+  to {
+    transform: scaleY(0);
+    transform-origin: 90% 10%;
+  }
+}
+
+.animate-slide-out-group {
+  animation: slideOutGroup 0.5s ease-out;
+  animation-fill-mode: backwards;
 }
