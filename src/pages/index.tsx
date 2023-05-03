@@ -5,8 +5,8 @@ import { trpcClient } from '../utils/api'
 
 import SidebarCategory from '../components/SidebarCategory'
 import Spinner from '../components/Spinner'
-import Image from 'next/image'
 import ArticleCarouselContainer from '../components/layout/articles/ArticleCarouselContainer'
+import HighlightedArticles from '../components/layout/articles/HighlightedArticles'
 
 const Home: NextPage = () => {
   const [isVisible, setIsVisible] = useState(false)
@@ -28,17 +28,11 @@ const Home: NextPage = () => {
             ? undefined
             : data.pageIndex + 1
         },
-        cacheTime: 0,
       }
     )
 
   const { data: categories } = useQuery(['category.getAllCategories'], () =>
     trpcClient.category.getAllCategories.query()
-  )
-
-  const { data: actions } = useQuery(
-    ['article_action.getAllArticleActions'],
-    () => trpcClient.article_action.getAllArticleActions.query()
   )
 
   // ref to the div at the bottom of the page
@@ -69,7 +63,7 @@ const Home: NextPage = () => {
 
   return (
     <div className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
-      <section className='relative flex h-[50vh] w-full flex-col-reverse items-center justify-center border-b-4 border-r-gray-500 sm:grid sm:grid-cols-[minmax(20em,20%)_1fr] sm:grid-rows-1'>
+      <section className='relative flex w-full flex-col-reverse items-center justify-center border-b-4 border-r-gray-500 sm:grid sm:grid-cols-[minmax(20em,20%)_1fr] sm:grid-rows-1'>
         {/* Categories */}
         <div className='hidden h-full w-full flex-col border-r-2 border-gray-800/30 sm:flex'>
           <h2 className='w-full py-5 text-center text-2xl font-bold tracking-tighter text-gray-800 sm:text-xl'>
@@ -86,28 +80,13 @@ const Home: NextPage = () => {
             ))}
           </ul>
         </div>
-        {/* Action images */}
-        <div className='relative flex min-h-[50vh] w-4/5 items-center justify-center overflow-x-auto'>
-          {actions?.map((action) => (
-            <div
-              key={action.id}
-              className='absolute flex items-center justify-center overflow-hidden'
-            >
-              <Image
-                height={100}
-                width={100}
-                className='object-contain'
-                src={action.image[0]?.url || ''}
-                alt='Article action'
-                priority
-              />
-            </div>
-          ))}
-        </div>
+        {/* Articles on sale or random low price articles */}
+        <HighlightedArticles />
       </section>
+
       {/* Articles */}
       <div className='flex w-full flex-col items-center justify-center'>
-        <div className='h-full w-full flex-col p-2 pl-0 sm:mt-[4em]'>
+        <div className='h-full w-full flex-col sm:mt-[4em]'>
           {isSuccess &&
             data.pages.map((page) =>
               page.group_articles.map((group) => (

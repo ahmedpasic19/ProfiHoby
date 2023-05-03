@@ -182,7 +182,7 @@ const Navbar = () => {
       {openDropDown && (
         <div
           onClick={() => setOpenDropDown(false)}
-          className=' absolute inset-0 z-10 h-screen w-full bg-black bg-opacity-30 backdrop-blur-sm backdrop-filter'
+          className=' absolute inset-0 z-40 h-screen w-full bg-black bg-opacity-30 backdrop-blur-sm backdrop-filter'
         />
       )}
     </>

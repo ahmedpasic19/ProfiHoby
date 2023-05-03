@@ -14,7 +14,7 @@ const DropdownMenu = ({
 
   return (
     <div
-      className={`fixed top-0 right-0 z-20 h-screen w-1/2 bg-white ${
+      className={`fixed top-0 right-0 z-50 h-screen w-1/2 bg-white ${
         isOpen ? 'animate-slide-in' : 'animate-slide-out'
       }`}
     >

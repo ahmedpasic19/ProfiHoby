@@ -46,13 +46,13 @@ const ArticleCarousel = ({ articles }: { articles: TArticle[] }) => {
       {/* Left and right buttons */}
       <button
         onClick={handleLeft}
-        className='from absolute left-0 z-50 h-full bg-gradient-to-b from-gray-400/10 via-gray-800/20 to-gray-400/10 px-2'
+        className='from absolute left-0 z-50 h-full px-2'
       >
         <AiFillCaretLeft className='h-7 w-7 text-gray-800/30' />
       </button>
       <button
         onClick={handleRight}
-        className='from absolute right-0 z-50 h-full bg-gradient-to-b from-gray-400/10 via-gray-800/20 to-gray-400/10 px-2'
+        className='from absolute right-0 z-50 h-full px-2'
       >
         <AiFillCaretLeft className='h-7 w-7 rotate-180 text-gray-800/30' />
       </button>

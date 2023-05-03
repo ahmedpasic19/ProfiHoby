@@ -438,6 +438,33 @@ export const articleRouter = createTRPCRouter({
       return article
     }),
 
+  getRandomArticles: publicProcedure.query(async ({ ctx }) => {
+    const articles = await ctx.prisma.article.findMany({
+      take: 5,
+      orderBy: {
+        base_price: 'desc',
+      },
+      include: {
+        image: true,
+      },
+    })
+
+    // Assigning an accessURL from S3
+    const extended_articles = articles.map((article) => {
+      const extended_images = article.image.map((image) => ({
+        ...image,
+        url: s3.getSignedUrl('getObject', {
+          Bucket: BUCKET_NAME,
+          Key: image.image,
+        }),
+      }))
+
+      return { ...article, image: extended_images }
+    })
+
+    return extended_articles
+  }),
+
   updateArticle: adminProcedure
     .input(
       z.object({
