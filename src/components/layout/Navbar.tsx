@@ -102,7 +102,7 @@ const Navbar = () => {
           'relative top-0 left-0 z-20 w-full border-b border-gray-200 bg-white px-2 py-2.5 sm:px-4'
         }
       >
-        <div className='mx-auto flex justify-evenly'>
+        <div className='mx-auto flex justify-between sm:justify-evenly'>
           <Link href='/' className='flex items-center justify-center'>
             <Image
               src='https://flowbite.com/docs/images/logo.svg'
