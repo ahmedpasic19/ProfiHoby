@@ -12,6 +12,7 @@ import { AiFillHome } from 'react-icons/ai'
 
 const Navbar = () => {
   const [openDropDown, setOpenDropDown] = useState(false)
+  const [dropdownWasOpen, setDropdownWasOpen] = useState(false) // Check if dropdown was open to determin the correct css
 
   const { data: allWorkers } = useQuery(['workers.getAllWorkers'], () =>
     trpcClient.workers.getAllWorkers.query()
@@ -127,7 +128,10 @@ const Navbar = () => {
               </button>
             )}
             <button
-              onClick={() => setOpenDropDown(true)}
+              onClick={() => {
+                setOpenDropDown(true)
+                setDropdownWasOpen(true)
+              }}
               data-collapse-toggle='navbar-sticky'
               type='button'
               className='inline-flex items-center rounded-lg p-2 text-sm text-gray-500 md:hidden'
@@ -172,6 +176,7 @@ const Navbar = () => {
           </div>
           {/* Dropdown */}
           <DropdownMenu
+            wasOpen={dropdownWasOpen}
             isOpen={openDropDown}
             setIsOpen={setOpenDropDown}
             links={navlinks}

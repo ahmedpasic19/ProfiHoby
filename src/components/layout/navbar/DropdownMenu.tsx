@@ -4,10 +4,12 @@ import Link from 'next/link'
 const DropdownMenu = ({
   setIsOpen,
   isOpen,
+  wasOpen,
   links,
 }: {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   isOpen: boolean
+  wasOpen: boolean
   links: { href: string; label: string }[]
 }) => {
   const { status } = useSession()
@@ -15,7 +17,7 @@ const DropdownMenu = ({
   return (
     <div
       className={`fixed top-0 right-0 z-50 h-screen w-1/2 bg-white ${
-        isOpen ? 'animate-slide-in' : 'animate-slide-out'
+        isOpen ? 'animate-slide-in' : wasOpen ? 'animate-slide-out' : 'hidden'
       }`}
     >
       <h2 className='w-full py-10 text-center text-2xl font-bold tracking-tighter'>
