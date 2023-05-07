@@ -9,6 +9,7 @@ import SearchBar from '../components/SearchBar'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
+import ContactBlob from '../components/layout/ContactBlob'
 
 const client = new QueryClient({
   defaultOptions: {
@@ -43,6 +44,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           !article_id &&
           router.pathname != '/articles/create-article' && <SearchBar />}
         <Component {...pageProps} />
+        <ContactBlob />
       </SessionProvider>
     </QueryClientProvider>
   )
