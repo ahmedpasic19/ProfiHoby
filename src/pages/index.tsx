@@ -86,7 +86,7 @@ const Home: NextPage = () => {
 
       {/* Articles */}
       <div className='flex w-full flex-col items-center justify-center'>
-        <div className='h-full w-full flex-col sm:mt-[4em]'>
+        <div className='h-full w-full flex-col'>
           {isSuccess &&
             data.pages.map((page) =>
               page.group_articles.map((group) => (

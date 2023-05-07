@@ -27,10 +27,10 @@ const HighlightedArticles = () => {
   return (
     <div
       id='default-carousel'
-      className='relative flex w-full'
+      className='relative flex w-full overflow-hidden'
       data-carousel='slide'
     >
-      <div className='relative flex h-56 overflow-hidden md:h-96'>
+      <div className='relative flex h-56 overflow-hidden sm:w-screen md:h-96'>
         <ul
           className='flex gap-4'
           style={{
@@ -166,17 +166,18 @@ export default HighlightedArticles
 
 const HiglightedArticle = ({ url }: { url: string }) => {
   return (
-    <li
+    <div
       className='relative flex h-full w-screen items-center justify-center duration-700 ease-in-out'
       data-carousel-item
     >
       <Image
-        className='absolute h-full w-full object-contain'
+        className='absolute block h-full w-full object-contain'
         height={100}
         width={100}
         alt='Article'
         src={url}
+        priority
       />
-    </li>
+    </div>
   )
 }
