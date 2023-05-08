@@ -81,9 +81,6 @@ const Navbar = () => {
   const navlinks =
     status === 'authenticated' && worker ? authenticated : unauthenticated
 
-  const router = useRouter()
-  const { article_id } = router.query
-
   // Prevent scrolling when the modal is open
   useEffect(() => {
     if (openDropDown) {
@@ -99,8 +96,7 @@ const Navbar = () => {
     <>
       <nav
         className={
-          (article_id ? 'sticky' : 'fixed') +
-          'relative top-0 left-0 z-20 w-full border-b border-gray-200 bg-white px-2 py-2.5 sm:px-4'
+          'relative sticky top-0 left-0 z-50 z-20 w-full border-b border-gray-200 bg-white px-2 py-2.5 sm:px-4'
         }
       >
         <div className='mx-auto flex justify-between sm:justify-evenly'>
