@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import useScrollDetector from '../../hooks/useScrollDetector'
 
@@ -10,12 +11,16 @@ import useCopyToClipboard from '../../hooks/useCopyToClipboard'
 
 const ContactBlob = () => {
   const [open, setOpen] = useState(false)
+  const [isClosed, setIsClosed] = useState(false)
   const show = useScrollDetector()
 
   // Close menu when scroll down
   useEffect(() => {
     if (!show && open) {
-      setOpen(false)
+      {
+        setOpen(false)
+        setIsClosed(false)
+      }
     }
     // eslint-disable-next-line
   }, [show])
@@ -23,21 +28,39 @@ const ContactBlob = () => {
   // Copy link and number
   const handleCopyToClipboard = useCopyToClipboard()
 
+  const { pathname } = useRouter()
+
   return (
     <>
       {open && (
-        <div className='absolute inset-0' onClick={() => setOpen(false)} />
+        <div
+          className='absolute inset-0'
+          onClick={() => {
+            setOpen(false)
+            setIsClosed(false)
+          }}
+        />
       )}
       <div
+        onClick={() => console.log('div')}
         className={`${
           show ? 'animate-pop-up' : 'animate-pop-out'
         } fixed left-10 bottom-10 w-14 cursor-pointer ${
-          open ? 'animate-open-up' : 'animate-close'
-        } overflow-hidden border-2 border-gray-200 bg-white py-2 drop-shadow-2xl`}
+          !show
+            ? ''
+            : open
+            ? 'animate-open-up'
+            : !open && isClosed
+            ? 'animate-close'
+            : ''
+        } ${
+          pathname === '/' ? 'z-10' : ''
+        } overflow-hidden border-2 border-gray-200 bg-white p-2 py-2 drop-shadow-2xl`}
       >
         {/* Display list if menu is open */}
         <ul
-          className={`flex h-full w-full flex-col justify-start gap-4 ${
+          onClick={() => console.log('ul')}
+          className={`z-[999] flex h-full w-full flex-col justify-start gap-4 ${
             open ? 'animate-unhide' : 'animate-hide'
           }`}
         >
@@ -76,7 +99,10 @@ const ContactBlob = () => {
         </ul>
         {/* Display contact icon when the menu is closed */}
         <div
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            setOpen(true)
+            setIsClosed(true)
+          }}
           className={`${
             open ? 'animate-hide' : 'animate-unhide'
           } absolute inset-0 z-10 flex h-full w-full items-center justify-center`}
