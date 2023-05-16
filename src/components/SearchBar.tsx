@@ -56,7 +56,7 @@ const SearchBar = () => {
   })
 
   return (
-    <div className='fixed z-50 flex w-full items-center bg-gray-100'>
+    <div className='fixed z-30 flex w-full items-center bg-gray-100'>
       <SearchComponent
         filter={name}
         filter_name='name'
@@ -73,7 +73,7 @@ const SearchBar = () => {
                 key={Math.random().toString()}
               >
                 <ListedArticle
-                  src={article?.image[0]?.url || ''}
+                  src={article?.image[0]?.access_url || ''}
                   article_name={article?.name || ''}
                   article_price={article?.base_price || ''}
                 />

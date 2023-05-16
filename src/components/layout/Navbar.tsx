@@ -92,12 +92,14 @@ const Navbar = () => {
     }
   }, [openDropDown])
 
+  const { pathname } = useRouter()
+
   return (
     <>
       <nav
-        className={
-          'relative sticky top-0 left-0 z-50 z-20 w-full border-b border-gray-200 bg-white px-2 py-2.5 sm:px-4'
-        }
+        className={`sticky top-0 left-0 ${
+          pathname === '/' || openDropDown ? 'z-30' : ''
+        } w-full border-b border-gray-200 bg-white px-2 py-2.5 sm:px-4`}
       >
         <div className='mx-auto flex justify-between sm:justify-evenly'>
           <Link href='/' className='flex items-center justify-center'>
@@ -170,20 +172,20 @@ const Navbar = () => {
               )}
             </ul>
           </div>
-          {/* Dropdown */}
-          <DropdownMenu
-            wasOpen={dropdownWasOpen}
-            isOpen={openDropDown}
-            setIsOpen={setOpenDropDown}
-            links={navlinks}
-          />
         </div>
       </nav>
+      {/* Dropdown */}
+      <DropdownMenu
+        wasOpen={dropdownWasOpen}
+        isOpen={openDropDown}
+        setIsOpen={setOpenDropDown}
+        links={navlinks}
+      />
       {/* Blur element */}
       {openDropDown && (
         <div
           onClick={() => setOpenDropDown(false)}
-          className=' absolute inset-0 z-40 h-screen w-full bg-black bg-opacity-30 backdrop-blur-sm backdrop-filter'
+          className='fixed top-0 left-0 z-40 h-screen w-full bg-black bg-opacity-30 backdrop-blur-sm backdrop-filter'
         />
       )}
     </>
