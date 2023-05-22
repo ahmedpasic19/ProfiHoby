@@ -39,9 +39,18 @@ const UploadImageForm = ({
     }
   )
 
+  const { mutate: assignUrl } = useMutation(
+    (input: { key: string; fileType: string; kind: string }) =>
+      trpcClient.image.generatePermanentAccessURL.mutate(input)
+  )
+
   const { mutate: createImage } = useMutation(
-    (input: { name: string; article_id: string; action_id: string }) =>
-      trpcClient.image.createPresignedURL.mutate(input),
+    (input: {
+      name: string
+      article_id: string
+      action_id: string
+      contentType: string
+    }) => trpcClient.image.createPresignedURL.mutate(input),
     {
       onSuccess: async (data) => {
         setArticleImage('')
@@ -68,11 +77,20 @@ const UploadImageForm = ({
         if (!url) return alert('NO URL')
 
         await fetch(url, {
-          method: 'POST',
+          method: 'PUT',
           body: formData,
         })
           .then((res) => console.log(res))
           .catch((err) => console.log(err))
+        console.log(
+          'fileTy: ',
+          files[0]?.type !== undefined ? files[0]?.type : ''
+        )
+        assignUrl({
+          key: data?.key || '',
+          fileType: files[0]?.type !== undefined ? files[0]?.type : '',
+          kind: 'edo-mulabdija-shop',
+        })
 
         await queryClient.invalidateQueries([
           'image.getAllRelatedImages',
@@ -124,6 +142,7 @@ const UploadImageForm = ({
       article_id,
       action_id,
       name: files[0]?.name || '',
+      contentType: files[0]?.type || 'image/jpeg',
     })
   }
 
@@ -166,7 +185,7 @@ const UploadImageForm = ({
 
       <div className='my-4 flex h-full w-full cursor-pointer items-center justify-center'>
         {/* eslint-disable-next-line */}
-        <img src={articleImage} />
+        <img src={articleImage || ''} />
       </div>
 
       <section className='mt-4 flex w-full items-center justify-evenly'>
@@ -198,7 +217,7 @@ const UploadImageForm = ({
               >
                 <Image
                   alt='article image'
-                  src={image.url}
+                  src={image.access_url || ''}
                   width={300}
                   height={300}
                 />
