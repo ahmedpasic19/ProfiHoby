@@ -39,9 +39,18 @@ const UploadArticleImageForm = ({
     }
   )
 
+  const { mutate: assignUrl } = useMutation(
+    (input: { key: string; fileType: string; kind: string }) =>
+      trpcClient.image.generatePermanentAccessURL.mutate(input)
+  )
+
   const { mutate: createImage } = useMutation(
-    (input: { name: string; article_id: string; action_id: string }) =>
-      trpcClient.image.createPresignedURL.mutate(input),
+    (input: {
+      name: string
+      article_id: string
+      action_id: string
+      contentType: string
+    }) => trpcClient.image.createPresignedURL.mutate(input),
     {
       onSuccess: async (data) => {
         setArticleImage('')
@@ -68,11 +77,27 @@ const UploadArticleImageForm = ({
         if (!url) return alert('NO URL')
 
         await fetch(url, {
-          method: 'POST',
+          method: 'PUT',
           body: formData,
         })
           .then((res) => console.log(res))
           .catch((err) => console.log(err))
+
+        // const response = await fetch(url, {
+        //   method: 'PUT',
+        //   body: formData,
+        //   headers: {
+        //     'Content-Type': 'multipart/form-data',
+        //   },
+        // })
+
+        // console.log(response)
+
+        assignUrl({
+          key: data?.key || '',
+          fileType: files[0]?.type !== undefined ? files[0]?.type : '',
+          kind: 'edo-mulabdija-shop',
+        })
 
         await queryClient.invalidateQueries([
           'image.getAllRelatedImages',
@@ -124,6 +149,7 @@ const UploadArticleImageForm = ({
       article_id,
       action_id,
       name: files[0]?.name || '',
+      contentType: files[0]?.type || '.jpg',
     })
   }
 
@@ -199,7 +225,7 @@ const UploadArticleImageForm = ({
               >
                 <Image
                   alt='article image'
-                  src={image.url}
+                  src={image.access_url || ''}
                   width={300}
                   height={300}
                 />

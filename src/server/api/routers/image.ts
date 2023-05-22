@@ -2,7 +2,14 @@ import { z } from 'zod'
 
 import { createTRPCRouter, publicProcedure, adminProcedure } from '../trpc'
 
-import AWS from 'aws-sdk'
+import { createPresignedPost } from '@aws-sdk/s3-presigned-post'
+
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 import { env } from '../../../env/server.mjs'
 
@@ -11,11 +18,18 @@ const BUCKET_NAME = env.BUCKET_NAME
 const SECRET_ACCES_KEY = env.SECRET_ACCES_KEY
 const ACCESS_KEY = env.ACCESS_KEY
 
-const s3 = new AWS.S3({
+const s3 = new S3Client({
   region: BUCKET_REGION,
-  accessKeyId: ACCESS_KEY,
-  secretAccessKey: SECRET_ACCES_KEY,
+  credentials: {
+    accessKeyId: ACCESS_KEY,
+    secretAccessKey: SECRET_ACCES_KEY,
+  },
 })
+
+const createPresignedUrlWithClient = ({ key }: { key: string }) => {
+  const command = new PutObjectCommand({ Bucket: BUCKET_NAME, Key: key })
+  return getSignedUrl(s3, command, { expiresIn: 3600 })
+}
 
 export const imageRouter = createTRPCRouter({
   createPresignedURL: adminProcedure
@@ -24,47 +38,78 @@ export const imageRouter = createTRPCRouter({
         name: z.string(),
         article_id: z.string(),
         action_id: z.string(),
+        contentType: z.string(),
       })
     )
     .mutation(async ({ input, ctx }) => {
       // Key for S3
-      const image = `${input.name}-${input.article_id || input.action_id}`
+      const key = `${input.name}-${input.article_id || input.action_id}.${
+        input.contentType
+      }`
+
       // POST image to DB
       await ctx.prisma.image.create({
         data: {
           action_id: input.action_id || null,
           article_id: input.article_id || null,
           name: input.name,
-          image,
+          key,
         },
       })
 
       // GET presigned URL from S3
-      let data
-      s3.createPresignedPost(
-        {
-          Fields: {
-            key: image,
-          },
-          Conditions: [
-            ['starts-with', '$Content-Type', 'image/'],
-            ['content-length-range', 0, 1000000],
-          ],
-          Expires: 30,
-          Bucket: BUCKET_NAME,
+      const { url, fields } = await createPresignedPost(s3, {
+        Fields: {
+          acl: 'public-read',
         },
-        (err, signed) => {
-          if (err) data = err
-          else data = signed
-        }
-      )
+        Key: key,
+        Conditions: [
+          ['starts-with', '$Content-Type', 'image/'],
+          ['content-length-range', 0, 1000000],
+        ],
+        Expires: 60,
+        Bucket: BUCKET_NAME,
+      })
 
-      return data as
+      const command = new PutObjectCommand({ Bucket: BUCKET_NAME, Key: key })
+      const uploadURL = await getSignedUrl(s3, command, { expiresIn: 3600 })
+
+      const thirdURL = await createPresignedUrlWithClient({ key })
+
+      return { url, fields, key } as
         | {
             url: string
             fields: object
+            key: string
           }
         | undefined
+    }),
+
+  // This API is used right after creating an image,
+  // It GET's an access_url from S3 and then SET's it  to db
+  generatePermanentAccessURL: adminProcedure
+    .input(
+      z.object({
+        key: z.string(), // "key" field is the object name on the S3 storage
+        fileType: z.string(),
+        kind: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // Find image by provided aws-key
+      const image = await ctx.prisma.image.findUnique({
+        where: { key: input.key },
+      })
+
+      if (!image?.key) return
+
+      // Permanent access url
+      const access_url = `https://${input.kind}.s3.${BUCKET_REGION}.amazonaws.com/${input.key}`
+      console.log('accessrul :', access_url)
+      await ctx.prisma.image.update({
+        where: { id: image?.id },
+        data: { access_url },
+      })
     }),
 
   getAllRelatedImages: publicProcedure
@@ -79,17 +124,7 @@ export const imageRouter = createTRPCRouter({
         where: { article_id: input.article_id, action_id: input.action_id },
       })
 
-      const extended_images = await Promise.all(
-        article_images.map(async (image) => ({
-          ...image,
-          url: await s3.getSignedUrlPromise('getObject', {
-            Bucket: BUCKET_NAME,
-            Key: image.image, // "image" is key (name) to fech by on S3
-          }),
-        }))
-      )
-
-      return extended_images
+      return article_images
     }),
 
   getArticleImage: publicProcedure
@@ -115,7 +150,7 @@ export const imageRouter = createTRPCRouter({
         data: {
           id: input.id,
           name: input.name,
-          image: input.image,
+          key: input.image,
         },
       })
 
@@ -125,16 +160,12 @@ export const imageRouter = createTRPCRouter({
   deleteImage: adminProcedure
     .input(z.object({ id: z.string(), key: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const data = s3.deleteObject(
-        { Bucket: BUCKET_NAME, Key: input.key },
-        (err, data) => {
-          if (err) {
-            return err
-          } else {
-            return data
-          }
-        }
-      )
+      const command = new DeleteObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: input.key,
+      })
+
+      const data = await s3.send(command)
 
       const deleted_image = await ctx.prisma.image.delete({
         where: { id: input.id },
