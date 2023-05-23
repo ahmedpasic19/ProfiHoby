@@ -85,9 +85,10 @@ model Article {
 }
 
 model Image {
-    id    String @id @default(cuid())
-    name  String
-    image String
+    id         String  @id @default(cuid())
+    name       String
+    key        String  @unique
+    access_url String? @unique
 
     Article       Article?       @relation(fields: [article_id], references: [id])
     article_id    String?
