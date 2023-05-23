@@ -35,7 +35,7 @@ const ArticleCarousel = ({ articles }: { articles: TArticle[] }) => {
               action={article.article_action_id ? true : false}
               actionPercentage={article?.action?.discount}
               name={article.name}
-              imageURL={(article.image[0]?.url as string) || ''}
+              imageURL={article.image[0]?.access_url || ''}
               price={article.base_price}
               categories={article.categories}
               article_id={article.id}

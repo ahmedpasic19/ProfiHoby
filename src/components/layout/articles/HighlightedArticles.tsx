@@ -44,19 +44,19 @@ const HighlightedArticles = () => {
                   index <= 4 && (
                     <HiglightedArticle
                       key={Math.random()}
-                      url={action.image[0]?.url || ''}
+                      url={action.image[0]?.access_url || ''}
                     />
                   )
               )
             : articles?.map((article) => (
                 <HiglightedArticle
                   key={Math.random()}
-                  url={article.image[0]?.url || ''}
+                  url={article.image[0]?.access_url || ''}
                 />
               ))}
         </ul>
       </div>
-      <div className='absolute bottom-5 left-1/2 z-30 flex -translate-x-1/2 space-x-3'>
+      <div className='absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 space-x-3'>
         <button
           onClick={() => setItemIndex(0)}
           type='button'
@@ -111,7 +111,7 @@ const HighlightedArticles = () => {
       <button
         onClick={handlePrevious}
         type='button'
-        className='group absolute top-0 left-0 z-30 flex h-full cursor-pointer items-center justify-center px-4 focus:outline-none'
+        className='group absolute top-0 left-0 z-20 flex h-full cursor-pointer items-center justify-center px-4 focus:outline-none'
         data-carousel-prev
       >
         <span className='inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-600/30 sm:h-10 sm:w-10'>
@@ -136,7 +136,7 @@ const HighlightedArticles = () => {
       <button
         onClick={handleNext}
         type='button'
-        className='group absolute top-0 right-0 z-30 flex h-full cursor-pointer items-center justify-center px-4 focus:outline-none'
+        className='group absolute top-0 right-0 z-20 flex h-full cursor-pointer items-center justify-center px-4 focus:outline-none'
         data-carousel-next
       >
         <span className='inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-600/30 sm:h-10 sm:w-10'>

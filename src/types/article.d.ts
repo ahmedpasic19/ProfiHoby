@@ -1,15 +1,12 @@
-import { ArticleAction, CategoriesOnArticle, Category } from '@prisma/client'
+import {
+  ArticleAction,
+  CategoriesOnArticle,
+  Category,
+  Image,
+} from '@prisma/client'
 
 export type TArticle = {
-  image: {
-    url: string
-    id: string
-    name: string
-    image: string
-    article_id: string | null
-    action_id: string | null
-    userId: string | null
-  }[]
+  image: Image[]
   id: string
   name: string
   description: string

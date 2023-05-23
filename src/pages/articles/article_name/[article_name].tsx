@@ -35,7 +35,7 @@ const ArticleNamePage = () => {
               name={article.name}
               action={article.article_action_id ? true : false}
               actionPercentage={article?.action?.discount}
-              imageURL={article.image[0]?.url || ''}
+              imageURL={article.image[0]?.access_url || ''}
               price={article.base_price}
               categories={article.categories}
               article_id={article.id}

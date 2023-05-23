@@ -27,14 +27,14 @@ const ArticlePage = () => {
     }
   )
 
-  const image_uls = artilce_images?.map((image) => image.url) || []
+  const image_uls = artilce_images?.map((image) => image.access_url || '') || []
 
   return (
-    <div className='flex h-full min-h-screen w-full flex-col pt-20'>
+    <div className='flex h-full min-h-screen w-full flex-col'>
       <div className='flex w-full flex-col items-center'>
         {/* Images and detail */}
-        <section className='flex'>
-          <div className='inset-0 flex w-full max-w-[50%] flex-col items-center justify-center overflow-hidden rounded-sm border-2 border-gray-100 p-5'>
+        <section className='flex flex-col sm:flex-row'>
+          <div className='inset-0 flex w-full flex-col items-center justify-center overflow-hidden rounded-sm border-2 border-gray-100 sm:max-w-[50%]'>
             {/* Selected image preveiw */}
             <div className='flex h-96 w-96 items-center justify-center overflow-hidden'>
               <ImageCarousel images={image_uls} />
@@ -57,7 +57,7 @@ const ArticlePage = () => {
             </div>
           </div>
 
-          <div className='jucenter flex h-full w-full max-w-[50%] flex-col items-center'>
+          <div className='jucenter flex h-full w-full flex-col items-center sm:max-w-[50%]'>
             <h2 className='w-full bg-gray-600 p-5 text-center text-2xl font-semibold text-white'>
               {article?.name}
             </h2>

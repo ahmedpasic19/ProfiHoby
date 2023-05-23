@@ -126,7 +126,7 @@ const ArticlesForActionForm = ({
                   categories={article.categories}
                   price={article.base_price}
                   name={article.name}
-                  imageURL={article?.image[0]?.url || ''}
+                  imageURL={article?.image[0]?.access_url || ''}
                 />
                 {selected && (
                   <ImCheckboxChecked className='absolute top-10 right-5 h-8 w-8 text-blue-600' />

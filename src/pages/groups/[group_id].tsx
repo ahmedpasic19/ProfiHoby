@@ -83,7 +83,7 @@ const GroupArticles: NextPage = () => {
                     categories={article.article.categories}
                     imageURL={
                       //@ts-ignore // Error: "url doesn't exits on image", but it does exits
-                      (article.article.image[0]?.url as string) || ''
+                      (article.article.image[0]?.access_url as string) || ''
                     }
                     price={article.article.base_price}
                     article_id={article.article_id}

@@ -3,16 +3,10 @@ import { trpcClient } from '../../utils/api'
 
 import Image from 'next/image'
 import * as Ai from 'react-icons/ai'
+import { Image as ImageModel } from '@prisma/client'
 
 type TProps = {
-  images: {
-    url: string
-    id: string
-    name: string
-    image: string
-    article_id: string | null
-    userId: string | null
-  }[]
+  images: ImageModel[]
   isDelete?: boolean
   article_id?: string
   action_id?: string
@@ -47,11 +41,16 @@ const ImageGrid = ({ images, article_id, action_id, isDelete }: TProps) => {
           key={Math.random().toString()}
           className='relative flex h-full w-full items-center justify-center'
         >
-          <Image src={image.url} width={300} height={200} alt='article image' />
+          <Image
+            src={image.access_url || ''}
+            width={300}
+            height={200}
+            alt='article image'
+          />
           {isDelete && (
             <Ai.AiFillCloseCircle
               onClick={() =>
-                deleteImageMutation({ id: image.id, key: image.image })
+                deleteImageMutation({ id: image.id, key: image.key })
               }
               className='absolute top-2 right-2 h-8 w-8 cursor-pointer text-red-500 hover:text-red-600'
             />
