@@ -3,13 +3,7 @@ import { z } from 'zod'
 import { createTRPCRouter, publicProcedure, adminProcedure } from '../trpc'
 
 import { createPresignedPost } from '@aws-sdk/s3-presigned-post'
-
-import {
-  DeleteObjectCommand,
-  PutObjectCommand,
-  S3Client,
-} from '@aws-sdk/client-s3'
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3'
 
 import { env } from '../../../env/server.mjs'
 
@@ -26,11 +20,6 @@ const s3 = new S3Client({
   },
 })
 
-const createPresignedUrlWithClient = ({ key }: { key: string }) => {
-  const command = new PutObjectCommand({ Bucket: BUCKET_NAME, Key: key })
-  return getSignedUrl(s3, command, { expiresIn: 3600 })
-}
-
 export const imageRouter = createTRPCRouter({
   createPresignedURL: adminProcedure
     .input(
@@ -42,10 +31,7 @@ export const imageRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
-      // Key for S3
-      const key = `${input.name}-${input.article_id || input.action_id}.${
-        input.contentType
-      }`
+      const key = `${input.name}-${input.article_id || input.action_id}`
 
       // POST image to DB
       await ctx.prisma.image.create({
@@ -70,11 +56,6 @@ export const imageRouter = createTRPCRouter({
         Expires: 60,
         Bucket: BUCKET_NAME,
       })
-
-      const command = new PutObjectCommand({ Bucket: BUCKET_NAME, Key: key })
-      const uploadURL = await getSignedUrl(s3, command, { expiresIn: 3600 })
-
-      const thirdURL = await createPresignedUrlWithClient({ key })
 
       return { url, fields, key } as
         | {

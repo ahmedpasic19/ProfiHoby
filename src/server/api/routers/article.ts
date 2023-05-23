@@ -2,20 +2,6 @@ import { z } from 'zod'
 
 import { createTRPCRouter, publicProcedure, adminProcedure } from '../trpc'
 
-import AWS from 'aws-sdk'
-import { env } from '../../../env/server.mjs'
-
-const BUCKET_REGION = env.BUCKET_REGION
-const BUCKET_NAME = env.BUCKET_NAME
-const SECRET_ACCES_KEY = env.SECRET_ACCES_KEY
-const ACCESS_KEY = env.ACCESS_KEY
-
-const s3 = new AWS.S3({
-  region: BUCKET_REGION,
-  accessKeyId: ACCESS_KEY,
-  secretAccessKey: SECRET_ACCES_KEY,
-})
-
 export const articleRouter = createTRPCRouter({
   createArticle: adminProcedure
     .input(
@@ -47,13 +33,13 @@ export const articleRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       const groups_with_articles = await ctx.prisma.group.findMany({
-        // where: {
-        //   articles: { some: { article: { action: {} } } },
-        // },
+        where: {
+          articles: { some: { article: {} } },
+        },
         include: {
           articles: {
             orderBy: { article: { action: { createdAt: 'asc' } } },
-            take: 20,
+            take: input.pageSize,
             include: {
               article: {
                 include: {
@@ -77,21 +63,6 @@ export const articleRouter = createTRPCRouter({
       const total_groups = await ctx.prisma.group.count()
 
       const pageCount = Math.ceil(total_groups / input.pageSize)
-
-      // Assigning an accessURL from S3
-      for (const group of groups_with_articles) {
-        for (const article of group.articles) {
-          const extended_images = article.article.image.map((image) => ({
-            ...image,
-            url: s3.getSignedUrl('getObject', {
-              Bucket: BUCKET_NAME,
-              Key: image.image,
-            }),
-          }))
-
-          article.article.image = extended_images
-        }
-      }
 
       return {
         group_articles: groups_with_articles,
@@ -141,21 +112,8 @@ export const articleRouter = createTRPCRouter({
       })
       const pageCount = Math.ceil(totalArticles / input.pageSize)
 
-      // Assigning an accessURL from S3
-      const arr = articles.map((article) => {
-        const extended_images = article.image.map((image) => ({
-          ...image,
-          url: s3.getSignedUrl('getObject', {
-            Bucket: BUCKET_NAME,
-            Key: image.image,
-          }),
-        }))
-
-        return { ...article, image: extended_images }
-      })
-
       return {
-        articles: arr,
+        articles,
         pageCount,
         pageIndex: input.pageIndex,
         pageSize: input.pageSize,
@@ -204,21 +162,8 @@ export const articleRouter = createTRPCRouter({
       })
       const pageCount = Math.ceil(totalArticles / input.pageSize)
 
-      // Assigning an accessURL from S3
-      const arr = articles.map((article) => {
-        const extended_images = article.image.map((image) => ({
-          ...image,
-          url: s3.getSignedUrl('getObject', {
-            Bucket: BUCKET_NAME,
-            Key: image.image,
-          }),
-        }))
-
-        return { ...article, image: extended_images }
-      })
-
       return {
-        articles: arr,
+        articles,
         pageCount,
         pageIndex: input.pageIndex,
         pageSize: input.pageSize,
@@ -252,20 +197,7 @@ export const articleRouter = createTRPCRouter({
           },
         })
 
-        // Assigning an accessURL from S3
-        const arr = articles.map((article) => {
-          const extended_images = article.image.map((image) => ({
-            ...image,
-            url: s3.getSignedUrl('getObject', {
-              Bucket: BUCKET_NAME,
-              Key: image.image,
-            }),
-          }))
-
-          return { ...article, image: extended_images }
-        })
-
-        return arr
+        return articles
       }
     }),
 
@@ -288,20 +220,7 @@ export const articleRouter = createTRPCRouter({
         orderBy: { createdAt: 'asc' },
       })
 
-      // Assigning an accessURL from S3
-      const action_articles = articles.map((article) => {
-        const extended_images = article.image.map((image) => ({
-          ...image,
-          url: s3.getSignedUrl('getObject', {
-            Bucket: BUCKET_NAME,
-            Key: image.image,
-          }),
-        }))
-
-        return { ...article, image: extended_images }
-      })
-
-      return action_articles
+      return articles
     }),
 
   getArticlesByGroupID: publicProcedure
@@ -338,22 +257,6 @@ export const articleRouter = createTRPCRouter({
       })
       const pageCount = Math.ceil(totalArticles / input.pageSize)
 
-      if (group) {
-        for (const article of group.articles) {
-          if (article.article.image) {
-            const extended_images = article.article.image.map((image) => ({
-              ...image,
-              url: s3.getSignedUrl('getObject', {
-                Bucket: BUCKET_NAME,
-                Key: image.image,
-              }),
-            }))
-
-            article.article.image = extended_images
-          }
-        }
-      }
-
       return {
         group,
         pageCount,
@@ -387,26 +290,13 @@ export const articleRouter = createTRPCRouter({
         orderBy: { createdAt: 'asc' },
       })
 
-      // Assigning an accessURL from S3
-      const action_articles = articles.map((article) => {
-        const extended_images = article.image.map((image) => ({
-          ...image,
-          url: s3.getSignedUrl('getObject', {
-            Bucket: BUCKET_NAME,
-            Key: image.image,
-          }),
-        }))
-
-        return { ...article, image: extended_images }
-      })
-
       const totalArticles = await ctx.prisma.article.count({
         where: { article_action_id: { not: null } },
       })
       const pageCount = Math.ceil(totalArticles / input.pageSize)
 
       return {
-        articles: action_articles,
+        articles,
         pageCount,
         pageIndex: input.pageIndex,
         pageSize: input.pageSize,
@@ -449,20 +339,7 @@ export const articleRouter = createTRPCRouter({
       },
     })
 
-    // Assigning an accessURL from S3
-    const extended_articles = articles.map((article) => {
-      const extended_images = article.image.map((image) => ({
-        ...image,
-        url: s3.getSignedUrl('getObject', {
-          Bucket: BUCKET_NAME,
-          Key: image.image,
-        }),
-      }))
-
-      return { ...article, image: extended_images }
-    })
-
-    return extended_articles
+    return articles
   }),
 
   updateArticle: adminProcedure

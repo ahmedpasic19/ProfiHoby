@@ -80,18 +80,6 @@ const UploadArticleImageForm = ({
           method: 'PUT',
           body: formData,
         })
-          .then((res) => console.log(res))
-          .catch((err) => console.log(err))
-
-        // const response = await fetch(url, {
-        //   method: 'PUT',
-        //   body: formData,
-        //   headers: {
-        //     'Content-Type': 'multipart/form-data',
-        //   },
-        // })
-
-        // console.log(response)
 
         assignUrl({
           key: data?.key || '',
