@@ -2,11 +2,25 @@ import { z } from 'zod'
 
 import { createTRPCRouter, adminProcedure, publicProcedure } from '../trpc'
 
+import AWS from 'aws-sdk'
+import { env } from '../../../env/server.mjs'
+
 const TTArticle = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string(),
   base_price: z.number(),
+})
+
+const BUCKET_REGION = env.BUCKET_REGION
+const BUCKET_NAME = env.BUCKET_NAME
+const SECRET_ACCES_KEY = env.SECRET_ACCES_KEY
+const ACCESS_KEY = env.ACCESS_KEY
+
+const s3 = new AWS.S3({
+  region: BUCKET_REGION,
+  accessKeyId: ACCESS_KEY,
+  secretAccessKey: SECRET_ACCES_KEY,
 })
 
 export const articleActionRouter = createTRPCRouter({
@@ -79,7 +93,25 @@ export const articleActionRouter = createTRPCRouter({
       include: { image: true },
     })
 
-    return all_actions
+    // Assigning an accessURL from S3
+    // GET signed access_url from S3 if image is stored on our S3 bucket
+    const actions_with_images = all_actions.map((action) => {
+      const extended_images = action.image.map((image) => {
+        if (image?.access_url) return image
+        else
+          return {
+            ...image,
+            access_url: s3.getSignedUrl('getObject', {
+              Bucket: BUCKET_NAME,
+              Key: image.key,
+            }),
+          }
+      })
+
+      return { ...action, image: extended_images }
+    })
+
+    return actions_with_images
   }),
 
   getArticleAction: adminProcedure

@@ -2,6 +2,20 @@ import { z } from 'zod'
 
 import { createTRPCRouter, adminProcedure, publicProcedure } from '../trpc'
 
+import AWS from 'aws-sdk'
+import { env } from 'process'
+
+const BUCKET_REGION = env.BUCKET_REGION
+const BUCKET_NAME = env.BUCKET_NAME
+const SECRET_ACCES_KEY = env.SECRET_ACCES_KEY
+const ACCESS_KEY = env.ACCESS_KEY
+
+const s3 = new AWS.S3({
+  region: BUCKET_REGION,
+  accessKeyId: ACCESS_KEY,
+  secretAccessKey: SECRET_ACCES_KEY,
+})
+
 export const categoryRouter = createTRPCRouter({
   createCategory: adminProcedure
     .input(
@@ -102,6 +116,28 @@ export const categoryRouter = createTRPCRouter({
       const total_groups = await ctx.prisma.group.count()
 
       const pageCount = Math.ceil(total_groups / input.pageSize)
+
+      // Assigning an accessURL from S3
+      // GET signed access_url from S3 if image is stored on our S3 bucket
+      if (category) {
+        for (const group of category.groups) {
+          for (const article of group.articles) {
+            const extended_images = article.article.image.map((image) => {
+              if (image?.access_url) return image
+              else
+                return {
+                  ...image,
+                  access_url: s3.getSignedUrl('getObject', {
+                    Bucket: BUCKET_NAME,
+                    Key: image.key,
+                  }),
+                }
+            })
+
+            article.article.image = extended_images
+          }
+        }
+      }
 
       return {
         category: category,
