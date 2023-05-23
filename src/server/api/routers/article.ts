@@ -526,6 +526,31 @@ export const articleRouter = createTRPCRouter({
         },
       })
 
+      const article_images = await ctx.prisma.image.findMany({
+        where: { article_id: input.id },
+      })
+
+      // Delete images from S3
+      for (const image of article_images) {
+        s3.deleteObject(
+          { Bucket: BUCKET_NAME, Key: image.key },
+          (err, data) => {
+            if (err) {
+              return err
+            } else {
+              return data
+            }
+          }
+        )
+      }
+
+      // Delete article images
+      await ctx.prisma.image.deleteMany({
+        where: {
+          article_id: input.id,
+        },
+      })
+
       const article = await ctx.prisma.article.delete({
         where: { id: input.id },
       })
