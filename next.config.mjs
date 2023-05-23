@@ -17,6 +17,7 @@ const config = {
   images: {
     domains: [
       'edo-mulabdija-shop.s3.eu-central-1.amazonaws.com',
+      'profihoby.s3.eu-north-1.amazonaws.com',
       'vp.lacuna.ba',
     ],
   },
