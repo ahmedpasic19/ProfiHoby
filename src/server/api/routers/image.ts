@@ -95,7 +95,7 @@ export const imageRouter = createTRPCRouter({
 
       // Permanent access url
       const access_url = `https://${input.kind}.s3.${BUCKET_REGION}.amazonaws.com/${input.key}`
-      console.log('accessrul :', access_url)
+
       await ctx.prisma.image.update({
         where: { id: image?.id },
         data: { access_url },

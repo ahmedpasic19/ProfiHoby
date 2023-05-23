@@ -39,11 +39,6 @@ const UploadArticleImageForm = ({
     }
   )
 
-  const { mutate: assignUrl } = useMutation(
-    (input: { key: string; fileType: string; kind: string }) =>
-      trpcClient.image.generatePermanentAccessURL.mutate(input)
-  )
-
   const { mutate: createImage } = useMutation(
     (input: { name: string; article_id: string; action_id: string }) =>
       trpcClient.image.createPresignedURL.mutate(input),
@@ -78,12 +73,6 @@ const UploadArticleImageForm = ({
         })
           .then(() => console.log('Success'))
           .catch(() => console.log('fail'))
-
-        assignUrl({
-          key: data?.key || '',
-          fileType: files[0]?.type !== undefined ? files[0]?.type : '',
-          kind: 'edo-mulabdija-shop',
-        })
 
         await queryClient.invalidateQueries([
           'image.getAllRelatedImages',
