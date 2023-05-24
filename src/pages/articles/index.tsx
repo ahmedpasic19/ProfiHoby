@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import useProtectRoute from '../../hooks/useProtectRoute'
 
-import MainTable from '../../components/table/MainTable'
+import MainPaginatedTable from '../../components/table/MainPaginatedTable'
 
 import DeleteArticleModal from '../../components/modals/articles/DeleteArticleModal'
 import UpdateArticleModal from '../../components/modals/articles/UpdateArticleModal'
@@ -44,13 +44,16 @@ const Articles: NextPage = () => {
 
   useProtectRoute()
 
+  const [pageSize, setPageSize] = useState(25)
+  const [pageIndex, setPageIndex] = useState(0)
+
   const { data: articleData } = useQuery(
-    ['articles', { pageSize: 100, pageIndex: 0, name: '' }],
+    ['articles', { pageSize, pageIndex, name: '' }],
     () =>
       trpcClient.article.getAllArticles.query({
         name: '',
-        pageIndex: 0,
-        pageSize: 100,
+        pageIndex,
+        pageSize,
       })
   )
 
@@ -155,7 +158,14 @@ const Articles: NextPage = () => {
         </section>
 
         <div className='relative flex w-full justify-center overflow-y-auto'>
-          <MainTable data={useData()} columns={columns} showNavigation />
+          <MainPaginatedTable
+            data={useData()}
+            columns={columns}
+            showNavigation
+            setPage={setPageIndex}
+            setPageSize={setPageSize}
+            pageCount={articleData?.pageCount || 0}
+          />
         </div>
       </div>
       <ArticleMultiformModal
