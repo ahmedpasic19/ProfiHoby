@@ -116,7 +116,7 @@ export const articleRouter = createTRPCRouter({
             },
           },
         },
-        // where,
+        where,
         skip: input.pageSize * input.pageIndex,
         take: input.pageSize,
         orderBy: { createdAt: 'desc' },

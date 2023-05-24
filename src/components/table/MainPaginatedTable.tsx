@@ -19,6 +19,7 @@ interface ReactTableProps<T extends object> {
   setPage: React.Dispatch<React.SetStateAction<number>>
   setPageSize: React.Dispatch<React.SetStateAction<number>>
   pageCount: number
+  pageIndex: number
 }
 
 const MainPaginatedTable = <T extends object>({
@@ -28,6 +29,7 @@ const MainPaginatedTable = <T extends object>({
   showNavigation,
   setPage,
   setPageSize,
+  pageIndex,
 }: ReactTableProps<T>) => {
   const table = useReactTable({
     data,
@@ -36,6 +38,12 @@ const MainPaginatedTable = <T extends object>({
     getPaginationRowModel: getPaginationRowModel(),
     manualPagination: true,
   })
+
+  // If pageIndex state is reset then reset the table.pageIndex
+  // This is done on handleSearchArticles for exp.
+  useEffect(() => {
+    table.setPageIndex(pageIndex)
+  }, [pageIndex])
 
   // UPDATE table state.pageCount each time API returns new pageCount
   useEffect(() => {

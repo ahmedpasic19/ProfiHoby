@@ -1,5 +1,5 @@
 import { NextPage } from 'next'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useRef, FormEvent } from 'react'
 
 import { ColumnDef } from '@tanstack/react-table'
 import { Article, CategoriesOnArticle, Image } from '@prisma/client'
@@ -23,6 +23,7 @@ import { BsFillImageFill } from 'react-icons/bs'
 import { FaTrash } from 'react-icons/fa'
 import { AiFillEdit } from 'react-icons/ai'
 import { HiOutlineRectangleGroup } from 'react-icons/hi2'
+import { ImCancelCircle } from 'react-icons/im'
 
 type TArticle = Article & {
   image: Image[]
@@ -46,12 +47,22 @@ const Articles: NextPage = () => {
 
   const [pageSize, setPageSize] = useState(25)
   const [pageIndex, setPageIndex] = useState(0)
+  const [inputName, setInputName] = useState('') // for input value
+  const [name, setName] = useState('')
 
-  const { data: articleData } = useQuery(
-    ['articles', { pageSize, pageIndex, name: '' }],
+  const handleSearchArticle = (e: FormEvent) => {
+    e.preventDefault()
+    setName(ref.current?.value || '')
+    setPageIndex(0)
+  } // pass input value onClick
+
+  const ref = useRef<HTMLInputElement>(null) // ref to article_name input
+
+  const { data: articleData, isLoading } = useQuery(
+    ['articles', { pageSize, pageIndex, name }],
     () =>
       trpcClient.article.getAllArticles.query({
-        name: '',
+        name,
         pageIndex,
         pageSize,
       })
@@ -147,14 +158,52 @@ const Articles: NextPage = () => {
           Artikli
         </h1>
 
-        <section className='flex w-4/5 items-center py-10'>
+        <section className='flex w-4/5 items-center pt-10'>
           <button
             // onClick={() => router.push('/articles/create-article')}
-            onClick={() => setOpenAddArticle(true)}
+            onClick={() => {
+              setOpenAddArticle(true)
+            }}
             className='w-[250px] rounded-xl bg-blue-500 p-4 text-xl font-semibold text-white hover:bg-blue-600'
           >
             Dodaj artikal
           </button>
+
+          {/* Search articles */}
+          <form
+            onSubmit={handleSearchArticle}
+            className='flex h-full w-full items-center justify-end pb-5'
+          >
+            <fieldset className='relative my-3 flex w-full flex-col items-end pr-5'>
+              <input
+                ref={ref}
+                type='text'
+                id='name'
+                name='name'
+                value={inputName}
+                onChange={(e) => setInputName(e.target.value)}
+                placeholder='Pretraži artikal'
+                className='w-2/5 rounded-xl border-2 border-gray-800 p-3 outline-none'
+              />
+              {name && (
+                <ImCancelCircle
+                  onClick={() => {
+                    setName('')
+                    setInputName('')
+                    setPageIndex(0) // reste pageIndex onClearSearch
+                  }}
+                  className='absolute right-7 h-5 w-5 translate-y-[80%] cursor-pointer text-gray-600/30'
+                />
+              )}
+            </fieldset>
+            <button
+              type='submit'
+              className='rounded-xl bg-gray-800 p-3 text-center text-lg font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
+              disabled={isLoading}
+            >
+              {isLoading ? 'Učitavanje' : 'Pretraži'}
+            </button>
+          </form>
         </section>
 
         <div className='relative flex w-full justify-center overflow-y-auto'>
@@ -165,6 +214,7 @@ const Articles: NextPage = () => {
             setPage={setPageIndex}
             setPageSize={setPageSize}
             pageCount={articleData?.pageCount || 0}
+            pageIndex={pageIndex}
           />
         </div>
       </div>
