@@ -40,7 +40,7 @@ const UploadImageForm = ({
   )
 
   const { mutate: assignUrl } = useMutation(
-    (input: { key: string; fileType: string; kind: string }) =>
+    (input: { key: string; fileType: string }) =>
       trpcClient.image.generatePermanentAccessURL.mutate(input)
   )
 
@@ -86,7 +86,6 @@ const UploadImageForm = ({
         assignUrl({
           key: data?.key || '',
           fileType: files[0]?.type !== undefined ? files[0]?.type : '',
-          kind: 'edo-mulabdija-shop',
         })
 
         await queryClient.invalidateQueries([

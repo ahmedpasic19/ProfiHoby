@@ -82,7 +82,6 @@ export const imageRouter = createTRPCRouter({
       z.object({
         key: z.string(), // "key" field is the object name on the S3 storage
         fileType: z.string(),
-        kind: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -94,7 +93,7 @@ export const imageRouter = createTRPCRouter({
       if (!image?.key) return
 
       // Permanent access url
-      const access_url = `https://${input.kind}.s3.${BUCKET_REGION}.amazonaws.com/${input.key}`
+      const access_url = `https://${BUCKET_NAME}.s3.${BUCKET_REGION}.amazonaws.com/${input.key}`
 
       await ctx.prisma.image.update({
         where: { id: image?.id },
