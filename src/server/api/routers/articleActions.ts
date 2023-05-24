@@ -118,25 +118,7 @@ export const articleActionRouter = createTRPCRouter({
       include: { image: true },
     })
 
-    // Assigning an accessURL from S3
-    // GET signed access_url from S3 if image is stored on our S3 bucket
-    const actions_with_images = all_actions.map((action) => {
-      const extended_images = action.image.map((image) => {
-        if (image?.access_url) return image
-        else
-          return {
-            ...image,
-            access_url: s3.getSignedUrl('getObject', {
-              Bucket: BUCKET_NAME,
-              Key: image.key,
-            }),
-          }
-      })
-
-      return { ...action, image: extended_images }
-    })
-
-    return actions_with_images
+    return all_actions
   }),
 
   getArticleAction: adminProcedure

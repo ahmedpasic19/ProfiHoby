@@ -79,26 +79,6 @@ export const articleRouter = createTRPCRouter({
 
       const pageCount = Math.ceil(total_groups / input.pageSize)
 
-      // Assigning an accessURL from S3
-      for (const group of groups_with_articles) {
-        for (const article of group.articles) {
-          const extended_images = article.article.image.map((image) => {
-            // GET signed access_url from S3 if image is stored on our S3 bucket
-            if (image?.access_url) return image
-            else
-              return {
-                ...image,
-                access_url: s3.getSignedUrl('getObject', {
-                  Bucket: BUCKET_NAME,
-                  Key: image.key,
-                }),
-              }
-          })
-
-          article.article.image = extended_images
-        }
-      }
-
       return {
         group_articles: groups_with_articles,
         pageCount,
@@ -197,26 +177,8 @@ export const articleRouter = createTRPCRouter({
       })
       const pageCount = Math.ceil(totalArticles / input.pageSize)
 
-      // Assigning an accessURL from S3
-      // GET signed access_url from S3 if image is stored on our S3 bucket
-      const arr = articles.map((article) => {
-        const extended_images = article.image.map((image) => {
-          if (image?.access_url) return image
-          else
-            return {
-              ...image,
-              access_url: s3.getSignedUrl('getObject', {
-                Bucket: BUCKET_NAME,
-                Key: image.key,
-              }),
-            }
-        })
-
-        return { ...article, image: extended_images }
-      })
-
       return {
-        articles: arr,
+        articles,
         pageCount,
         pageIndex: input.pageIndex,
         pageSize: input.pageSize,
@@ -250,25 +212,7 @@ export const articleRouter = createTRPCRouter({
           },
         })
 
-        // Assigning an accessURL from S3
-        // GET signed access_url from S3 if image is stored on our S3 bucket
-        const arr = articles.map((article) => {
-          const extended_images = article.image.map((image) => {
-            if (image?.access_url) return image
-            else
-              return {
-                ...image,
-                access_url: s3.getSignedUrl('getObject', {
-                  Bucket: BUCKET_NAME,
-                  Key: image.key,
-                }),
-              }
-          })
-
-          return { ...article, image: extended_images }
-        })
-
-        return arr
+        return articles
       }
     }),
 
@@ -291,25 +235,7 @@ export const articleRouter = createTRPCRouter({
         orderBy: { createdAt: 'asc' },
       })
 
-      // Assigning an accessURL from S3
-      // GET signed access_url from S3 if image is stored on our S3 bucket
-      const action_articles = articles.map((article) => {
-        const extended_images = article.image.map((image) => {
-          if (image?.access_url) return image
-          else
-            return {
-              ...image,
-              access_url: s3.getSignedUrl('getObject', {
-                Bucket: BUCKET_NAME,
-                Key: image.key,
-              }),
-            }
-        })
-
-        return { ...article, image: extended_images }
-      })
-
-      return action_articles
+      return articles
     }),
 
   getArticlesByGroupID: publicProcedure
@@ -345,27 +271,6 @@ export const articleRouter = createTRPCRouter({
         where: { groups: { some: { group_id: input.group_id } } },
       })
       const pageCount = Math.ceil(totalArticles / input.pageSize)
-
-      // GET signed access_url from S3 if image is stored on our S3 bucket
-      if (group) {
-        for (const article of group.articles) {
-          if (article.article.image) {
-            const extended_images = article.article.image.map((image) => {
-              if (image?.access_url) return image
-              else
-                return {
-                  ...image,
-                  access_url: s3.getSignedUrl('getObject', {
-                    Bucket: BUCKET_NAME,
-                    Key: image.key,
-                  }),
-                }
-            })
-
-            article.article.image = extended_images
-          }
-        }
-      }
 
       return {
         group,
@@ -405,26 +310,8 @@ export const articleRouter = createTRPCRouter({
       })
       const pageCount = Math.ceil(totalArticles / input.pageSize)
 
-      // Assigning an accessURL from S3
-      // GET signed access_url from S3 if image is stored on our S3 bucket
-      const action_articles = articles.map((article) => {
-        const extended_images = article.image.map((image) => {
-          if (image?.access_url) return image
-          else
-            return {
-              ...image,
-              access_url: s3.getSignedUrl('getObject', {
-                Bucket: BUCKET_NAME,
-                Key: image.key,
-              }),
-            }
-        })
-
-        return { ...article, image: extended_images }
-      })
-
       return {
-        articles: action_articles,
+        articles,
         pageCount,
         pageIndex: input.pageIndex,
         pageSize: input.pageSize,
@@ -467,25 +354,7 @@ export const articleRouter = createTRPCRouter({
       },
     })
 
-    // Assigning an accessURL from S3
-    // GET signed access_url from S3 if image is stored on our S3 bucket
-    const extended_articles = articles.map((article) => {
-      const extended_images = article.image.map((image) => {
-        if (image?.access_url) return image
-        else
-          return {
-            ...image,
-            access_url: s3.getSignedUrl('getObject', {
-              Bucket: BUCKET_NAME,
-              Key: image.key,
-            }),
-          }
-      })
-
-      return { ...article, image: extended_images }
-    })
-
-    return extended_articles
+    return articles
   }),
 
   updateArticle: adminProcedure

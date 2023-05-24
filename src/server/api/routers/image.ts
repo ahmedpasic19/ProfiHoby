@@ -114,22 +114,7 @@ export const imageRouter = createTRPCRouter({
         where: { article_id: input.article_id, action_id: input.action_id },
       })
 
-      const extended_images = await Promise.all(
-        article_images.map(async (image) => {
-          // GET signed access_url from S3 if image is stored on our S3 bucket
-          if (image?.access_url) return image
-          else
-            return {
-              ...image,
-              access_url: await s3.getSignedUrlPromise('getObject', {
-                Bucket: BUCKET_NAME,
-                Key: image.key, // key (name) to fech by on S3
-              }),
-            }
-        })
-      )
-
-      return extended_images
+      return article_images
     }),
 
   getArticleImage: publicProcedure
