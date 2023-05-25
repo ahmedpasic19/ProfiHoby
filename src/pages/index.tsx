@@ -93,6 +93,7 @@ const Home: NextPage = () => {
                 <ArticleCarouselContainer
                   key={Math.random()}
                   group_name={group.name}
+                  group_id={group?.id || ''}
                   // @ts-ignore // "url" is provided to the Image in the api query
                   articles={group.articles.map(({ article }) => article)}
                 />
