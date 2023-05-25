@@ -29,6 +29,9 @@ const ArticlePage = () => {
 
   const image_uls = artilce_images?.map((image) => image.access_url || '') || []
 
+  const apiString = `${article?.description || ''}`
+  const formattedString = apiString.replace(/&lt;br&gt;/g, '<br/>')
+
   return (
     <div className='flex h-full min-h-screen w-full flex-col'>
       <div className='flex w-full flex-col items-center'>
@@ -70,7 +73,7 @@ const ArticlePage = () => {
         {/* Article description */}
         <section className='flex w-full max-w-[80%] flex-col items-center'>
           <h2 className='text-xl font-bold'>Opis artikla</h2>
-          <p className='text-lg'>{article?.description}</p>
+          <div dangerouslySetInnerHTML={{ __html: formattedString }} />
         </section>
       </div>
     </div>
