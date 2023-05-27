@@ -67,6 +67,14 @@ const ArticlePage = () => {
             <h1 className='p-10 text-[4em] font-extrabold tracking-tight text-gray-600'>
               {article?.base_price}KM
             </h1>
+            {article?.warranty && (
+              <div className='flex w-full flex-col items-center justify-center'>
+                <h1 className='w-full bg-gray-600 py-2 text-center text-white'>
+                  <b>Garancija:</b>
+                </h1>
+                <p>{article?.warranty}</p>
+              </div>
+            )}
           </div>
         </section>
 
