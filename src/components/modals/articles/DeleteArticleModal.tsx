@@ -1,6 +1,6 @@
 import { FormEvent } from 'react'
 import { trpcClient } from '../../../utils/api'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import {
   Article,
   CategoriesOnArticle,
@@ -11,6 +11,7 @@ import {
 
 import Textarea from '../../Textarea'
 import FieldSet from '../../Fieldset'
+import Select from 'react-select'
 import { Dialog } from '@headlessui/react'
 import * as Ai from 'react-icons/ai'
 
@@ -39,6 +40,20 @@ const DeleteArticleModal = ({
   setArticle,
 }: TProps) => {
   const queryClient = useQueryClient()
+
+  const { data: brands } = useQuery(['brand.getAllBrands'], () =>
+    trpcClient.brand.getAllBrands.query()
+  )
+
+  const brand_options =
+    brands?.map((brand) => ({
+      label: brand.name,
+      value: brand.id,
+    })) || []
+
+  const value = brand_options.find(
+    (option) => option.label === article?.brand?.name
+  )
 
   const { mutate: deleteArticle } = useMutation(
     () => trpcClient.article.deleteArticle.mutate({ id: article.id }),
@@ -76,7 +91,7 @@ const DeleteArticleModal = ({
         <main className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
           <form
             onSubmit={handleSubmit}
-            className='flex min-h-[584px] w-[450px] flex-col justify-evenly rounded-xl bg-white p-10 drop-shadow-2xl'
+            className='flex h-full w-full flex-col justify-evenly overflow-y-auto rounded-xl bg-white p-10 drop-shadow-2xl sm:h-[80vh] sm:max-w-screen-sm sm:pt-52'
           >
             <h1 className='w-full text-center text-2xl font-bold text-gray-800'>
               Izbriši artikal
@@ -97,13 +112,34 @@ const DeleteArticleModal = ({
               name='description'
               placeholder='Opišite artikal'
             />
+            <Textarea
+              rows={4}
+              id='warranty'
+              readOnly
+              label='Garancija'
+              value={article.warranty || ''}
+              name='warranty'
+              placeholder='Informacije...'
+            />
             <FieldSet
               value={article.base_price}
-              readOnly={true}
+              readOnly
               name='base_price'
               label='Cijena'
               type='number'
             />
+            <fieldset className='flex w-full flex-col items-center'>
+              <label className='text-cl mb-2 w-3/4 text-start text-xl font-semibold text-gray-800'>
+                Brend
+              </label>
+              <div className='w-4/5'>
+                <Select
+                  options={brand_options}
+                  placeholder='Brend'
+                  value={value || null}
+                />
+              </div>
+            </fieldset>
             <section className='mt-5 flex w-full items-center justify-center'>
               <button
                 onSubmit={handleSubmit}
@@ -117,7 +153,7 @@ const DeleteArticleModal = ({
                 setIsOpen(false)
                 setArticle({} as TArticle)
               }}
-              className='absolute top-4 right-4 h-8 w-8 cursor-pointer rounded-full bg-gray-600 text-white hover:bg-gray-800'
+              className='absolute top-4 right-4 block h-8 w-8 cursor-pointer rounded-full bg-gray-600 text-white hover:bg-gray-800 sm:hidden'
             />
           </form>
         </main>

@@ -98,8 +98,8 @@ const Articles: NextPage = () => {
       accessorKey: 'description',
     },
     {
-      header: 'Popust',
-      accessorKey: 'discount',
+      header: 'Garancija',
+      accessorKey: 'warranty',
     },
     {
       header: 'Akcije',

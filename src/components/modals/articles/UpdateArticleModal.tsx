@@ -115,7 +115,7 @@ const UpdateArticleModal = ({
         <main className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
           <form
             onSubmit={handleSubmit}
-            className='flex min-h-[584px] w-[450px] flex-col justify-evenly rounded-xl bg-white p-10 drop-shadow-2xl'
+            className='flex h-full w-full flex-col justify-evenly overflow-y-auto rounded-xl bg-white p-10 drop-shadow-2xl sm:h-[80vh] sm:max-w-screen-sm sm:pt-52'
           >
             <h1 className='w-full text-center text-2xl font-bold text-gray-800'>
               Izmjeni artikal
@@ -130,11 +130,20 @@ const UpdateArticleModal = ({
             <Textarea
               rows={4}
               id='message'
-              label=' Opis artikla'
+              label='Opis artikla'
               value={article.description}
               onChange={handleChange}
               name='description'
               placeholder='Opišite artikal'
+            />
+            <Textarea
+              rows={4}
+              id='warranty'
+              label='Garancija'
+              value={article.warranty || ''}
+              onChange={handleChange}
+              name='warranty'
+              placeholder='Informacije...'
             />
             <FieldSet
               value={article.base_price}
@@ -143,15 +152,22 @@ const UpdateArticleModal = ({
               label='Cijena'
               type='number'
             />
-            <Select
-              options={brand_options}
-              placeholder='Odaberi brend'
-              value={value || null}
-              onChange={(option) =>
-                option &&
-                setArticle({ ...article, brand: { name: option.label } })
-              }
-            />
+            <fieldset className='flex w-full flex-col items-center'>
+              <label className='text-cl mb-2 w-3/4 text-start text-xl font-semibold text-gray-800'>
+                Brend
+              </label>
+              <div className='w-4/5'>
+                <Select
+                  options={brand_options}
+                  placeholder='Odaberi brend'
+                  value={value || null}
+                  onChange={(option) =>
+                    option &&
+                    setArticle({ ...article, brand: { name: option.label } })
+                  }
+                />
+              </div>
+            </fieldset>
             <section className='mt-5 flex w-full items-center justify-center'>
               <button
                 onSubmit={handleSubmit}
@@ -165,7 +181,7 @@ const UpdateArticleModal = ({
                 setIsOpen(false)
                 setArticle({} as TArticle)
               }}
-              className='absolute top-4 right-4 h-8 w-8 cursor-pointer rounded-full bg-gray-600 text-white hover:bg-gray-800'
+              className='absolute top-4 right-4 block h-8 w-8 cursor-pointer rounded-full bg-gray-600 text-white hover:bg-gray-800 sm:hidden'
             />
           </form>
         </main>

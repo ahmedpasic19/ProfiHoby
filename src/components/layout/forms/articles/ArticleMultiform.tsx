@@ -8,6 +8,7 @@ import UploadArticleImageForm from './UploadArticleImageForm'
 import MultiformPageStepper from '../../../MultiformPageStepper'
 
 import { Article } from '@prisma/client'
+import { AiFillCloseCircle } from 'react-icons/ai'
 
 type TProps = {
   isOpen: boolean
@@ -35,8 +36,8 @@ const ArticleMultiformModal = ({
         <div className='absolute h-full w-full bg-black/30' onClick={onClose} />
 
         <div>
-          <main className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
-            <div className='z-10 flex h-[50em] w-1/2 flex-col items-center overflow-y-auto rounded-xl bg-white'>
+          <main className='flex h-full min-h-screen w-full flex-col items-center justify-center sm:h-[80vh]'>
+            <div className='relative z-10 flex h-full w-full flex-col items-center overflow-y-auto rounded-xl bg-white sm:h-[80vh] sm:max-w-screen-sm'>
               {/* Stepper */}
               <div className='w-full px-10'>
                 <MultiformPageStepper
@@ -72,7 +73,11 @@ const ArticleMultiformModal = ({
                   article_id={articleId}
                   action_id=''
                 />
-              )}
+              )}{' '}
+              <AiFillCloseCircle
+                onClick={onClose}
+                className='absolute top-4 right-4 block h-8 w-8 cursor-pointer rounded-full bg-gray-600 text-white hover:bg-gray-800 sm:hidden'
+              />
             </div>
           </main>
         </div>

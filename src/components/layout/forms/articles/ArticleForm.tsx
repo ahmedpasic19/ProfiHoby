@@ -29,8 +29,12 @@ const ArticleForm = ({
   )
 
   const { mutate: postArticle } = useMutation(
-    (input: { name: string; description: string; base_price: number }) =>
-      trpcClient.article.createArticle.mutate(input),
+    (input: {
+      name: string
+      description: string
+      warranty: string | null
+      base_price: number
+    }) => trpcClient.article.createArticle.mutate(input),
     {
       onSuccess: async (data) => {
         setArticleId(data.id)
@@ -73,7 +77,10 @@ const ArticleForm = ({
   )
 
   return (
-    <form onSubmit={createArticle} className='relative h-full w-3/4 p-10'>
+    <form
+      onSubmit={createArticle}
+      className='relative h-full w-full p-10 sm:w-3/4 sm:pb-5'
+    >
       <h1 className='w-full text-center text-2xl font-bold text-gray-800'>
         Dodaj artikal
       </h1>
@@ -99,6 +106,21 @@ const ArticleForm = ({
           placeholder='Opišite artikal'
         />
       </fieldset>
+      <fieldset className='flex w-full flex-col items-center'>
+        <label
+          htmlFor='warranty'
+          className='text-cl mb-2 w-3/4 text-start text-xl font-semibold text-gray-800'
+        >
+          Garancija
+        </label>
+        <Textarea
+          onChange={handleChange}
+          rows={4}
+          id='warranty'
+          name='warranty'
+          placeholder='Informacije'
+        />
+      </fieldset>
       <FieldSet
         value={articleData.base_price || ''}
         onChange={handleChange}
@@ -106,14 +128,22 @@ const ArticleForm = ({
         label='Cijena'
         type='number'
       />
-      <Select
-        options={brand_options}
-        placeholder='Odaberi brend'
-        value={value || null}
-        onChange={(option) =>
-          option && setArticleData({ ...articleData, brand_id: option.value })
-        }
-      />
+      <fieldset className='flex w-full flex-col items-center'>
+        <label className='text-cl mb-2 w-3/4 text-start text-xl font-semibold text-gray-800'>
+          Brend
+        </label>
+        <div className='w-4/5'>
+          <Select
+            options={brand_options}
+            placeholder='Odaberi brend'
+            value={value || null}
+            onChange={(option) =>
+              option &&
+              setArticleData({ ...articleData, brand_id: option.value })
+            }
+          />
+        </div>
+      </fieldset>
       <section className='mt-10 flex w-full items-center justify-center'>
         <button
           disabled={
