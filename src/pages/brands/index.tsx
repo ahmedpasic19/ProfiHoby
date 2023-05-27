@@ -124,14 +124,12 @@ const Brands: NextPage = () => {
         setIsOpen={setOpenUpdate}
         setBrand={setBrand}
       />
-      {/* 
-
       <BrandArticlesModal
         brand={brand}
         isOpen={openBrandArticles}
-        setIsOpen={setOpenUpdateCategories}
+        setIsOpen={setOpenBrandArticles}
         setBrand={setBrand}
-      /> */}
+      />
     </>
   )
 }
