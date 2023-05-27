@@ -43,6 +43,10 @@ const Navbar = () => {
       label: 'Radnici',
     },
     {
+      href: '/brands',
+      label: 'Brendovi',
+    },
+    {
       href: '/actions',
       label: 'Akcije',
     },

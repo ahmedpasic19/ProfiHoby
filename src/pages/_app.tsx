@@ -27,6 +27,19 @@ const MyApp: AppType<{ session: Session | null }> = ({
   const router = useRouter()
   const { article_id } = router.query
 
+  // pages where search-bar will not appear
+  const searchbarpages = [
+    '/articles',
+    '/categories',
+    '/signin',
+    '/groups',
+    '/actions',
+    '/brands',
+    '/workers',
+  ]
+
+  const showSearchbar = searchbarpages.find((page) => page === router.pathname)
+
   return (
     <QueryClientProvider client={client}>
       <SessionProvider session={session}>
@@ -36,11 +49,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           <link rel='icon' href='/favicon.ico' />
         </Head>
         {router.pathname !== '/signin' && <Navbar />}
-        {router.pathname != '/articles' &&
-          router.pathname != '/categories' &&
-          router.pathname != '/signin' &&
-          router.pathname != '/groups' &&
-          router.pathname != '/actions' &&
+        {!showSearchbar &&
           !article_id &&
           router.pathname != '/articles/create-article' && <SearchBar />}
         <Component {...pageProps} />
