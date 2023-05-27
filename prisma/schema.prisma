@@ -79,8 +79,8 @@ model Article {
     groups            ArticleGroups[]
     action            ArticleAction?        @relation(fields: [article_action_id], references: [id])
     article_action_id String?
-    brand             Brand                 @relation(fields: [brand_id], references: [id])
-    brand_id          String
+    brand             Brand?                @relation(fields: [brand_id], references: [id])
+    brand_id          String?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
