@@ -1,10 +1,11 @@
 import { Article } from '@prisma/client'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { FormEvent, ChangeEvent } from 'react'
 import { trpcClient } from '../../../../utils/api'
 
 import FieldSet from '../../../Fieldset'
 import Textarea from '../../../Textarea'
+import Select from 'react-select'
 
 type TProps = {
   setArticleData: React.Dispatch<React.SetStateAction<Article>>
@@ -22,6 +23,10 @@ const ArticleForm = ({
   pageIndex,
 }: TProps) => {
   const queryClient = useQueryClient()
+
+  const { data: brands } = useQuery(['brand.getAllBrands'], () =>
+    trpcClient.brand.getAllBrands.query()
+  )
 
   const { mutate: postArticle } = useMutation(
     (input: { name: string; description: string; base_price: number }) =>
@@ -64,6 +69,16 @@ const ArticleForm = ({
     setArticleData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
+  const brand_options =
+    brands?.map((brand) => ({
+      label: brand.name,
+      value: brand.id,
+    })) || []
+
+  const value = brand_options.find(
+    (option) => option.value === articleData?.brand_id
+  )
+
   return (
     <form onSubmit={createArticle} className='relative h-full w-3/4 p-10'>
       <h1 className='w-full text-center text-2xl font-bold text-gray-800'>
@@ -97,6 +112,13 @@ const ArticleForm = ({
         name='base_price'
         label='Cijena'
         type='number'
+      />
+      <Select
+        options={brand_options}
+        value={value || null}
+        onChange={(option) =>
+          option && setArticleData({ ...articleData, brand_id: option.value })
+        }
       />
       <section className='mt-10 flex w-full items-center justify-center'>
         <button
