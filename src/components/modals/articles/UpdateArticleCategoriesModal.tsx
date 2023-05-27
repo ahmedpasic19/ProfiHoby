@@ -2,13 +2,25 @@ import { FormEvent, useState } from 'react'
 import { Dialog } from '@headlessui/react'
 import Select, { MultiValue } from 'react-select'
 import * as Ai from 'react-icons/ai'
-import { Article, CategoriesOnArticle, Image } from '@prisma/client'
+import {
+  Article,
+  ArticleAction,
+  CategoriesOnArticle,
+  Category,
+  Image,
+} from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { trpcClient } from '../../../utils/api'
 
 type TArticle = Article & {
   image: Image[]
-  categories: CategoriesOnArticle[]
+  brand: {
+    name: string
+  } | null
+  categories: (CategoriesOnArticle & {
+    category: Category
+  })[]
+  action: ArticleAction | null
 }
 
 type TProps = {
@@ -59,6 +71,7 @@ const UpdateArticleCategoriesModal = ({
     }) => trpcClient.article_category_relation.updateRelation.mutate(input),
     {
       onSuccess: async () => {
+        await queryClient.invalidateQueries(['articles.getAllArticles'])
         await queryClient.invalidateQueries([
           'article.categoreis',
           { id: article.id },

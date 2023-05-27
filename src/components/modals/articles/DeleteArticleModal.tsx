@@ -1,7 +1,13 @@
 import { FormEvent } from 'react'
 import { trpcClient } from '../../../utils/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Article, CategoriesOnArticle, Image } from '@prisma/client'
+import {
+  Article,
+  CategoriesOnArticle,
+  Image,
+  Category,
+  ArticleAction,
+} from '@prisma/client'
 
 import Textarea from '../../Textarea'
 import FieldSet from '../../Fieldset'
@@ -10,7 +16,13 @@ import * as Ai from 'react-icons/ai'
 
 type TArticle = Article & {
   image: Image[]
-  categories: CategoriesOnArticle[]
+  brand: {
+    name: string
+  } | null
+  categories: (CategoriesOnArticle & {
+    category: Category
+  })[]
+  action: ArticleAction | null
 }
 
 type TProps = {
@@ -32,14 +44,7 @@ const DeleteArticleModal = ({
     () => trpcClient.article.deleteArticle.mutate({ id: article.id }),
     {
       onSuccess: async () => {
-        await queryClient.invalidateQueries([
-          'articles',
-          {
-            name: '',
-            pageIndex: 0,
-            pageSize: 100,
-          },
-        ])
+        await queryClient.invalidateQueries(['articles.getAllArticles'])
         setArticle({} as TArticle)
         setIsOpen(false)
       },

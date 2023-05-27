@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import { Dialog } from '@headlessui/react'
-import { Article, CategoriesOnArticle, Image } from '@prisma/client'
+import {
+  Article,
+  ArticleAction,
+  CategoriesOnArticle,
+  Category,
+  Image,
+} from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../../utils/api'
 
@@ -11,7 +17,13 @@ import * as Bs from 'react-icons/bs'
 
 type TArticle = Article & {
   image: Image[]
-  categories: CategoriesOnArticle[]
+  brand: {
+    name: string
+  } | null
+  categories: (CategoriesOnArticle & {
+    category: Category
+  })[]
+  action: ArticleAction | null
 }
 
 type TProps = {

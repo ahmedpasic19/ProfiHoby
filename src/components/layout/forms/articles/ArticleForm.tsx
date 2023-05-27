@@ -35,14 +35,7 @@ const ArticleForm = ({
       onSuccess: async (data) => {
         setArticleId(data.id)
         setArticleData({} as Article)
-        await queryClient.invalidateQueries([
-          'articles',
-          {
-            name: '',
-            pageSize: 100,
-            pageIndex: 0,
-          },
-        ])
+        await queryClient.invalidateQueries(['articles.getAllArticles'])
         if (pageIndex !== 2) setPageIndex((prev) => prev + 1)
         else setPageIndex(0)
       },
@@ -115,6 +108,7 @@ const ArticleForm = ({
       />
       <Select
         options={brand_options}
+        placeholder='Odaberi brend'
         value={value || null}
         onChange={(option) =>
           option && setArticleData({ ...articleData, brand_id: option.value })

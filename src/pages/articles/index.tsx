@@ -2,7 +2,13 @@ import { NextPage } from 'next'
 import { useMemo, useState, useRef, FormEvent } from 'react'
 
 import { ColumnDef } from '@tanstack/react-table'
-import { Article, CategoriesOnArticle, Image } from '@prisma/client'
+import {
+  Article,
+  ArticleAction,
+  CategoriesOnArticle,
+  Category,
+  Image,
+} from '@prisma/client'
 
 import { trpcClient } from '../../utils/api'
 import { useQuery } from '@tanstack/react-query'
@@ -27,7 +33,13 @@ import { ImCancelCircle } from 'react-icons/im'
 
 type TArticle = Article & {
   image: Image[]
-  categories: CategoriesOnArticle[]
+  brand: {
+    name: string
+  } | null
+  categories: (CategoriesOnArticle & {
+    category: Category
+  })[]
+  action: ArticleAction | null
 }
 
 type TRow = {
@@ -59,7 +71,7 @@ const Articles: NextPage = () => {
   const ref = useRef<HTMLInputElement>(null) // ref to article_name input
 
   const { data: articleData, isLoading } = useQuery(
-    ['articles', { pageSize, pageIndex, name }],
+    ['articles.getAllArticles'],
     () =>
       trpcClient.article.getAllArticles.query({
         name,
@@ -76,6 +88,10 @@ const Articles: NextPage = () => {
     {
       header: 'Cijena',
       accessorKey: 'base_price',
+    },
+    {
+      header: 'Brend',
+      accessorKey: 'brand.name',
     },
     {
       header: 'Opis',

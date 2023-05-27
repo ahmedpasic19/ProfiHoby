@@ -15,7 +15,7 @@ const Home: NextPage = () => {
     useInfiniteQuery(
       // This is correct queryKey to use.
       // This queryKey is the one invalidated whenever any article is updated.
-      ['article.index.page'],
+      ['article.getAllArticles'],
       ({ pageParam = 0 }) =>
         trpcClient.article.getAllArticlesForHomePage.query({
           pageSize: 25,

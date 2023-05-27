@@ -18,26 +18,6 @@ const s3 = new AWS.S3({
 })
 
 export const articleRouter = createTRPCRouter({
-  createArticle: adminProcedure
-    .input(
-      z.object({
-        name: z.string(),
-        description: z.string(),
-        base_price: z.number(),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      const new_article = await ctx.prisma.article.create({
-        data: {
-          base_price: input.base_price,
-          name: input.name,
-          description: input.description,
-        },
-      })
-
-      return new_article
-    }),
-
   // GET all articles and filter by category if category is provided
   getAllArticlesForHomePage: publicProcedure
     .input(
@@ -110,6 +90,7 @@ export const articleRouter = createTRPCRouter({
         include: {
           image: true,
           action: true,
+          brand: { select: { name: true } },
           categories: {
             include: {
               category: true,
@@ -375,6 +356,28 @@ export const articleRouter = createTRPCRouter({
     return articles
   }),
 
+  createArticle: adminProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        description: z.string(),
+        base_price: z.number(),
+        brand_id: z.string().nullish(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const new_article = await ctx.prisma.article.create({
+        data: {
+          base_price: input.base_price,
+          name: input.name,
+          description: input.description,
+          ...(input.brand_id ? { brand_id: input.brand_id } : {}), // optionaly accept brand_id
+        },
+      })
+
+      return new_article
+    }),
+
   updateArticle: adminProcedure
     .input(
       z.object({
@@ -382,6 +385,7 @@ export const articleRouter = createTRPCRouter({
         name: z.string(),
         description: z.string(),
         base_price: z.number(),
+        brand_id: z.string().nullish(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -392,6 +396,7 @@ export const articleRouter = createTRPCRouter({
           name: input.name,
           description: input.description,
           base_price: input.base_price,
+          ...(input.brand_id ? { brand_id: input.brand_id } : {}), // optionaly accept brand_id
         },
       })
 

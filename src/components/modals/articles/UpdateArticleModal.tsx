@@ -1,16 +1,29 @@
 import { ChangeEvent, FormEvent } from 'react'
-import { Article, Image, CategoriesOnArticle } from '@prisma/client'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import {
+  Article,
+  Image,
+  CategoriesOnArticle,
+  Category,
+  ArticleAction,
+} from '@prisma/client'
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../../utils/api'
 
 import FieldSet from '../../Fieldset'
 import Textarea from '../../Textarea'
+import Select from 'react-select'
 import { Dialog } from '@headlessui/react'
 import * as Ai from 'react-icons/ai'
 
 type TArticle = Article & {
   image: Image[]
-  categories: CategoriesOnArticle[]
+  brand: {
+    name: string
+  } | null
+  categories: (CategoriesOnArticle & {
+    category: Category
+  })[]
+  action: ArticleAction | null
 }
 
 type TProps = {
@@ -28,19 +41,31 @@ const UpdateArticleModal = ({
 }: TProps) => {
   const queryClient = useQueryClient()
 
+  const { data: brands } = useQuery(['brand.getAllBrands'], () =>
+    trpcClient.brand.getAllBrands.query()
+  )
+
+  const brand_options =
+    brands?.map((brand) => ({
+      label: brand.name,
+      value: brand.id,
+    })) || []
+
+  const value = brand_options.find(
+    (option) => option.label === article?.brand?.name
+  )
+
   const { mutate: updateArticle } = useMutation(
     (input: {
       id: string
       name: string
       description: string
       base_price: number
+      brand_id: string | null
     }) => trpcClient.article.updateArticle.mutate(input),
     {
       onSuccess: async () => {
-        await queryClient.invalidateQueries([
-          'articles',
-          { pageSize: 100, pageIndex: 0, name: '' },
-        ])
+        await queryClient.invalidateQueries(['articles.getAllArticles'])
         setArticle({} as TArticle)
         setIsOpen(false)
       },
@@ -58,7 +83,16 @@ const UpdateArticleModal = ({
 
   const handleSubmit = (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
-    updateArticle(article)
+
+    // Check for selected brand
+    const brand = brand_options.find(
+      (option) => option.label === article?.brand?.name
+    )
+
+    updateArticle({
+      ...article,
+      ...(brand ? { brand_id: brand?.value } : {}), // optionaly send brand_id
+    })
   }
 
   return (
@@ -108,6 +142,15 @@ const UpdateArticleModal = ({
               name='base_price'
               label='Cijena'
               type='number'
+            />
+            <Select
+              options={brand_options}
+              placeholder='Odaberi brend'
+              value={value || null}
+              onChange={(option) =>
+                option &&
+                setArticle({ ...article, brand: { name: option.label } })
+              }
             />
             <section className='mt-5 flex w-full items-center justify-center'>
               <button
