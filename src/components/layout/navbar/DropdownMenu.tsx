@@ -36,6 +36,10 @@ const DropdownMenu = ({ setIsOpen, isOpen, wasOpen, links }: TProps) => {
     allCategories?.map((category) => ({
       label: category?.name,
       href: '/categories/' + category?.id,
+      moreLinks: category.groups?.map((group) => ({
+        label: group.name,
+        href: '/groups/' + group.id,
+      })),
     })) || []
 
   return (
@@ -81,6 +85,7 @@ const DropdownMenu = ({ setIsOpen, isOpen, wasOpen, links }: TProps) => {
           setIsOpenSecond={setOpenCategories}
           isOpen={openCategories}
           links={categoryLinks}
+          moreLinks
           wasOpen={wasOpen}
           title='Kategorije'
         />
