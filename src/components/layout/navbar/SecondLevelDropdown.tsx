@@ -58,7 +58,7 @@ const SecondLevelDropdown: FC<TProps> = ({
         </ul>
 
         {/* Close btn in admin links */}
-        <div className='absolute bottom-0 flex w-full flex-col'>
+        <div className='absolute bottom-0 flex w-full flex-col pb-16'>
           <button
             onClick={() => setIsOpenSecond(false)}
             className='w-full bg-gray-50 p-5 text-start text-lg font-bold text-gray-800'

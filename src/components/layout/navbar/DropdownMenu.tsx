@@ -101,7 +101,7 @@ const DropdownMenu = ({ setIsOpen, isOpen, wasOpen, links }: TProps) => {
         />
 
         {/* Close and logout btns */}
-        <div className='absolute bottom-0 flex w-full flex-col'>
+        <div className='absolute bottom-0 flex w-full flex-col pb-16'>
           <button
             onClick={() => setIsOpen(false)}
             className='w-full bg-gray-50 p-5 text-start text-lg font-semibold text-gray-800'
