@@ -31,28 +31,31 @@ const SecondLevelDropdown: FC<TProps> = ({
   return (
     <>
       <ul
-        className={`fixed top-0 right-0 z-[60] h-screen w-full overflow-y-auto bg-white ${
+        className={`fixed top-0 right-0 z-[60] h-screen w-full bg-white ${
           isOpen ? 'animate-slide-in' : wasOpen ? 'animate-slide-out' : 'hidden'
         }`}
       >
         <h1 className='text-gray-80 w-full py-3 text-center text-2xl font-bold'>
           {title}
         </h1>
-        {links
-          .filter((link) => link.href !== '/')
-          .map((link) => (
-            <li
-              key={Math.random()}
-              onClick={() => {
-                !moreLinks && setIsOpenMain(false)
-                !moreLinks && setIsOpenSecond(false)
-                moreLinks && setLink(link)
-              }}
-              className='w-full p-5 text-lg font-semibold text-gray-800'
-            >
-              <Link href={link.href}>{link.label}</Link>
-            </li>
-          ))}
+
+        <ul className='h-screen overflow-y-auto'>
+          {links
+            .filter((link) => link.href !== '/')
+            .map((link) => (
+              <li
+                key={Math.random()}
+                onClick={() => {
+                  !moreLinks && setIsOpenMain(false)
+                  !moreLinks && setIsOpenSecond(false)
+                  moreLinks && setLink(link)
+                }}
+                className='w-full p-5 text-lg font-semibold text-gray-800'
+              >
+                <Link href={link.href}>{link.label}</Link>
+              </li>
+            ))}
+        </ul>
 
         {/* Close btn in admin links */}
         <div className='absolute bottom-0 flex w-full flex-col'>
