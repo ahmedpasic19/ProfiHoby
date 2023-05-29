@@ -48,6 +48,21 @@ export const categoryRouter = createTRPCRouter({
   deleteCategory: adminProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
+      // Unrelate articles from category
+      await ctx.prisma.categoriesOnArticle.deleteMany({
+        where: {
+          category_id: input.id,
+        },
+      })
+
+      // Unrelate articles from category groups
+      await ctx.prisma.articleGroups.deleteMany({
+        where: { group: { category_id: input.id } },
+      })
+
+      // DELETE realted groups
+      await ctx.prisma.group.deleteMany({ where: { category_id: input.id } })
+
       const deleted_category = await ctx.prisma.category.delete({
         where: { id: input.id },
       })
