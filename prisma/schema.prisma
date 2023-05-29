@@ -91,7 +91,7 @@ model Image {
     id         String  @id @default(cuid())
     name       String
     key        String  @unique
-    access_url String? @unique
+    access_url String?
 
     Article       Article?       @relation(fields: [article_id], references: [id])
     article_id    String?
