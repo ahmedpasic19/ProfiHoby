@@ -78,6 +78,7 @@ export const categoryRouter = createTRPCRouter({
       const category = await ctx.prisma.category.findUnique({
         include: {
           groups: {
+            where: { articles: { some: {} } },
             skip: input.pageSize * input.pageIndex,
             take: input.pageSize,
             include: {
