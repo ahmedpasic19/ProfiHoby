@@ -1,31 +1,10 @@
-import { useState } from 'react'
 import { TArticle } from '../../../types/article'
 import Article from '../../Article'
-import { AiFillCaretLeft } from 'react-icons/ai'
 
 const ArticleCarousel = ({ articles }: { articles: TArticle[] }) => {
-  const [xPosition, setXPosition] = useState(0)
-
-  const MAX_LEFT = 0
-  // const MAX_RIGHT = 0
-
-  const handleLeft = () => {
-    if (xPosition != MAX_LEFT) setXPosition((prev) => prev + 80)
-  }
-  const handleRight = () => {
-    // if (MAX_RIGHT)
-    setXPosition((prev) => prev - 80)
-  }
-
   return (
-    <div className={`relative flex overflow-hidden px-5 py-2`}>
-      <ul
-        className='flex gap-4'
-        style={{
-          transform: `translateX(${xPosition}vw)`,
-          transition: 'transform 0.5s ease-in-out',
-        }}
-      >
+    <div className='relative flex w-full overflow-hidden px-5 py-2'>
+      <ul className='grid w-full grid-cols-2 gap-4 sm:grid-cols-3 md:gap-2 xl:grid-cols-5 2xl:grid-cols-10'>
         {articles.map((article) => (
           <li
             key={Math.random()}
@@ -43,19 +22,6 @@ const ArticleCarousel = ({ articles }: { articles: TArticle[] }) => {
           </li>
         ))}
       </ul>
-      {/* Left and right buttons */}
-      <button
-        onClick={handleLeft}
-        className='from absolute left-0 z-50 h-full px-2'
-      >
-        <AiFillCaretLeft className='h-7 w-7 text-gray-800/30' />
-      </button>
-      <button
-        onClick={handleRight}
-        className='from absolute right-0 z-50 h-full px-2'
-      >
-        <AiFillCaretLeft className='h-7 w-7 rotate-180 text-gray-800/30' />
-      </button>
     </div>
   )
 }

@@ -20,7 +20,7 @@ const ArticleNamePage = () => {
     () =>
       trpcClient.article.getAllArticles.query({
         name,
-        pageSize: 100,
+        pageSize: 25,
         pageIndex,
       })
   )

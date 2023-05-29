@@ -18,7 +18,7 @@ const Home: NextPage = () => {
       ['article.getAllArticles'],
       ({ pageParam = 0 }) =>
         trpcClient.article.getAllArticlesForHomePage.query({
-          pageSize: 25,
+          pageSize: 10,
           pageIndex: pageParam as number,
         }),
       {
@@ -94,7 +94,6 @@ const Home: NextPage = () => {
                   key={Math.random()}
                   group_name={group.name}
                   group_id={group?.id || ''}
-                  // @ts-ignore // "url" is provided to the Image in the api query
                   articles={group.articles.map(({ article }) => article)}
                 />
               ))
