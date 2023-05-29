@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../../utils/api'
 
 import SecondLevelDropdown from './SecondLevelDropdown'
+import { BiChevronLeft } from 'react-icons/bi'
 import Link from 'next/link'
 
 type TProps = {
@@ -45,13 +46,19 @@ const DropdownMenu = ({ setIsOpen, isOpen, wasOpen, links }: TProps) => {
   return (
     <>
       <div
-        className={`fixed top-0 right-0 z-50 h-screen w-1/2 bg-white ${
+        className={`fixed top-0 right-0 z-50 h-screen w-3/4 bg-white ${
           isOpen ? 'animate-slide-in' : wasOpen ? 'animate-slide-out' : 'hidden'
         }`}
       >
-        <h2 className='w-full py-10 text-center text-2xl font-bold tracking-tighter'>
-          Profihoby
-        </h2>
+        <div className='text-gray-80 relative flex  w-full items-center justify-center py-3 text-center text-2xl font-bold'>
+          <button
+            onClick={() => setIsOpen(false)}
+            className='absolute left-0 p-5 text-start text-lg font-bold text-gray-800'
+          >
+            <BiChevronLeft className='h-8 w-8 text-gray-800' />
+          </button>
+          <h1 className='w-full text-center'>Profihoby</h1>
+        </div>
 
         {/* Homepage link */}
         <div className='w-full'>
@@ -101,14 +108,7 @@ const DropdownMenu = ({ setIsOpen, isOpen, wasOpen, links }: TProps) => {
         />
 
         {/* Close and logout btns */}
-        <div className='absolute bottom-0 flex w-full flex-col pb-16'>
-          <button
-            onClick={() => setIsOpen(false)}
-            className='w-full bg-gray-50 p-5 text-start text-lg font-semibold text-gray-800'
-          >
-            Zatvori
-          </button>
-
+        <div className='absolute bottom-0 flex w-full flex-col'>
           {status === 'authenticated' && (
             <button
               onClick={() => signOut()}

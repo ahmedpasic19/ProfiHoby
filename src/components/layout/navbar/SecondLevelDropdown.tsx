@@ -1,5 +1,6 @@
 import { FC, useState } from 'react'
 import Link from 'next/link'
+import { BiChevronLeft } from 'react-icons/bi'
 
 type TLink = {
   href: string
@@ -35,9 +36,15 @@ const SecondLevelDropdown: FC<TProps> = ({
           isOpen ? 'animate-slide-in' : wasOpen ? 'animate-slide-out' : 'hidden'
         }`}
       >
-        <h1 className='text-gray-80 w-full py-3 text-center text-2xl font-bold'>
-          {title}
-        </h1>
+        <div className='text-gray-80 relative flex  w-full items-center justify-center py-3 text-center text-2xl font-bold'>
+          <button
+            onClick={() => setIsOpenSecond(false)}
+            className='absolute left-0 p-5 text-start text-lg font-bold text-gray-800'
+          >
+            <BiChevronLeft className='h-8 w-8 text-gray-800' />
+          </button>
+          <h1 className='w-full text-center'>{title}</h1>
+        </div>
 
         <ul className='h-screen overflow-y-auto'>
           {links
@@ -56,16 +63,6 @@ const SecondLevelDropdown: FC<TProps> = ({
               </li>
             ))}
         </ul>
-
-        {/* Close btn in admin links */}
-        <div className='absolute bottom-0 flex w-full flex-col pb-16'>
-          <button
-            onClick={() => setIsOpenSecond(false)}
-            className='w-full bg-gray-50 p-5 text-start text-lg font-bold text-gray-800'
-          >
-            Zatvori
-          </button>
-        </div>
       </ul>
       {link.moreLinks?.length && (
         <SecondLevelDropdown
