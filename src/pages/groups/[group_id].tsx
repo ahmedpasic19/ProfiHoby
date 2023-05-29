@@ -68,7 +68,7 @@ const GroupArticles: NextPage = () => {
       </h1>
 
       {/* Article list */}
-      <div className='grid w-full grid-cols-2 gap-4 px-5 sm:grid-cols-3 md:gap-2 xl:grid-cols-5 2xl:grid-cols-10'>
+      <div className='grid w-full grid-cols-2 gap-4 sm:grid-cols-3 md:gap-2 xl:grid-cols-4 2xl:grid-cols-6 2xl:gap-2 4k:grid-cols-10'>
         {isSuccess &&
           data.pages.map((page) => {
             return page.group?.articles.map((article) => {
