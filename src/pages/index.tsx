@@ -18,7 +18,7 @@ const Home: NextPage = () => {
       ['article.getAllArticles'],
       ({ pageParam = 0 }) =>
         trpcClient.article.getAllArticlesForHomePage.query({
-          pageSize: 10,
+          pageSize: 12,
           pageIndex: pageParam as number,
         }),
       {
