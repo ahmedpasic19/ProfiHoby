@@ -73,6 +73,7 @@ const Articles: NextPage = () => {
   const { data: articleData, isLoading } = useQuery(
     [
       'articles.getAllArticles',
+      'articles.getAllArticles',
       {
         name,
         pageIndex,
