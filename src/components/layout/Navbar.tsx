@@ -66,15 +66,6 @@ const Navbar = () => {
       href: '/sales',
       label: 'Sniženja',
     },
-    status === 'unauthenticated'
-      ? {
-          href: '/signin',
-          label: 'Login',
-        }
-      : {
-          href: '',
-          label: '',
-        },
   ]
 
   // find if user is a worker
