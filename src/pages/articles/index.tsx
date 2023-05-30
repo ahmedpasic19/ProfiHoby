@@ -71,7 +71,15 @@ const Articles: NextPage = () => {
   const ref = useRef<HTMLInputElement>(null) // ref to article_name input
 
   const { data: articleData, isLoading } = useQuery(
-    ['articles.getAllArticles'],
+    [
+      'articles.getAllArticles',
+      'articles.getAllArticles',
+      {
+        name,
+        pageIndex,
+        pageSize,
+      },
+    ],
     () =>
       trpcClient.article.getAllArticles.query({
         name,

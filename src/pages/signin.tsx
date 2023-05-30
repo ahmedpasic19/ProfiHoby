@@ -1,7 +1,6 @@
 import { FormEvent, useEffect } from 'react'
 import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import Link from 'next/link'
 
 const Signin = () => {
   const handleGoogleSignin = async (e: FormEvent) => {
@@ -38,12 +37,6 @@ const Signin = () => {
           >
             Sign in with Google
           </button>
-          <Link
-            href='/signin/credentials'
-            className='mt-8 w-4/5 rounded-xl bg-gray-600 p-4 px-16 text-center text-[1.1rem] font-bold text-gray-100 drop-shadow-[0px_0px_2px] hover:bg-gray-400'
-          >
-            Sign in with Email
-          </Link>
         </section>
       </form>
     </div>

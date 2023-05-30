@@ -78,13 +78,6 @@ export const articleRouter = createTRPCRouter({
     )
     .query(async ({ input, ctx }) => {
       const name = input.name
-      const where = name
-        ? {
-            name: {
-              contains: input.name,
-            },
-          }
-        : {}
 
       const articles = await ctx.prisma.article.findMany({
         include: {
@@ -97,14 +90,24 @@ export const articleRouter = createTRPCRouter({
             },
           },
         },
-        where,
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+        },
         skip: input.pageSize * input.pageIndex,
         take: input.pageSize,
         orderBy: { createdAt: 'desc' },
       })
 
       const totalArticles = await ctx.prisma.article.count({
-        where,
+        where: {
+          name: {
+            contains: name,
+            mode: 'insensitive',
+          },
+        },
       })
       const pageCount = Math.ceil(totalArticles / input.pageSize)
 
@@ -128,15 +131,6 @@ export const articleRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const category = input.category_id
       const name = input.name
-      const where = category
-        ? { categories: { some: { category: { id: input.category_id } } } }
-        : name
-        ? {
-            name: {
-              contains: input.name,
-            },
-          }
-        : {}
 
       const articles = await ctx.prisma.article.findMany({
         include: {
@@ -148,13 +142,31 @@ export const articleRouter = createTRPCRouter({
             },
           },
         },
-        where,
+        where: category
+          ? { categories: { some: { category: { id: input.category_id } } } }
+          : name
+          ? {
+              name: {
+                contains: input.name,
+                mode: 'insensitive',
+              },
+            }
+          : {},
         skip: input.pageSize * input.pageIndex,
         take: input.pageSize,
       })
 
       const totalArticles = await ctx.prisma.article.count({
-        where,
+        where: category
+          ? { categories: { some: { category: { id: input.category_id } } } }
+          : name
+          ? {
+              name: {
+                contains: input.name,
+                mode: 'insensitive',
+              },
+            }
+          : {},
       })
       const pageCount = Math.ceil(totalArticles / input.pageSize)
 
