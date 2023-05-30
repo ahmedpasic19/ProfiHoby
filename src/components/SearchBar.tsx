@@ -7,8 +7,6 @@ import { trpcClient } from '../utils/api'
 import Image from 'next/image'
 import SearchComponent from './SearchComponent'
 
-import useGroupSimularData from '../hooks/useGroupSimularData'
-
 type TListedArticleProps = {
   src: string
   article_name: string
@@ -24,9 +22,9 @@ const SearchBar = () => {
     ['articles', { name, pageIndex: 0, pageSize: 100 }],
     () =>
       trpcClient.article.getAllArticles.query({
-        name: '',
+        name,
         pageIndex: 0,
-        pageSize: 100,
+        pageSize: 20,
       })
   )
 
@@ -43,17 +41,7 @@ const SearchBar = () => {
     await router.push(`/articles/article_name/${name}`)
   }
 
-  const articles = useMemo(
-    () => articleData?.articles || [],
-    [articleData?.articles]
-  )
-
-  // Get the minimum set of article by taking the first string of each group
-  const minimum = useGroupSimularData({
-    groupBy: 'name',
-    data: articles,
-    treshHold: 0.1,
-  })
+  const articles = useMemo(() => articleData?.articles || [], [articleData])
 
   return (
     <div className='fixed z-30 flex w-full items-center bg-gray-100'>
@@ -67,7 +55,7 @@ const SearchBar = () => {
       {name && (
         <div className='absolute top-14 z-[9] flex w-full items-center justify-center overflow-y-auto bg-gray-300 px-2'>
           <ul className='h-full max-h-[20em] w-full overflow-y-auto'>
-            {minimum?.map((article) => (
+            {articles?.map((article) => (
               <li
                 onClick={() => navigateToArticle(article?.id || '')}
                 key={Math.random().toString()}
