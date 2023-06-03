@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent } from 'react'
+import { ChangeEvent, FormEvent, useRef, useState } from 'react'
 import {
   Article,
   Image,
@@ -12,6 +12,8 @@ import { trpcClient } from '../../../utils/api'
 import FieldSet from '../../Fieldset'
 import Textarea from '../../Textarea'
 import Select from 'react-select'
+import Attribute from '../../layout/forms/articles/attributes/Attribute'
+
 import { Dialog } from '@headlessui/react'
 import * as Ai from 'react-icons/ai'
 
@@ -24,6 +26,7 @@ type TArticle = Article & {
     category: Category
   })[]
   action: ArticleAction | null
+  attributes: { title: string; text: string; id: string }[]
 }
 
 type TProps = {
@@ -39,7 +42,91 @@ const UpdateArticleModal = ({
   setIsOpen,
   setArticle,
 }: TProps) => {
+  const [attribute, setAttribute] = useState({
+    title: '',
+    text: '',
+    id: Math.random().toString(),
+  })
+  const [selectedAtribute, setSelectedAtribute] = useState({
+    title: '',
+    text: '',
+    id: Math.random().toString(),
+  })
+
   const queryClient = useQueryClient()
+
+  // ref to attribute title iput
+  // onSubmit of ew attribute, focus on the attribute title input
+  const title_ref = useRef<HTMLInputElement>(null)
+
+  // Remove attribute
+  const handleRemoveAttribute = (id: string) => {
+    setArticle((prev) => {
+      const newAttributes = [...(prev?.attributes || [])]
+
+      // Remove attrbute
+      const filtered = newAttributes.filter((item) => item.id !== id)
+      return { ...prev, attributes: filtered }
+    })
+  }
+
+  // New attribute onChange
+  const handleAttributeChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setAttribute((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+  }
+
+  // Submit new attribute
+  const handleAddAttribute = () => {
+    if (!attribute.text || !attribute.title) return
+
+    const values = [
+      ...(article?.attributes ? article?.attributes : []),
+      attribute,
+    ]
+
+    setArticle((prev) => ({
+      ...prev,
+      attributes: values,
+    }))
+    setAttribute({ title: '', text: '', id: Math.random().toString() }) // clear inputs
+    title_ref?.current?.focus()
+  }
+
+  // Select attribute for edit
+  const handleSelectForEdit = (attribute: {
+    text: string
+    title: string
+    id: string
+  }) => {
+    setSelectedAtribute(attribute)
+  }
+
+  // Cancle edit
+  const handleCloseEdit = () => {
+    setSelectedAtribute({ text: '', title: '', id: Math.random().toString() })
+  }
+
+  // Submit edit
+  const handleSubmitEdit = (newAttribute: {
+    title: string
+    text: string
+    id: string
+  }) => {
+    if (!newAttribute.text || !newAttribute.title) return
+
+    const newAttributes = [...(article?.attributes || [])]
+
+    // Find attribute user is editing
+    const index = newAttributes.findIndex((att) => att.id === newAttribute.id)
+
+    if (index === -1) return
+    newAttributes.splice(index, 1, newAttribute)
+
+    setArticle((prev) => {
+      return { ...prev, attributes: newAttributes }
+    })
+    handleCloseEdit()
+  }
 
   const { data: brands } = useQuery(['brand.getAllBrands'], () =>
     trpcClient.brand.getAllBrands.query()
@@ -62,6 +149,7 @@ const UpdateArticleModal = ({
       description: string
       base_price: number
       brand_id: string | null
+      attributes: { text: string; title: string }[]
     }) => trpcClient.article.updateArticle.mutate(input),
     {
       onSuccess: async () => {
@@ -89,10 +177,12 @@ const UpdateArticleModal = ({
       (option) => option.label === article?.brand?.name
     )
 
-    updateArticle({
+    const updatedArticle = {
       ...article,
       ...(brand ? { brand_id: brand?.value } : {}), // optionaly send brand_id
-    })
+    }
+
+    updateArticle(updatedArticle)
   }
 
   return (
@@ -168,6 +258,51 @@ const UpdateArticleModal = ({
                 />
               </div>
             </fieldset>
+
+            {/* Article attributes */}
+            <section>
+              <h2 className='text-lg font-semibold text-gray-800'>Atributi</h2>
+              <ul className='my-2 max-h-44 overflow-y-auto border-2 border-gray-200 bg-gray-100 text-gray-800'>
+                {article?.attributes?.map((att) => (
+                  <Attribute
+                    key={Math.random()}
+                    attribute={att}
+                    remove={handleRemoveAttribute}
+                    edit={handleSelectForEdit}
+                    handleSubmitEdit={handleSubmitEdit}
+                    selectedAttribute={selectedAtribute}
+                    handleCloseEdit={handleCloseEdit}
+                  />
+                ))}
+              </ul>
+              <div className='relative my-2 flex w-full items-center justify-evenly p-2'>
+                <fieldset>
+                  <label className='font-semibold text-gray-800'>Naziv</label>
+                  <input
+                    ref={title_ref}
+                    placeholder='Naziv'
+                    value={attribute.title || ''}
+                    name='title'
+                    className='rounded-sm border-2 border-gray-400 pl-2 outline-none'
+                    onChange={handleAttributeChange}
+                  />
+                </fieldset>
+                <fieldset>
+                  <label className='font-semibold text-gray-800'>Opis</label>
+                  <input
+                    placeholder='Opis'
+                    value={attribute.text || ''}
+                    name='text'
+                    onChange={handleAttributeChange}
+                    className='rounded-sm border-2 border-gray-400 pl-2 outline-none'
+                  />
+                </fieldset>
+                <button onClick={handleAddAttribute}>
+                  <Ai.AiFillCheckSquare className='absolute bottom-2 h-7 w-7 text-gray-800 hover:text-gray-600' />
+                </button>
+              </div>
+            </section>
+
             <section className='mt-5 flex w-full items-center justify-center'>
               <button
                 onSubmit={handleSubmit}

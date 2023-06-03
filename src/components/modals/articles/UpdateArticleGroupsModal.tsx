@@ -21,6 +21,7 @@ type TArticle = Article & {
     category: Category
   })[]
   action: ArticleAction | null
+  attributes: { title: string; text: string; id: string }[]
 }
 
 type TProps = {
