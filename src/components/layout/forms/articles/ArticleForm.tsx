@@ -108,7 +108,8 @@ const ArticleForm = ({
   }
 
   // Submit new attribute
-  const handleAddAttribute = () => {
+  const handleAddAttribute = (e: FormEvent) => {
+    e.preventDefault()
     if (!attribute.text || !attribute.title) return
 
     const values = [

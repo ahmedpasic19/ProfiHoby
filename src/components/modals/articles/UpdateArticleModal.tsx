@@ -76,7 +76,8 @@ const UpdateArticleModal = ({
   }
 
   // Submit new attribute
-  const handleAddAttribute = () => {
+  const handleAddAttribute = (e: FormEvent) => {
+    e.preventDefault()
     if (!attribute.text || !attribute.title) return
 
     const values = [
@@ -276,7 +277,7 @@ const UpdateArticleModal = ({
                 ))}
               </ul>
               <div className='relative my-2 flex w-full items-center justify-evenly p-2'>
-                <fieldset>
+                <fieldset className='flex flex-col'>
                   <label className='font-semibold text-gray-800'>Naziv</label>
                   <input
                     ref={title_ref}
@@ -287,7 +288,7 @@ const UpdateArticleModal = ({
                     onChange={handleAttributeChange}
                   />
                 </fieldset>
-                <fieldset>
+                <fieldset className='flex flex-col'>
                   <label className='font-semibold text-gray-800'>Opis</label>
                   <input
                     placeholder='Opis'
