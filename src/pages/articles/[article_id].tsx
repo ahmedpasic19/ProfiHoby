@@ -83,6 +83,26 @@ const ArticlePage = () => {
           <h2 className='text-xl font-bold'>Opis artikla</h2>
           <div dangerouslySetInnerHTML={{ __html: formattedString }} />
         </section>
+
+        {article?.attributes.length && (
+          <section className='mt-2 min-h-[70vh] w-full sm:w-4/5'>
+            <h2 className='w-full border-t-2 border-r-gray-50 text-center text-xl font-bold'>
+              O artiklu
+            </h2>
+            <ul className='w-full px-4'>
+              {article?.attributes?.map((att) => (
+                <li key={Math.random()} className='flex w-full justify-between'>
+                  <label className='w-full text-lg font-bold text-gray-800'>
+                    {att.title}
+                  </label>
+                  <p className='w-full max-w-5xl truncate whitespace-pre-line text-end text-lg text-gray-600'>
+                    {att.text}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
     </div>
   )

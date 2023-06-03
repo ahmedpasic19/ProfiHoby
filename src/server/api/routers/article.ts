@@ -81,6 +81,13 @@ export const articleRouter = createTRPCRouter({
 
       const articles = await ctx.prisma.article.findMany({
         include: {
+          attributes: {
+            select: {
+              text: true,
+              title: true,
+              id: true,
+            },
+          },
           image: true,
           action: true,
           brand: { select: { name: true } },
@@ -317,6 +324,7 @@ export const articleRouter = createTRPCRouter({
       const article = await ctx.prisma.article.findUnique({
         where: { id: input.article_id },
         include: {
+          attributes: true,
           groups: {
             include: {
               group: true,
@@ -376,6 +384,7 @@ export const articleRouter = createTRPCRouter({
         base_price: z.number(),
         brand_id: z.string().nullish(),
         warranty: z.string().nullish(),
+        attributes: z.array(z.object({ title: z.string(), text: z.string() })),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -387,6 +396,17 @@ export const articleRouter = createTRPCRouter({
           warranty: input.warranty ? input.warranty : '',
           ...(input.brand_id ? { brand_id: input.brand_id } : {}), // optionaly accept brand_id
         },
+      })
+
+      // Insert article_id
+      const attributes = input.attributes.map((att) => ({
+        ...att,
+        article_id: new_article.id,
+      }))
+
+      // Add article attributes
+      await ctx.prisma.attribute.createMany({
+        data: attributes,
       })
 
       return new_article
@@ -401,6 +421,7 @@ export const articleRouter = createTRPCRouter({
         base_price: z.number(),
         brand_id: z.string().nullish(),
         warranty: z.string().nullish(),
+        attributes: z.array(z.object({ title: z.string(), text: z.string() })),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -416,6 +437,22 @@ export const articleRouter = createTRPCRouter({
         },
       })
 
+      // DELETE previous attibutes and add new attributes
+      await ctx.prisma.attribute.deleteMany({
+        where: { article_id: input.id },
+      })
+
+      // Insert article_id
+      const attributes = input.attributes.map((att) => ({
+        ...att,
+        article_id: updated_article.id,
+      }))
+
+      // ADD new article attributes
+      await ctx.prisma.attribute.createMany({
+        data: attributes,
+      })
+
       return updated_article
     }),
 
@@ -429,6 +466,11 @@ export const articleRouter = createTRPCRouter({
         },
       })
       await ctx.prisma.categoriesOnArticle.deleteMany({
+        where: {
+          article_id: input.id,
+        },
+      })
+      await ctx.prisma.attribute.deleteMany({
         where: {
           article_id: input.id,
         },
