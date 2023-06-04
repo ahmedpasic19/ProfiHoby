@@ -16,6 +16,7 @@ import Attribute from '../../layout/forms/articles/attributes/Attribute'
 
 import { Dialog } from '@headlessui/react'
 import * as Ai from 'react-icons/ai'
+import { parseTextFormat } from '../../../utils/formatText'
 
 type TArticle = Article & {
   image: Image[]
@@ -222,7 +223,11 @@ const UpdateArticleModal = ({
               rows={4}
               id='message'
               label='Opis artikla'
-              value={article.description}
+              value={
+                article?.description?.includes('[sp]')
+                  ? parseTextFormat(article?.description)
+                  : article?.description
+              }
               onChange={handleChange}
               name='description'
               placeholder='Opišite artikal'

@@ -9,6 +9,7 @@ import Select from 'react-select'
 import Attribute from './attributes/Attribute'
 
 import { AiFillCheckSquare } from 'react-icons/ai'
+import { formatTextContent } from '../../../../utils/formatText'
 
 type TArticle = Article & {
   attributes: { title: string; text: string; id: string }[]
@@ -80,6 +81,10 @@ const ArticleForm = ({
     )
       return
     articleData.base_price = parseFloat(articleData.base_price.toString())
+    articleData.description = formatTextContent(articleData.description)
+    articleData.attributes = articleData.attributes?.length
+      ? articleData.attributes
+      : []
 
     postArticle(articleData)
   }
