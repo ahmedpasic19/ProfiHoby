@@ -16,19 +16,25 @@ type TProps = {
   setOpenAddArticle: React.Dispatch<React.SetStateAction<boolean>>
 }
 
+type TArticle = Article & {
+  attributes: { title: string; text: string; id: string }[]
+}
+
 const ArticleMultiformModal = ({
   isOpen,
   setIsOpen,
   setOpenAddArticle,
 }: TProps) => {
   const [pageIndex, setPageIndex] = useState(0)
-  const [articleData, setArticleData] = useState({} as Article)
+  const [articleData, setArticleData] = useState({} as TArticle)
   const [articleId, setArticleId] = useState<string | null>(null)
 
   const onClose = () => {
     setIsOpen(false)
     setPageIndex(0)
   }
+
+  console.log(articleData)
 
   return (
     <Dialog open={isOpen} onClose={onClose}>

@@ -40,6 +40,7 @@ type TArticle = Article & {
     category: Category
   })[]
   action: ArticleAction | null
+  attributes: { title: string; text: string; id: string }[]
 }
 
 type TRow = {
@@ -95,7 +96,7 @@ const Articles: NextPage = () => {
     },
     {
       header: 'Cijena',
-      accessorKey: 'base_price',
+      accessorKey: 'id',
     },
     {
       header: 'Brend',

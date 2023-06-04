@@ -5,6 +5,8 @@ import { useQuery } from '@tanstack/react-query'
 import ImageCarousel from '../../components/layout/ImageCarousel'
 import Image from 'next/image'
 
+import { reverseFormatContent } from '../../utils/formatText'
+
 const ArticlePage = () => {
   const router = useRouter()
   const { article_id } = router.query
@@ -31,6 +33,8 @@ const ArticlePage = () => {
 
   const apiString = `${article?.description || ''}`
   const formattedString = apiString.replace(/&lt;br&gt;/g, '<br/>')
+
+  const descriptionValues = reverseFormatContent(article?.description || '')
 
   return (
     <div className='flex h-full min-h-screen w-full flex-col'>
@@ -68,21 +72,53 @@ const ArticlePage = () => {
               {article?.base_price}KM
             </h1>
             {article?.warranty && (
-              <div className='flex w-full flex-col items-center justify-center'>
+              <div className='flex w-full items-center justify-center'>
                 <h1 className='w-full bg-gray-600 py-2 text-center text-white'>
-                  <b>Garancija:</b>
+                  <b>Garancija: {article?.warranty}</b>
                 </h1>
-                <p>{article?.warranty}</p>
               </div>
             )}
           </div>
         </section>
 
         {/* Article description */}
-        <section className='flex w-full max-w-[80%] flex-col items-center'>
-          <h2 className='text-xl font-bold'>Opis artikla</h2>
-          <div dangerouslySetInnerHTML={{ __html: formattedString }} />
+        <section className='mt-4 flex min-h-[70vh] w-full max-w-[80%] flex-col items-center'>
+          <h2 className='mb-2 text-xl font-bold'>Opis artikla</h2>
+          {article?.description?.includes('&lt;br&gt;') ? (
+            <div dangerouslySetInnerHTML={{ __html: formattedString }} />
+          ) : (
+            descriptionValues?.map((att) => (
+              <li key={Math.random()} className='flex w-full justify-between'>
+                <label className='w-full text-lg font-bold text-gray-800'>
+                  {att.title}
+                </label>
+                <p className='w-full max-w-5xl truncate whitespace-pre-line text-end text-lg text-gray-600'>
+                  {att.value}
+                </p>
+              </li>
+            ))
+          )}
         </section>
+
+        {article?.attributes?.length ? (
+          <section className='mt-2 min-h-[70vh] w-full sm:w-4/5'>
+            <h2 className='w-full border-t-2 border-r-gray-50 text-center text-xl font-bold'>
+              O artiklu
+            </h2>
+            <ul className='w-full px-4'>
+              {article?.attributes?.map((att) => (
+                <li key={Math.random()} className='flex w-full justify-between'>
+                  <label className='w-full text-lg font-bold text-gray-800'>
+                    {att.title}
+                  </label>
+                  <p className='w-full max-w-5xl truncate whitespace-pre-line text-end text-lg text-gray-600'>
+                    {att.text}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
       </div>
     </div>
   )
