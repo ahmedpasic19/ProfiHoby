@@ -96,7 +96,7 @@ const Articles: NextPage = () => {
     },
     {
       header: 'Cijena',
-      accessorKey: 'id',
+      accessorKey: 'base_price',
     },
     {
       header: 'Brend',
