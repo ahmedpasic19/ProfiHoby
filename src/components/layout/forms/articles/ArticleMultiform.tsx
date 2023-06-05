@@ -34,8 +34,6 @@ const ArticleMultiformModal = ({
     setPageIndex(0)
   }
 
-  console.log(articleData)
-
   return (
     <Dialog open={isOpen} onClose={onClose}>
       <Dialog.Panel className='fixed inset-0'>

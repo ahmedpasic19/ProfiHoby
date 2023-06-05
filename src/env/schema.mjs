@@ -25,6 +25,9 @@ export const serverSchema = z.object({
   BUCKET_NAME: z.string(),
   SECRET_ACCES_KEY: z.string(),
   ACCESS_KEY: z.string(),
+  OLX_API: z.string(),
+  OLX_PASSWORD: z.string(),
+  OLX_USERNAME: z.string(),
 })
 
 /**
@@ -43,6 +46,9 @@ export const serverEnv = {
   BUCKET_NAME: process.env.BUCKET_NAME,
   SECRET_ACCES_KEY: process.env.SECRET_ACCES_KEY,
   ACCESS_KEY: process.env.ACCESS_KEY,
+  OLX_API: process.env.OLX_API,
+  OLX_PASSWORD: process.env.OLX_PASSWORD,
+  OLX_USERNAME: process.env.OLX_USERNAME,
 }
 
 /**
