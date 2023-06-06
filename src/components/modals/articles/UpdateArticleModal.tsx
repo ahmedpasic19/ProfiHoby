@@ -16,7 +16,8 @@ import Attribute from '../../layout/forms/articles/attributes/Attribute'
 
 import { Dialog } from '@headlessui/react'
 import * as Ai from 'react-icons/ai'
-import { parseTextFormat } from '../../../utils/formatText'
+
+import { formatTextContent, parseTextFormat } from '../../../utils/formatText'
 
 type TArticle = Article & {
   image: Image[]
@@ -183,6 +184,12 @@ const UpdateArticleModal = ({
       ...article,
       ...(brand ? { brand_id: brand?.value } : {}), // optionaly send brand_id
     }
+
+    updatedArticle.base_price = parseFloat(updatedArticle.base_price.toString())
+    updatedArticle.description = formatTextContent(updatedArticle.description)
+    updatedArticle.attributes = updatedArticle.attributes?.length
+      ? updatedArticle.attributes
+      : []
 
     updateArticle(updatedArticle)
   }
