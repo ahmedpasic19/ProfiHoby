@@ -115,6 +115,15 @@ const DeleteArticleModal = ({
             />
             <Textarea
               rows={4}
+              id='message'
+              readOnly
+              label='Kratki opis'
+              value={article.short_description || ''}
+              name='short_description'
+              placeholder='Opišite artikal'
+            />
+            <Textarea
+              rows={4}
               id='warranty'
               readOnly
               label='Garancija'

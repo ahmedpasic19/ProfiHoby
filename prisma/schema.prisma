@@ -83,6 +83,7 @@ model Article {
     brand             Brand?                @relation(fields: [brand_id], references: [id])
     brand_id          String?
     warranty          String?
+    short_description String?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

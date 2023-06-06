@@ -96,7 +96,7 @@ const Articles: NextPage = () => {
     },
     {
       header: 'Cijena',
-      accessorKey: 'id',
+      accessorKey: 'base_price',
     },
     {
       header: 'Brend',
@@ -105,6 +105,10 @@ const Articles: NextPage = () => {
     {
       header: 'Opis',
       accessorKey: 'description',
+    },
+    {
+      header: 'Kratki Opis',
+      accessorKey: 'short_description',
     },
     {
       header: 'Garancija',

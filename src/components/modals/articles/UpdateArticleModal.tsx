@@ -13,10 +13,12 @@ import FieldSet from '../../Fieldset'
 import Textarea from '../../Textarea'
 import Select from 'react-select'
 import Attribute from '../../layout/forms/articles/attributes/Attribute'
+import Spinner from '../../Spinner'
 
 import { Dialog } from '@headlessui/react'
 import * as Ai from 'react-icons/ai'
-import { parseTextFormat } from '../../../utils/formatText'
+
+import { formatTextContent, parseTextFormat } from '../../../utils/formatText'
 
 type TArticle = Article & {
   image: Image[]
@@ -144,11 +146,12 @@ const UpdateArticleModal = ({
     (option) => option.label === article?.brand?.name
   )
 
-  const { mutate: updateArticle } = useMutation(
+  const { mutate: updateArticle, isLoading } = useMutation(
     (input: {
       id: string
       name: string
       description: string
+      short_description: string | null
       base_price: number
       brand_id: string | null
       attributes: { text: string; title: string }[]
@@ -184,6 +187,12 @@ const UpdateArticleModal = ({
       ...(brand ? { brand_id: brand?.value } : {}), // optionaly send brand_id
     }
 
+    updatedArticle.base_price = parseFloat(updatedArticle.base_price.toString())
+    updatedArticle.description = formatTextContent(updatedArticle.description)
+    updatedArticle.attributes = updatedArticle.attributes?.length
+      ? updatedArticle.attributes
+      : []
+
     updateArticle(updatedArticle)
   }
 
@@ -207,7 +216,7 @@ const UpdateArticleModal = ({
         <main className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
           <form
             onSubmit={handleSubmit}
-            className='flex h-full w-full flex-col justify-evenly overflow-y-auto rounded-xl bg-white p-10 drop-shadow-2xl sm:h-[80vh] sm:max-w-screen-sm sm:pt-52'
+            className='flex h-full w-full flex-col justify-evenly overflow-y-auto rounded-xl bg-white p-10 drop-shadow-2xl sm:h-[80vh] sm:max-w-screen-sm sm:pt-[30rem]'
           >
             <h1 className='w-full text-center text-2xl font-bold text-gray-800'>
               Izmjeni artikal
@@ -230,6 +239,15 @@ const UpdateArticleModal = ({
               }
               onChange={handleChange}
               name='description'
+              placeholder='Opišite artikal'
+            />
+            <Textarea
+              rows={4}
+              id='message'
+              label='Kratki opis'
+              value={article.short_description || ''}
+              onChange={handleChange}
+              name='short_description'
               placeholder='Opišite artikal'
             />
             <Textarea
@@ -312,9 +330,9 @@ const UpdateArticleModal = ({
             <section className='mt-5 flex w-full items-center justify-center'>
               <button
                 onSubmit={handleSubmit}
-                className='w-4/5 rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
+                className='flex w-4/5 items-center justify-center rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
               >
-                Sačuvaj
+                {isLoading ? <Spinner /> : 'Sačuvaj'}
               </button>
             </section>
             <Ai.AiFillCloseCircle
