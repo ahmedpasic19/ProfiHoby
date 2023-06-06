@@ -7,6 +7,7 @@ import FieldSet from '../../../Fieldset'
 import Textarea from '../../../Textarea'
 import Select from 'react-select'
 import Attribute from './attributes/Attribute'
+import Spinner from '../../../Spinner'
 
 import { AiFillCheckSquare } from 'react-icons/ai'
 import { formatTextContent } from '../../../../utils/formatText'
@@ -51,10 +52,11 @@ const ArticleForm = ({
     trpcClient.brand.getAllBrands.query()
   )
 
-  const { mutate: postArticle } = useMutation(
+  const { mutate: postArticle, isLoading } = useMutation(
     (input: {
       name: string
       description: string
+      short_description: string | null
       warranty: string | null
       base_price: number
       attributes: { text: string; title: string }[]
@@ -208,6 +210,21 @@ const ArticleForm = ({
       </fieldset>
       <fieldset className='flex w-full flex-col items-center'>
         <label
+          htmlFor='message'
+          className='text-cl mb-2 w-3/4 text-start text-xl font-semibold text-gray-800'
+        >
+          Kratki opis
+        </label>
+        <Textarea
+          onChange={handleChange}
+          rows={4}
+          id='message'
+          name='short_description'
+          placeholder='Opišite artikal'
+        />
+      </fieldset>
+      <fieldset className='flex w-full flex-col items-center'>
+        <label
           htmlFor='warranty'
           className='text-cl mb-2 w-3/4 text-start text-xl font-semibold text-gray-800'
         >
@@ -289,7 +306,7 @@ const ArticleForm = ({
         </div>
       </section>
 
-      <section className='mt-10 flex w-full items-center justify-center'>
+      <section className='mt-10 flex w-full items-center justify-center pb-10'>
         <button
           disabled={
             !articleData.base_price ||
@@ -297,9 +314,9 @@ const ArticleForm = ({
             !articleData.name
           }
           onSubmit={createArticle}
-          className='w-4/5 rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
+          className='flex w-4/5 items-center justify-center rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
         >
-          Dodaj
+          {isLoading ? <Spinner /> : 'Dodaj'}
         </button>
       </section>
     </form>
