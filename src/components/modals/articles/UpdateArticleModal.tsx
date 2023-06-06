@@ -233,7 +233,9 @@ const UpdateArticleModal = ({
               id='message'
               label='Opis artikla'
               value={
-                article?.description?.includes('[sp]')
+                article?.description?.includes('[sp]') ||
+                article?.description?.includes('[tab]') ||
+                article?.description?.includes('[nl]')
                   ? parseTextFormat(article?.description)
                   : article?.description
               }
