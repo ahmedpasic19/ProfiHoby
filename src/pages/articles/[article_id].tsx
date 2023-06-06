@@ -81,9 +81,16 @@ const ArticlePage = () => {
           </div>
         </section>
 
-        {/* Article description */}
-        <section className='mt-4 flex min-h-[70vh] w-full max-w-[80%] flex-col items-center'>
+        {/* Article short description */}
+        <section className='mt-4 flex w-full max-w-[80%] flex-col items-center'>
           <h2 className='mb-2 text-xl font-bold'>Opis artikla</h2>
+          <p className='w-[90%] break-words text-gray-600'>
+            {article?.short_description}
+          </p>
+        </section>
+
+        {/* Article description */}
+        <section className='mt-4 flex w-full max-w-[80%] flex-col items-center'>
           {article?.description?.includes('&lt;br&gt;') ? (
             <div dangerouslySetInnerHTML={{ __html: formattedString }} />
           ) : (
@@ -101,10 +108,8 @@ const ArticlePage = () => {
         </section>
 
         {article?.attributes?.length ? (
-          <section className='mt-2 min-h-[70vh] w-full sm:w-4/5'>
-            <h2 className='w-full border-t-2 border-r-gray-50 text-center text-xl font-bold'>
-              O artiklu
-            </h2>
+          <section className='mt-2 w-full sm:w-4/5'>
+            <h2 className='w-full border-t-2 border-gray-50 text-center text-xl font-bold'></h2>
             <ul className='w-full px-4'>
               {article?.attributes?.map((att) => (
                 <li key={Math.random()} className='flex w-full justify-between'>
