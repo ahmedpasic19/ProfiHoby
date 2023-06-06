@@ -107,6 +107,10 @@ const Articles: NextPage = () => {
       accessorKey: 'description',
     },
     {
+      header: 'Kratki Opis',
+      accessorKey: 'short_description',
+    },
+    {
       header: 'Garancija',
       accessorKey: 'warranty',
     },

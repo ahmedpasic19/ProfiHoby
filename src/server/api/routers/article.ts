@@ -381,6 +381,7 @@ export const articleRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         description: z.string(),
+        short_description: z.string().nullish(),
         base_price: z.number(),
         brand_id: z.string().nullish(),
         warranty: z.string().nullish(),
@@ -393,6 +394,9 @@ export const articleRouter = createTRPCRouter({
           base_price: input.base_price,
           name: input.name,
           description: input.description,
+          short_description: input.short_description
+            ? input.short_description
+            : '',
           warranty: input.warranty ? input.warranty : '',
           ...(input.brand_id ? { brand_id: input.brand_id } : {}), // optionaly accept brand_id
         },
@@ -418,6 +422,7 @@ export const articleRouter = createTRPCRouter({
         id: z.string(),
         name: z.string(),
         description: z.string(),
+        short_description: z.string().nullish(),
         base_price: z.number(),
         brand_id: z.string().nullish(),
         warranty: z.string().nullish(),
@@ -431,6 +436,9 @@ export const articleRouter = createTRPCRouter({
           id: input.id,
           name: input.name,
           description: input.description,
+          short_description: input.short_description
+            ? input.short_description
+            : '',
           base_price: input.base_price,
           warranty: input.warranty ? input.warranty : '',
           ...(input.brand_id ? { brand_id: input.brand_id } : {}), // optionaly accept brand_id
