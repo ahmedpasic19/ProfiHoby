@@ -84,6 +84,7 @@ model Article {
     brand_id          String?
     warranty          String?
     short_description String?
+    olx_id            Int?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
