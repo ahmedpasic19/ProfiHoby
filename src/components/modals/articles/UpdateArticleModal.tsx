@@ -146,6 +146,18 @@ const UpdateArticleModal = ({
     (option) => option.label === article?.brand?.name
   )
 
+  const warranty_options = [
+    { label: '1 Godina', value: '1 Godina' },
+    { label: '2 Godine', value: '2 Godine' },
+    { label: '3 Godine', value: '3 Godine' },
+    { label: '5 Godina', value: '5 Godina' },
+    { label: '25 Godina', value: '25 Godina' },
+  ]
+
+  const warranty_value = warranty_options.find(
+    (option) => option.value === article.warranty
+  )
+
   const { mutate: updateArticle, isLoading } = useMutation(
     (input: {
       id: string
@@ -252,15 +264,28 @@ const UpdateArticleModal = ({
               name='short_description'
               placeholder='Opišite artikal'
             />
-            <Textarea
-              rows={4}
-              id='warranty'
-              label='Garancija'
-              value={article.warranty || ''}
-              onChange={handleChange}
-              name='warranty'
-              placeholder='Informacije...'
-            />
+            <fieldset className='flex w-full flex-col items-center'>
+              <label
+                htmlFor='warranty'
+                className='text-cl mb-2 w-3/4 text-start text-xl font-semibold text-gray-800'
+              >
+                Garancija
+              </label>
+              <div className='w-4/5'>
+                <Select
+                  placeholder='Garancija'
+                  options={warranty_options}
+                  value={warranty_value || null}
+                  onChange={(option) => {
+                    if (!option) return
+                    setArticle((prev) => ({
+                      ...prev,
+                      warranty: option.value,
+                    }))
+                  }}
+                />
+              </div>
+            </fieldset>
             <FieldSet
               value={article.base_price}
               onChange={handleChange}
