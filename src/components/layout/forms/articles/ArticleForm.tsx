@@ -178,6 +178,18 @@ const ArticleForm = ({
     (option) => option.value === articleData?.brand_id
   )
 
+  const warranty_options = [
+    { label: '1 Godina', value: '1 Godina' },
+    { label: '2 Godine', value: '2 Godine' },
+    { label: '3 Godine', value: '3 Godine' },
+    { label: '5 Godina', value: '5 Godina' },
+    { label: '25 Godina', value: '25 Godina' },
+  ]
+
+  const warranty_value = warranty_options.find(
+    (option) => option.value === articleData.warranty
+  )
+
   return (
     <form
       onSubmit={createArticle}
@@ -230,13 +242,17 @@ const ArticleForm = ({
         >
           Garancija
         </label>
-        <Textarea
-          onChange={handleChange}
-          rows={4}
-          id='warranty'
-          name='warranty'
-          placeholder='Informacije'
-        />
+        <div className='w-4/5'>
+          <Select
+            placeholder='Garancija'
+            options={warranty_options}
+            value={warranty_value || null}
+            onChange={(option) => {
+              if (!option) return
+              setArticleData((prev) => ({ ...prev, warranty: option.value }))
+            }}
+          />
+        </div>
       </fieldset>
       <FieldSet
         value={articleData.base_price || ''}
