@@ -2,6 +2,7 @@ import { FormEvent, ChangeEvent, useState, useRef } from 'react'
 import { Article } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { trpcClient } from '../../../../utils/api'
+import { toast } from 'react-toastify'
 
 import FieldSet from '../../../Fieldset'
 import Textarea from '../../../Textarea'
@@ -63,6 +64,7 @@ const ArticleForm = ({
     }) => trpcClient.article.createArticle.mutate(input),
     {
       onSuccess: async (data) => {
+        if (!data) return toast.error('Greška na serveru')
         setArticleId(data.id)
         setArticleData({} as TArticle)
         await queryClient.invalidateQueries(['articles.getAllArticles'])
@@ -84,6 +86,9 @@ const ArticleForm = ({
       return
     articleData.base_price = parseFloat(articleData.base_price.toString())
     articleData.description = formatTextContent(articleData.description)
+    articleData.short_description = formatTextContent(
+      articleData.short_description || ''
+    )
     articleData.attributes = articleData.attributes?.length
       ? articleData.attributes
       : []

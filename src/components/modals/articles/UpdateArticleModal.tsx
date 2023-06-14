@@ -201,6 +201,9 @@ const UpdateArticleModal = ({
 
     updatedArticle.base_price = parseFloat(updatedArticle.base_price.toString())
     updatedArticle.description = formatTextContent(updatedArticle.description)
+    updatedArticle.short_description = formatTextContent(
+      updatedArticle.short_description || ''
+    )
     updatedArticle.attributes = updatedArticle.attributes?.length
       ? updatedArticle.attributes
       : []
@@ -249,7 +252,7 @@ const UpdateArticleModal = ({
                 article?.description?.includes('[tab]') ||
                 article?.description?.includes('[nl]')
                   ? parseTextFormat(article?.description)
-                  : article?.description
+                  : article?.description || ''
               }
               onChange={handleChange}
               name='description'
@@ -259,7 +262,13 @@ const UpdateArticleModal = ({
               rows={4}
               id='message'
               label='Kratki opis'
-              value={article.short_description || ''}
+              value={
+                article?.short_description?.includes('[sp]') ||
+                article?.short_description?.includes('[tab]') ||
+                article?.short_description?.includes('[nl]')
+                  ? parseTextFormat(article?.short_description)
+                  : article?.short_description || ''
+              }
               onChange={handleChange}
               name='short_description'
               placeholder='Opišite artikal'
