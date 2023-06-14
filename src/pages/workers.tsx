@@ -31,13 +31,15 @@ const Workers: NextPage = () => {
   const workerColumns = [
     {
       header: 'Naziv',
-      accessorKey: 'name',
-      cell: ({ row }: { row: TRow }) => row.original.user.name,
+      accessorKey: 'user.name',
     },
     {
       header: 'Naziv',
-      accessorKey: 'name',
-      cell: ({ row }: { row: TRow }) => row.original.user.email,
+      accessorKey: 'user.email',
+    },
+    {
+      header: 'Objavljeno',
+      accessorKey: 'articles',
     },
     {
       header: 'Akcije',

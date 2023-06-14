@@ -389,6 +389,13 @@ export const articleRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input, ctx }) => {
+      const workerId = await ctx.prisma.worker.findUnique({
+        where: { user_id: ctx.session.user.id },
+        select: { id: true },
+      })
+
+      if (!workerId) return console.log('No worker id')
+
       const new_article = await ctx.prisma.article.create({
         data: {
           base_price: input.base_price,
@@ -399,6 +406,8 @@ export const articleRouter = createTRPCRouter({
             : '',
           warranty: input.warranty ? input.warranty : '',
           ...(input.brand_id ? { brand_id: input.brand_id } : {}), // optionaly accept brand_id
+          userId: ctx.session.user.id,
+          workerId: workerId.id,
         },
       })
 

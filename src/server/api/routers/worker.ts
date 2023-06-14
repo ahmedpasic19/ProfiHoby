@@ -63,7 +63,14 @@ export const workerRouter = createTRPCRouter({
       return deletedWorker
     }),
 
-  getAllWorkers: adminProcedure.query(({ ctx }) => {
-    return ctx.prisma.worker.findMany({ include: { user: true } })
+  getAllWorkers: adminProcedure.query(async ({ ctx }) => {
+    const workers = await ctx.prisma.worker.findMany({
+      include: { user: true, articles: { select: { id: true } } },
+    })
+
+    return workers.map((worker) => ({
+      ...worker,
+      articles: worker.articles.reduce((prev) => prev + 1, 0),
+    }))
   }),
 })
