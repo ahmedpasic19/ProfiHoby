@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import ImageCarousel from '../../components/layout/ImageCarousel'
 import Image from 'next/image'
 
-import { reverseFormatContent } from '../../utils/formatText'
+import { parseTextFormat, reverseFormatContent } from '../../utils/formatText'
 
 const ArticlePage = () => {
   const router = useRouter()
@@ -84,8 +84,8 @@ const ArticlePage = () => {
         {/* Article short description */}
         <section className='mt-4 flex w-full max-w-[80%] flex-col items-center'>
           <h2 className='mb-2 text-xl font-bold'>Opis artikla</h2>
-          <p className='w-[90%] break-words text-gray-600'>
-            {article?.short_description}
+          <p className='w-[90%] whitespace-pre break-words text-base   font-normal text-gray-600'>
+            {parseTextFormat(article?.short_description || '')}
           </p>
         </section>
 

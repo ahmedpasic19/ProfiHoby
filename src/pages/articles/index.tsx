@@ -31,6 +31,8 @@ import { AiFillEdit } from 'react-icons/ai'
 import { HiOutlineRectangleGroup } from 'react-icons/hi2'
 import { ImCancelCircle } from 'react-icons/im'
 
+import { parseTextFormat } from '../../utils/formatText'
+
 type TArticle = Article & {
   image: Image[]
   brand: {
@@ -105,10 +107,14 @@ const Articles: NextPage = () => {
     {
       header: 'Opis',
       accessorKey: 'description',
+      cell: ({ row }: { row: TRow }) =>
+        parseTextFormat(row.original.description),
     },
     {
       header: 'Kratki Opis',
       accessorKey: 'short_description',
+      cell: ({ row }: { row: TRow }) =>
+        parseTextFormat(row.original.short_description || ''),
     },
     {
       header: 'Garancija',
