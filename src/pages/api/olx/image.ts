@@ -38,7 +38,6 @@ export default async function handler(
         return res.status(403).json({ message: 'No token recieved' })
 
       // GET article olx_id
-
       const article = await prisma.article.findUnique({
         where: { id: typeof req.query.id === 'string' ? req.query.id : '' },
         select: { id: true, olx_id: true },
@@ -59,57 +58,40 @@ export default async function handler(
         },
         select: {
           access_url: true,
+          key: true,
         },
       })
 
       if (!images || !images.length)
         return res.status(404).json({ message: 'Images not found' })
 
-      // for (let i = 0; i < images.length; i++) {
-      //   const url = images[i]
+      if (!images[0]?.access_url || !images[0]?.key)
+        return console.log('No file image')
 
-      //   if (!url)
-      //     return res
-      //       .status(400)
-      //       .json({ message: "Article images sin't assigned an access_url" })
+      const image = await fetch(images[0]?.access_url)
 
-      //   const upload = await axios.post(
-      //     OLX_API + `/listings/${article.olx_id}/image-upload`,
-      //     url.access_url,
-      //     {
-      //       headers: {
-      //         'Content-Type': 'application/json',
-      //         Authorization: `Bearer ${auth.data.token}`,
-      //       },
-      //     }
-      //   )
+      const imageBlob = await image.blob()
 
-      //   // @ts-ignore
-      //   console.log('upload res: ', upload.data)
-      // }
-
-      // Create a new FormData object
       const formData = new FormData()
 
-      // Append each image file to the FormData object
-      images.forEach((file) => {
-        if (!file.access_url) return
-        formData.append(`url`, file.access_url)
+      formData.append('images[]', imageBlob, images[0]?.key)
+
+      console.log('ols_id: ', article.olx_id)
+      fetch(OLX_API + `/listings/${article.olx_id}/image-upload`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          Authorization: `Bearer ${auth.data.token}`,
+        },
       })
-
-      const upload = await axios.post(
-        OLX_API + `/listings/${article.olx_id}/image-upload`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${auth.data.token}`,
-          },
-        }
-      )
-
-      // @ts-ignore
-      console.log('upload res: ', upload.data)
+        .then((response) => response.text())
+        .then((data) => {
+          console.log('UPLOAD RESPONSE: ', data)
+          // Process the response data here
+        })
+        .catch((error) => {
+          console.error('Error:', error)
+        })
 
       // When listing is added to olx api its in a "draft" state
       // It needs to be published for listing upload to be finished
@@ -124,14 +106,13 @@ export default async function handler(
         }
       )
 
-      res
-        .status(200)
-        .json({
-          message: 'Images uploaded to olx',
-          olx_message: publish.data as string,
-        })
+      res.status(200).json({
+        message: 'Images uploaded to olx',
+        olx_message: publish.data as string,
+      })
     } catch (error) {
       res.status(500).json(error)
+      console.log(error)
     }
   } else {
     return res

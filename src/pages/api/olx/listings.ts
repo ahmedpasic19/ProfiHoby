@@ -146,7 +146,7 @@ export default async function handler(
             country_id: country.id,
             city_id: 35,
             price: article.base_price,
-            available: true,
+            available: false,
             state: 'new',
             // },
           },

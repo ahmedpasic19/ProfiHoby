@@ -2,7 +2,6 @@ import { useState, FormEvent, useEffect, useCallback } from 'react'
 import { trpcClient } from '../../../../utils/api'
 import { useRouter } from 'next/router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'react-toastify'
 import axios from 'axios'
 
 import { useDropzone } from 'react-dropzone'
@@ -203,10 +202,9 @@ const UploadArticleImageForm = ({
         <button
           onClick={() => {
             handleSyncImages()
-              .then((data) => {
+              .then(() => {
                 setPageIndex(0)
                 setOpenAddArticle(false)
-                toast.success(data.message)
               })
               .catch(console.error)
           }}
