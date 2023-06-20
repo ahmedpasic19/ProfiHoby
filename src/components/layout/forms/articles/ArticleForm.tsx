@@ -2,6 +2,7 @@ import { FormEvent, ChangeEvent, useState, useRef } from 'react'
 import { Article } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { trpcClient } from '../../../../utils/api'
+import axios from 'axios'
 import { toast } from 'react-toastify'
 
 import FieldSet from '../../../Fieldset'
@@ -70,6 +71,10 @@ const ArticleForm = ({
         await queryClient.invalidateQueries(['articles.getAllArticles'])
         if (pageIndex !== 2) setPageIndex((prev) => prev + 1)
         else setPageIndex(0)
+
+        axios
+          .post(`/api/olx/listings?id=${data.id}`)
+          .catch(console.error)
       },
     }
   )
