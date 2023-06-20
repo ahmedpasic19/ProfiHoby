@@ -10,28 +10,28 @@ const OLX_API = env.OLX_API
 const USERNAME = env.OLX_USERNAME
 const PASSWORD = env.OLX_PASSWORD
 
-type City = {
-  id: number
-  name: string
-  location: {
-    lat: string
-    lon: string
-  }
-  canton_id: number
-}
+// type City = {
+//   id: number
+//   name: string
+//   location: {
+//     lat: string
+//     lon: string
+//   }
+//   canton_id: number
+// }
 
-type Canton = {
-  id: number
-  name: string
-  cities: City[]
-}
+// type Canton = {
+//   id: number
+//   name: string
+//   cities: City[]
+// }
 
-type Entitet = {
-  id: number
-  name: string
-  code: string
-  cantons: Canton[]
-}
+// type Entitet = {
+//   id: number
+//   name: string
+//   code: string
+//   cantons: Canton[]
+// }
 
 type Country = { id: number; name: string; code: string }
 
@@ -126,10 +126,18 @@ export default async function handler(
 
       const category = categories.data.data[0]
 
-      if (!category)
+      if (!category) {
+        console.log('Cannot find category')
         return res
           .status(500)
           .json({ message: 'Cannot find suggested category' })
+      }
+
+      const attributes: { data: { data: object[] } } = await axios.get(
+        OLX_API + `/categories/${category.id}/attributes`
+      )
+
+      console.log('attributes:', attributes)
 
       // POST article to olx api
       // const response: { data: { error: string } } = await
@@ -137,7 +145,6 @@ export default async function handler(
         .post(
           OLX_API + '/listings',
           {
-            // data: {
             title: article?.name, // required and min 2 words
             listing_type: 'sell', // required
             category_id: category.id, // required
@@ -148,7 +155,7 @@ export default async function handler(
             price: article.base_price,
             available: false,
             state: 'new',
-            // },
+            ...(attributes?.data.data.length ? { attributes: [] } : {}),
           },
           {
             headers: {
@@ -158,19 +165,25 @@ export default async function handler(
           }
         )
         .then(async (response: { data: { id: number } }) => {
+          console.log('OLX ID RESPONSE: ', response.data)
+
           // Wright olx listing id to article olx_id field
           await prisma.article.update({
             where: { id: article.id },
             data: { olx_id: response.data.id },
           })
+
+          return res.status(200).json({ message: 'Article posted to olx' })
         })
         .catch(() => {
+          // console.log('error')
+          // @ts-ignore
+          // console.log(err.response.data)
           // Handle errors here
           return res.status(500).json({ message: 'Article NOT posted to olx' })
         })
-
-      res.status(200).json({ message: 'Article posted to olx' })
     } catch (error) {
+      console.log('eeror 2')
       res.status(500).json(error)
     }
   } else {

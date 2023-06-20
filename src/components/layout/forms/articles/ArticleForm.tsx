@@ -72,8 +72,9 @@ const ArticleForm = ({
         if (pageIndex !== 2) setPageIndex((prev) => prev + 1)
         else setPageIndex(0)
 
-        const response = await axios.post(`/api/olx/listings?id=${data.id}`)
-        console.log('OLX api response: ', response.data)
+        axios
+          .post(`/api/olx/listings?id=${data.id}`)
+          .catch(console.error)
       },
     }
   )
