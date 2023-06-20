@@ -65,33 +65,35 @@ export default async function handler(
       if (!images || !images.length)
         return res.status(404).json({ message: 'Images not found' })
 
-      if (!images[0]?.access_url || !images[0]?.key)
-        return console.log('No file image')
+      // POST all images to OLX
+      for (let i = 0; i < images.length; i++) {
+        if (!images[i]?.access_url || !images[i]?.key)
+          return console.log('No file image')
 
-      const image = await fetch(images[0]?.access_url)
+        const image = await fetch(images[i]?.access_url || '')
 
-      const imageBlob = await image.blob()
+        const imageBlob = await image.blob()
 
-      const formData = new FormData()
+        const formData = new FormData()
 
-      formData.append('images[]', imageBlob, images[0]?.key)
+        formData.append('images[]', imageBlob, images[i]?.key)
 
-      console.log('ols_id: ', article.olx_id)
-      fetch(OLX_API + `/listings/${article.olx_id}/image-upload`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          Authorization: `Bearer ${auth.data.token}`,
-        },
-      })
-        .then((response) => response.text())
-        .then((data) => {
-          console.log('UPLOAD RESPONSE: ', data)
-          // Process the response data here
+        fetch(OLX_API + `/listings/${article.olx_id}/image-upload`, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${auth.data.token}`,
+          },
         })
-        .catch((error) => {
-          console.error('Error:', error)
-        })
+          .then((response) => response.text())
+          .then((data) => {
+            console.log('UPLOAD RESPONSE: ', data)
+            // Process the response data here
+          })
+          .catch((error) => {
+            console.error('Error:', error)
+          })
+      }
 
       // When listing is added to olx api its in a "draft" state
       // It needs to be published for listing upload to be finished
