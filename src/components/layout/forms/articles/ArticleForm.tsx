@@ -2,7 +2,7 @@ import { FormEvent, ChangeEvent, useState, useRef } from 'react'
 import { Article } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { trpcClient } from '../../../../utils/api'
-import axios from 'axios'
+// import axios from 'axios'
 
 import FieldSet from '../../../Fieldset'
 import Textarea from '../../../Textarea'
@@ -70,9 +70,9 @@ const ArticleForm = ({
         if (pageIndex !== 2) setPageIndex((prev) => prev + 1)
         else setPageIndex(0)
 
-        axios
-          .post(`/api/olx/listings?id=${data.id}`)
-          .catch(console.error)
+        // axios
+        //   .post(`/api/olx/listings?id=${data.id}`)
+        //   .catch(console.error)
       },
     }
   )

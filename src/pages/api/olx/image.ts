@@ -77,7 +77,7 @@ export default async function handler(
         const formData = new FormData()
 
         formData.append('images[]', imageBlob, images[i]?.key)
-
+        console.log(formData)
         fetch(OLX_API + `/listings/${article.olx_id}/image-upload`, {
           method: 'POST',
           body: formData,
