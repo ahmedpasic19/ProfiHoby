@@ -32,14 +32,15 @@ const Article = ({
       }}
       className='flex h-48 w-full cursor-pointer flex-col items-center bg-white drop-shadow-[0px_0px_1px_rgba(0,0,0,0.5)] hover:drop-shadow-[0px_0px_6px_rgba(0,0,0,0.3)] sm:h-80 sm:w-60'
     >
-      <section className='relative flex h-3/5 w-full overflow-hidden border-b-[1px] border-r-gray-100'>
-        <div className='absolute top-0'>
+      <section className='relative flex h-3/5 w-full items-center justify-center overflow-hidden border-b-[1px] border-r-gray-100'>
+        <div className='flex items-center justify-center'>
           <Image
             src={imageURL}
             alt='article image'
-            width={150}
-            height={100}
-            className='h-full w-full object-contain'
+            // width={150}
+            // height={100}
+            className='object-contain'
+            fill
           />
         </div>
         {action && (

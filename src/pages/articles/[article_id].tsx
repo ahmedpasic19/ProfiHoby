@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router'
 import { trpcClient } from '../../utils/api'
 import { useQuery } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
 
 import ImageCarousel from '../../components/layout/ImageCarousel'
 import Image from 'next/image'
@@ -36,14 +37,23 @@ const ArticlePage = () => {
 
   const descriptionValues = reverseFormatContent(article?.description || '')
 
+  const copyToClipboard = async () => {
+    await navigator?.clipboard.writeText('+387 62 671 327')
+    toast.info('Kopiran br. telefona', {
+      position: 'top-center',
+      hideProgressBar: true,
+      delay: 500,
+    })
+  }
+
   return (
-    <div className='flex h-full min-h-screen w-full flex-col'>
+    <div className='flex h-full min-h-screen w-full flex-col pb-5 xl:px-20'>
       <div className='flex w-full flex-col items-center'>
         {/* Images and detail */}
-        <section className='flex flex-col sm:flex-row'>
+        <section className='flex w-full flex-col sm:flex-row'>
           <div className='inset-0 flex w-full flex-col items-center justify-center overflow-hidden rounded-sm border-2 border-gray-100 sm:max-w-[50%]'>
             {/* Selected image preveiw */}
-            <div className='flex h-96 w-96 items-center justify-center overflow-hidden'>
+            <div className='flex h-96 w-full items-center justify-center overflow-hidden'>
               <ImageCarousel images={image_uls} />
             </div>
             {/* List of all article images */}
@@ -78,13 +88,29 @@ const ArticlePage = () => {
                 </h1>
               </div>
             )}
+            <section className='mt-4 flex h-full w-full flex-col items-center px-5 sm:flex-row sm:items-end'>
+              <button
+                onClick={copyToClipboard}
+                className='my-2 flex w-4/5 justify-between rounded-md bg-blue-600 p-2 text-lg font-bold text-white sm:mx-2 sm:w-3/5'
+              >
+                <label>Viber:</label> <p>+387 62 671 327</p>
+              </button>
+              <a
+                className='my-2 w-4/5 rounded-md bg-gray-600 p-2 text-center text-lg font-bold text-white sm:mx-2 sm:w-3/5'
+                href='https://profihoby.olx.ba/aktivni'
+                rel='noreferrer'
+                target='_blank'
+              >
+                profihoby.olx.ba
+              </a>
+            </section>
           </div>
         </section>
 
         {/* Article short description */}
         <section className='mt-4 flex w-full max-w-[80%] flex-col items-center'>
           <h2 className='mb-2 text-xl font-bold'>Opis artikla</h2>
-          <p className='w-[90%] whitespace-pre break-words text-base   font-normal text-gray-600'>
+          <p className='w-[90%] whitespace-pre-line break-words text-base font-normal text-gray-600'>
             {parseTextFormat(article?.short_description || '')}
           </p>
         </section>

@@ -93,7 +93,9 @@ const Navbar = () => {
     <>
       <nav
         className={`sticky top-0 left-0 ${
-          pathname === '/' || openDropDown ? 'z-30' : ''
+          pathname === '/' || pathname.includes('articles/') || openDropDown
+            ? 'z-30'
+            : ''
         } w-full border-b border-gray-200 bg-white px-2 py-2.5 sm:px-4`}
       >
         <div className='mx-auto flex justify-between sm:justify-evenly'>
