@@ -1,6 +1,8 @@
 import { type AppType } from 'next/app'
 import { type Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 import '../styles/globals.css'
 import Head from 'next/head'
@@ -52,6 +54,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         {!showSearchbar &&
           !article_id &&
           router.pathname != '/articles/create-article' && <SearchBar />}
+        <ToastContainer />
         <Component {...pageProps} />
         <ContactBlob />
       </SessionProvider>
