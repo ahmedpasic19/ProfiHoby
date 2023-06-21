@@ -2,7 +2,7 @@ import { useState, FormEvent, useEffect, useCallback } from 'react'
 import { trpcClient } from '../../../../utils/api'
 import { useRouter } from 'next/router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import axios from 'axios'
+// import axios from 'axios'
 
 import { useDropzone } from 'react-dropzone'
 
@@ -139,15 +139,15 @@ const UploadArticleImageForm = ({
   }
 
   // Upload images to olx
-  const handleSyncImages = async () => {
-    try {
-      const response = await axios.post(`/api/olx/image?id=${article_id || ''}`)
+  // const handleSyncImages = async () => {
+  //   try {
+  //     const response = await axios.post(`/api/olx/image?id=${article_id || ''}`)
 
-      return response
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  //     return response
+  //   } catch (error) {
+  //     console.error(error)
+  //   }
+  // }
 
   // Display empty slots if array of images length is < 8
   const insertPlaceholderImages = (article_images: typeof images) => {
@@ -201,12 +201,13 @@ const UploadArticleImageForm = ({
         </button>
         <button
           onClick={() => {
-            handleSyncImages()
-              .then(() => {
-                setPageIndex(0)
-                setOpenAddArticle(false)
-              })
-              .catch(console.error)
+            // handleSyncImages()
+            //   .then(() => {
+            //     setPageIndex(0)
+            //     setOpenAddArticle(false)
+            //   })
+            //   .catch(console.error)
+            setOpenAddArticle(false)
           }}
           className='w-4/5 max-w-[200px] rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
         >
