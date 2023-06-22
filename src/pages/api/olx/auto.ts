@@ -21,6 +21,11 @@ type Category = {
   parent_categories: string[]
 }
 
+function containsNonLatinChars(str: string) {
+  const latinRegex = /^[a-zA-Z0-9\sčšćžđ+,\.\-'/]+$/
+  return !latinRegex.test(str)
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -51,6 +56,22 @@ export default async function handler(
 
     for (let i = 0; i < articles.length; i++) {
       const article = articles[i]
+
+      if (
+        article?.name === 'Villager hidropak hidrofor VGP 800' ||
+        article?.name === 'Einhell kofer za alat E-Box L70/35' ||
+        article?.name === 'Villager kompresor za vazduh VAT 24 L' ||
+        article?.name === 'Villager kompresor za vazduh VAT 50 L' ||
+        article?.name === 'Vrtni električni trimer 2u1 550 W VERTO 52G552' ||
+        article?.name === 'Villager hidropak hidrofor VGP 800'
+      )
+        continue
+
+      if (containsNonLatinChars(article?.name || '')) {
+        // Skip non-Latin strings
+        console.log('Non latin character!!! ', article?.name)
+        continue
+      }
 
       /////////////////////
       // GET new article
@@ -89,6 +110,7 @@ export default async function handler(
 
       // Category "sve ostalo" in case category is not found
       const backup_category_id = 947
+      // const backup_category_id = 1578
 
       const attributes: { data: { data: object[] } } = await axios.get(
         OLX_API + `/categories/${category?.id || backup_category_id}/attributes`
@@ -102,8 +124,10 @@ export default async function handler(
       console.log('POST LISTING BODY: ', {
         title: article?.name.substring(0, 54), // required and min 2 words
         listing_type: 'sell', // required
-        category_id: category?.id || backup_category_id, // required
-        short_description: parseTextFormat(
+        category_id: backup_category_id, // required
+        short_description: `${
+          article.warranty ? `Garancija: ${article.warranty}\n` : ''
+        }${parseTextFormat(
           article.description
             .replace(/&lt;/g, '<')
             .replace(/&gt;/g, '>')
@@ -111,8 +135,10 @@ export default async function handler(
             .replace(/&quot;/g, '"')
             .replace(/&#39;/g, "'")
             .substring(0, 244)
-        ),
-        description: parseTextFormat(
+        )}`,
+        description: `${
+          article.warranty ? `${article.warranty}\n` : ''
+        }${parseTextFormat(
           article.description
             .replace(/&lt;/g, '<')
             .replace(/&gt;/g, '>')
@@ -120,7 +146,7 @@ export default async function handler(
             .replace(/&quot;/g, '"')
             .replace(/&#39;/g, "'")
             .substring(0, 244)
-        ),
+        )}`,
         country_id: country.id,
         city_id: 35,
         price: article.base_price,
@@ -136,24 +162,26 @@ export default async function handler(
             title: article?.name.substring(0, 54), // required and min 2 words
             listing_type: 'sell', // required
             category_id: category?.id || backup_category_id, // required
-            short_description: parseTextFormat(
+            short_description: `${
+              article.warranty ? `Garancija: ${article.warranty}\n` : ''
+            }${parseTextFormat(
               article.description
                 .replace(/&lt;/g, '<')
                 .replace(/&gt;/g, '>')
                 .replace(/&amp;/g, '&')
                 .replace(/&quot;/g, '"')
                 .replace(/&#39;/g, "'")
-                .substring(0, 244)
-            ),
-            description: parseTextFormat(
+            )}`.substring(0, 244),
+            description: `${
+              article.warranty ? `Garancija: ${article.warranty}\n` : ''
+            }${parseTextFormat(
               article.description
                 .replace(/&lt;/g, '<')
                 .replace(/&gt;/g, '>')
                 .replace(/&amp;/g, '&')
                 .replace(/&quot;/g, '"')
                 .replace(/&#39;/g, "'")
-                .substring(0, 244)
-            ),
+            )}`.substring(0, 244),
             country_id: country.id,
             city_id: 35,
             price: article.base_price,
@@ -180,6 +208,7 @@ export default async function handler(
         // eslint-disable-next-line
         .catch((error: { response: { data: any } }) => {
           console.log(error?.response?.data)
+          console.log('CONTINUE AFTER ERROR')
         })
 
       ////////////////////////
@@ -195,10 +224,10 @@ export default async function handler(
       if (!article1)
         return res.status(404).json({ message: 'Article not found' })
 
-      if (!article1?.olx_id)
-        return res
-          .status(404)
-          .json({ message: "Article isn't assigned a listing id" })
+      if (!article1?.olx_id) {
+        console.log("Article isn't assigned a listing id.... CONTINUE")
+        continue
+      }
 
       // GET S3 access_url from article1 images
       const images = await prisma.image.findMany({
@@ -211,8 +240,10 @@ export default async function handler(
         },
       })
 
-      if (!images || !images.length)
-        return res.status(404).json({ message: 'Images not found' })
+      if (!images || !images.length) {
+        console.log('IMAGES NOT FOUND... CONTINUTING')
+        continue
+      }
 
       // POST all images to OLX
       for (let i = 0; i < images.length; i++) {
@@ -262,13 +293,43 @@ export default async function handler(
 
       // Wait a minute before running againt
       // This is to not make to many api calls
-      await new Promise((resolve) => setTimeout(resolve, 60000))
+      await new Promise((resolve) => setTimeout(resolve, 30000))
     }
     return res.status(200).json({ message: 'Syncing completed.' })
   } catch (error) {
     // @ts-ignore
     console.log(Object.keys(error))
     console.log('cath errormessage: ', error)
-    res.status(500).json(error)
+
+    // Set the response status
+    res.status(500)
+
+    // Create a custom error page HTML
+    const errorPage = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Error</title>
+        <style>
+          body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Error</h1>
+        <pre>${JSON.stringify(error, null, 2)}</pre>
+      </body>
+    </html>
+  `
+
+    // Set the response content-type to HTML
+    res.setHeader('Content-Type', 'text/html')
+
+    // Send the error page as a response
+    res.send(errorPage)
   }
 }
