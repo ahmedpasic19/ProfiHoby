@@ -8,6 +8,7 @@ import FieldSet from '../../../Fieldset'
 import { AiFillCloseCircle } from 'react-icons/ai'
 
 type TProps = {
+  zindex?: string
   group?: Group & { category: Category }
   isEditing?: boolean
   isDeleting?: boolean
@@ -31,6 +32,7 @@ const GroupForm = ({
   isDeleting,
   setIsOpen,
   setGroup,
+  zindex,
 }: TProps) => {
   const [name, setName] = useState('')
   const [category, setCategory] = useState({} as TCategoryOption)
@@ -119,7 +121,11 @@ const GroupForm = ({
   }
 
   return (
-    <div className='flex w-full flex-col items-center justify-center'>
+    <div
+      className={`${
+        zindex ? zindex : ''
+      } flex w-full flex-col items-center justify-center`}
+    >
       <form
         onSubmit={handleSubmit}
         className='relative flex w-[500px] flex-col items-center justify-center rounded-xl bg-white py-20'

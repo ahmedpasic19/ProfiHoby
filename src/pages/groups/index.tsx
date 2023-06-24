@@ -93,8 +93,8 @@ const Groups: NextPage = () => {
         <h1 className='w-full text-center text-[3em] font-bold text-gray-800'>
           Grupe
         </h1>
-        <GroupForm />
-        <div className='relative flex h-[60vh] w-full justify-center overflow-y-auto'>
+        <GroupForm zindex='z-[-1]' />
+        <div className='relative flex w-full justify-center overflow-y-auto'>
           <MainTable data={useData()} columns={columns} showNavigation />
         </div>
       </div>

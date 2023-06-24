@@ -76,22 +76,29 @@ const UploadImageForm = ({
         }
         if (!url) return alert('NO URL')
 
-        fetch(url, {
+        await fetch(url, {
           method: 'PUT',
           body: formData,
         })
           .then((res) => console.log(res))
           .catch((err) => console.log(err))
 
-        assignUrl({
-          key: data?.key || '',
-          fileType: files[0]?.type !== undefined ? files[0]?.type : '',
-        })
-
-        await queryClient.invalidateQueries([
-          'image.getAllRelatedImages',
-          { article_id, action_id },
-        ])
+        assignUrl(
+          {
+            key: data?.key || '',
+            fileType: files[0]?.type !== undefined ? files[0]?.type : '',
+          },
+          {
+            onSuccess: () => {
+              queryClient
+                .invalidateQueries([
+                  'image.getAllRelatedImages',
+                  { article_id, action_id },
+                ])
+                .catch(console.error)
+            },
+          }
+        )
       },
     }
   )

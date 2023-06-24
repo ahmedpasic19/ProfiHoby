@@ -7,6 +7,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useDropzone } from 'react-dropzone'
 
 import Image from 'next/image'
+import Spinner from '../../../Spinner'
 
 type TProps = {
   setOpenAddArticle: React.Dispatch<React.SetStateAction<boolean>>
@@ -28,7 +29,7 @@ const UploadArticleImageForm = ({
 
   const queryClient = useQueryClient()
 
-  const { data: images } = useQuery(
+  const { data: images, isLoading: loadingFetchImages } = useQuery(
     ['image.getAllRelatedImages', { article_id, action_id }],
     () =>
       trpcClient.image.getAllRelatedImages.query({
@@ -40,12 +41,12 @@ const UploadArticleImageForm = ({
     }
   )
 
-  const { mutate: assignUrl } = useMutation(
+  const { mutate: assignUrl, isLoading: loadingAssignURL } = useMutation(
     (input: { key: string; fileType: string }) =>
       trpcClient.image.generatePermanentAccessURL.mutate(input)
   )
 
-  const { mutate: createImage } = useMutation(
+  const { mutate: createImage, isLoading: loadingAddImage } = useMutation(
     (input: { name: string; article_id: string; action_id: string }) =>
       trpcClient.image.createPresignedURL.mutate(input),
     {
@@ -73,22 +74,29 @@ const UploadArticleImageForm = ({
         }
         if (!url) return alert('NO URL')
 
-        fetch(url, {
+        await fetch(url, {
           method: 'POST',
           body: formData,
         })
           .then(() => console.log('Success'))
           .catch(() => console.log('fail'))
 
-        assignUrl({
-          key: data?.key || '',
-          fileType: files[0]?.type !== undefined ? files[0]?.type : '',
-        })
-
-        await queryClient.invalidateQueries([
-          'image.getAllRelatedImages',
-          { article_id, action_id },
-        ])
+        assignUrl(
+          {
+            key: data?.key || '',
+            fileType: files[0]?.type !== undefined ? files[0]?.type : '',
+          },
+          {
+            onSuccess: () => {
+              queryClient
+                .invalidateQueries([
+                  'image.getAllRelatedImages',
+                  { article_id, action_id },
+                ])
+                .catch(console.error)
+            },
+          }
+        )
       },
     }
   )
@@ -238,7 +246,11 @@ const UploadArticleImageForm = ({
                 key={Math.random().toString()}
                 className='relative z-20 flex h-full w-full animate-pulse items-center justify-center bg-gray-400 text-2xl text-transparent'
               >
-                {index}
+                {loadingFetchImages || loadingAssignURL || loadingAddImage ? (
+                  <Spinner />
+                ) : (
+                  index
+                )}
               </div>
             )
         })}
