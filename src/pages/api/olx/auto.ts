@@ -34,7 +34,7 @@ export default async function handler(
   const articles = await prisma.article.findMany({
     where: { olx_id: null },
     take: 300,
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: 'asc' },
   })
 
   const auth: { data: { token?: string } } = await axios.post(

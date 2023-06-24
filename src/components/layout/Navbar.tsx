@@ -93,7 +93,13 @@ const Navbar = () => {
     <>
       <nav
         className={`sticky top-0 left-0 ${
-          pathname === '/' || pathname.includes('articles/') || openDropDown
+          pathname === '/' ||
+          pathname.includes('articles/') ||
+          pathname.includes('categories/') ||
+          pathname.includes('groups/') ||
+          // pathname === '/groups' ||
+          // pathname === '/categories' ||
+          openDropDown
             ? 'z-30'
             : ''
         } w-full border-b border-gray-200 bg-white px-2 py-2.5 sm:px-4`}

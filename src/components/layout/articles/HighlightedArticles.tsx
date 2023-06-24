@@ -176,7 +176,6 @@ const HiglightedArticle = ({ url }: { url: string }) => {
         width={100}
         alt='Article'
         src={url}
-        priority
       />
     </div>
   )
