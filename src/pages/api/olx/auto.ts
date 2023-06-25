@@ -96,7 +96,7 @@ export default async function handler(
       OLX_API +
         `/categories/suggest?keyword=${article.name.replace(/\s/g, '%')}`
     )
-    console.log('req suggested category: ', uri)
+
     // Sugested categories by the OLX api
     const categories: { data: { data: Category[] } } = await axios.get(uri)
     console.log(categories.data)

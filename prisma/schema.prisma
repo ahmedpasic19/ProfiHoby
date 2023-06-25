@@ -146,8 +146,9 @@ model ArticleAction {
 }
 
 model Group {
-    id   String @id @default(cuid())
-    name String
+    id              String  @id @default(cuid())
+    name            String
+    olx_category_id String?
 
     category    Category        @relation(fields: [category_id], references: [id])
     category_id String
