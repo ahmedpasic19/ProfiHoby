@@ -6,20 +6,24 @@ import { Category, Group } from '@prisma/client'
 
 import useProtectRoute from '../../hooks/useProtectRoute'
 
+import CreateGroupModal from '../../components/modals/groups/CreateGroupModal'
 import DeleteGroupModal from '../../components/modals/groups/DeleteGroupModal'
 import UpdateGroupModal from '../../components/modals/groups/UpdateGroupModal'
 import GroupArticlesModal from '../../components/modals/groups/GroupArticlesModal'
+import SearchOLXCategoryModal from '../../components/modals/olx/SearchOLXCategoryModal'
 
-import GroupForm from '../../components/layout/forms/groups/GroupForm'
 import MainTable from '../../components/table/MainTable'
 import { AiFillEdit } from 'react-icons/ai'
 import { ImPriceTags } from 'react-icons/im'
 import { FaTrash } from 'react-icons/fa'
+import { BiCategoryAlt } from 'react-icons/bi'
 
 const Groups: NextPage = () => {
   const [openArticles, setOpenArticles] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
   const [openUpdate, setOpenUpdate] = useState(false)
+  const [openCreate, setOpenCreate] = useState(false)
+  const [openOLXCategory, setOpenOLXCategory] = useState(false)
   const [group, setGroup] = useState({} as Group & { category: Category })
 
   useProtectRoute()
@@ -33,10 +37,11 @@ const Groups: NextPage = () => {
     { header: 'Naziv', accessorKey: 'name' },
     {
       header: 'Kategorija',
-      accessorKey: 'category',
-      cell: ({ row }: { row: { original: { category: Category } } }) => {
-        return row.original.category.name
-      },
+      accessorKey: 'category.name',
+    },
+    {
+      header: 'OLX Kategorija',
+      accessorKey: 'olx_category_id',
     },
     {
       header: 'Akcije',
@@ -56,6 +61,15 @@ const Groups: NextPage = () => {
               }}
             >
               <ImPriceTags className='h-8 w-8' />
+            </button>
+            <button
+              className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
+              onClick={() => {
+                setOpenOLXCategory(true)
+                setGroup(row.original)
+              }}
+            >
+              <BiCategoryAlt className='h-8 w-8' />
             </button>
             <button
               className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
@@ -93,11 +107,21 @@ const Groups: NextPage = () => {
         <h1 className='w-full text-center text-[3em] font-bold text-gray-800'>
           Grupe
         </h1>
-        <GroupForm zindex='z-[-1]' />
+
+        <section className='flex w-4/5 items-center py-10'>
+          <button
+            onClick={() => setOpenCreate(true)}
+            className='w-[250px] rounded-xl bg-blue-500 p-4 text-xl font-semibold text-white hover:bg-blue-600'
+          >
+            Dodaj grupu
+          </button>
+        </section>
+
         <div className='relative flex w-full justify-center overflow-y-auto'>
           <MainTable data={useData()} columns={columns} showNavigation />
         </div>
       </div>
+      <CreateGroupModal isOpen={openCreate} setIsOpen={setOpenCreate} />
       <DeleteGroupModal
         group={group}
         setGroup={setGroup}
@@ -115,6 +139,12 @@ const Groups: NextPage = () => {
         setGroup={setGroup}
         isOpen={openArticles}
         setIsOpen={setOpenArticles}
+      />
+      <SearchOLXCategoryModal
+        group={group}
+        setGroup={setGroup}
+        isOpen={openOLXCategory}
+        setIsOpen={setOpenOLXCategory}
       />
     </>
   )

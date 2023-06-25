@@ -28,6 +28,7 @@ export const groupRouter = createTRPCRouter({
         id: z.string(),
         name: z.string(),
         category_id: z.string(),
+        olx_category_id: z.string().nullish(),
         articles: z.array(z.object({ id: z.string() })),
       })
     )
@@ -35,6 +36,7 @@ export const groupRouter = createTRPCRouter({
       const updated_group = await ctx.prisma.group.update({
         where: { id: input.id },
         data: {
+          olx_category_id: input.olx_category_id,
           name: input.name,
           category: { connect: { id: input.category_id } },
         },

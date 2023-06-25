@@ -5,14 +5,14 @@ import { Category, Group } from '@prisma/client'
 
 import Select, { SingleValue } from 'react-select'
 import FieldSet from '../../../Fieldset'
+import Spinner from '../../../Spinner'
 import { AiFillCloseCircle } from 'react-icons/ai'
 
 type TProps = {
-  zindex?: string
   group?: Group & { category: Category }
   isEditing?: boolean
   isDeleting?: boolean
-  setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   setGroup?: React.Dispatch<
     React.SetStateAction<Group & { category: Category }>
   >
@@ -32,7 +32,6 @@ const GroupForm = ({
   isDeleting,
   setIsOpen,
   setGroup,
-  zindex,
 }: TProps) => {
   const [name, setName] = useState('')
   const [category, setCategory] = useState({} as TCategoryOption)
@@ -57,36 +56,37 @@ const GroupForm = ({
   const { data: allCategories } = useQuery(['category.getAllCategories'], () =>
     trpcClient.category.getAllCategories.query()
   )
-  const { mutate: createGroup } = useMutation(
+  const { mutate: createGroup, isLoading: loadingCreateGroup } = useMutation(
     (input: TInput) => trpcClient.group.createGroup.mutate(input),
     {
       onSuccess: async () => {
         await invalidateQueries()
         setName('')
         setCategory({} as TCategoryOption)
+        setIsOpen(false)
       },
     }
   )
-  const { mutate: updateGroup } = useMutation(
+  const { mutate: updateGroup, isLoading: loadingUpdateGroup } = useMutation(
     (input: TInput & { id: string }) =>
       trpcClient.group.updateGroup.mutate(input),
     {
       onSuccess: async () => {
         await invalidateQueries()
         setName('')
-        setIsOpen && setIsOpen(false)
+        setIsOpen(false)
         setGroup && setGroup({} as Group & { category: Category })
         setCategory({} as TCategoryOption)
       },
     }
   )
-  const { mutate: deleteGroup } = useMutation(
+  const { mutate: deleteGroup, isLoading: loadingDeleteGroup } = useMutation(
     (input: { id: string }) => trpcClient.group.deleteGroup.mutate(input),
     {
       onSuccess: async () => {
         await invalidateQueries()
         setName('')
-        setIsOpen && setIsOpen(false)
+        setIsOpen(false)
         setGroup && setGroup({} as Group & { category: Category })
         setCategory({} as TCategoryOption)
       },
@@ -121,11 +121,7 @@ const GroupForm = ({
   }
 
   return (
-    <div
-      className={`${
-        zindex ? zindex : ''
-      } flex w-full flex-col items-center justify-center`}
-    >
+    <div className={`flex w-full flex-col items-center justify-center`}>
       <form
         onSubmit={handleSubmit}
         className='relative flex w-[500px] flex-col items-center justify-center rounded-xl bg-white py-20'
@@ -161,17 +157,25 @@ const GroupForm = ({
         </div>
         <section className='mt-10 flex w-full items-center justify-center'>
           <button
-            disabled={!name}
+            disabled={!name || !Object.keys(category || {}).length}
             onSubmit={handleSubmit}
-            className='w-4/5 rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
+            className='flex w-4/5 items-center justify-center rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
           >
-            {isEditing ? 'Izmjeni' : isDeleting ? 'Izbriši' : 'Dodaj'}
+            {loadingCreateGroup || loadingUpdateGroup || loadingDeleteGroup ? (
+              <Spinner />
+            ) : isEditing ? (
+              'Izmjeni'
+            ) : isDeleting ? (
+              'Izbriši'
+            ) : (
+              'Dodaj'
+            )}
           </button>
         </section>
         {isEditing && (
           <AiFillCloseCircle
             onClick={() => {
-              setIsOpen && setIsOpen(false)
+              setIsOpen(false)
               setGroup && setGroup({} as Group & { category: Category })
             }}
             className='absolute top-4 right-4 h-8 w-8 cursor-pointer rounded-full bg-gray-600 text-white hover:bg-gray-800'
