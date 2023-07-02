@@ -5,6 +5,7 @@ import { signOut, useSession } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../utils/api'
 
+import Logo from '../../assets/logo.png'
 import Image from 'next/image'
 import Link from 'next/link'
 import DropdownMenu from './navbar/DropdownMenu'
@@ -105,16 +106,17 @@ const Navbar = () => {
         } w-full border-b border-gray-200 bg-white px-2 py-2.5 sm:px-4`}
       >
         <div className='mx-auto flex justify-between sm:justify-evenly'>
-          <Link href='/' className='flex items-center justify-center'>
+          <Link href='/' className='relative flex items-center justify-center'>
             <Image
-              src='https://flowbite.com/docs/images/logo.svg'
-              width={50}
+              src={Logo}
+              // fill
               height={50}
-              className='mr-3 h-6 sm:h-9'
-              alt='Flowbite Logo'
+              width={50}
+              className='object-contain'
+              alt='Profihoby Logo'
             />
             <h2 className='w-full text-center text-2xl font-bold tracking-tighter'>
-              Profihoby
+              {/* Profihoby */}
             </h2>
           </Link>
           <div className='flex md:order-2'>
