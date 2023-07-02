@@ -10,6 +10,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import DropdownMenu from './navbar/DropdownMenu'
 import { AiFillHome } from 'react-icons/ai'
+import SearchBar from '../SearchBar'
 
 const Navbar = () => {
   const [openDropDown, setOpenDropDown] = useState(false)
@@ -119,6 +120,8 @@ const Navbar = () => {
               {/* Profihoby */}
             </h2>
           </Link>
+
+          <SearchBar />
           <div className='flex md:order-2'>
             {/* Log out btn */}
             {status === 'authenticated' && (

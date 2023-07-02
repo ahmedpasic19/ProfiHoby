@@ -60,7 +60,7 @@ const ArticleNamePage = () => {
   }, [isVisible, fetchNextPage])
 
   return (
-    <div className='pt-[12vh]'>
+    <div className='pt-5'>
       <div className='flex w-full items-center justify-center'>
         <div className='grid w-full grid-cols-2 gap-4 px-3 sm:grid-cols-3 md:gap-2 xl:grid-cols-4 2xl:grid-cols-6 2xl:gap-2 4k:grid-cols-10'>
           {isSuccess &&

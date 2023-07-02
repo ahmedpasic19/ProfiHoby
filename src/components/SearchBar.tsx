@@ -44,7 +44,7 @@ const SearchBar = () => {
   const articles = useMemo(() => articleData?.articles || [], [articleData])
 
   return (
-    <div className='fixed z-30 flex w-full items-center bg-gray-100'>
+    <div className='z-30 flex items-center border-b-2 border-gray-50'>
       <SearchComponent
         filter={name}
         filter_name='name'
@@ -53,7 +53,7 @@ const SearchBar = () => {
         handleChange={(e) => setName(e.target.value)}
       />
       {name && (
-        <div className='absolute top-14 z-[9] flex w-full items-center justify-center overflow-y-auto bg-gray-300 px-2'>
+        <div className='absolute top-16 left-0 right-0 z-[9] flex w-full items-center justify-center overflow-y-auto bg-gray-300 px-2'>
           <ul className='h-full max-h-[20em] w-full overflow-y-auto'>
             {articles?.map((article) => (
               <li
@@ -92,7 +92,7 @@ const ListedArticle = ({
           className='absolute object-contain'
         />
       </div>
-      <div className='mx-5 flex h-full w-full items-center justify-center'>
+      <div className='mx-5 flex h-full w-full items-center justify-center truncate break-words'>
         <h3 className='text-md w-full text-start font-medium uppercase text-gray-800'>
           {article_name}
         </h3>

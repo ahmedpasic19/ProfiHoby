@@ -7,7 +7,6 @@ import 'react-toastify/dist/ReactToastify.css'
 import '../styles/globals.css'
 import Head from 'next/head'
 import Navbar from '../components/layout/Navbar'
-import SearchBar from '../components/SearchBar'
 import ContactBlob from '../components/layout/ContactBlob'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -27,20 +26,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   const router = useRouter()
-  const { article_id } = router.query
-
-  // pages where search-bar will not appear
-  const searchbarpages = [
-    '/articles',
-    '/categories',
-    '/signin',
-    '/groups',
-    '/actions',
-    '/brands',
-    '/workers',
-  ]
-
-  const showSearchbar = searchbarpages.find((page) => page === router.pathname)
 
   return (
     <QueryClientProvider client={client}>
@@ -51,9 +36,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
           <link rel='icon' href='/favicon.ico' />
         </Head>
         {router.pathname !== '/signin' && <Navbar />}
-        {!showSearchbar &&
-          !article_id &&
-          router.pathname != '/articles/create-article' && <SearchBar />}
         <ToastContainer />
         <Component {...pageProps} />
         <ContactBlob />

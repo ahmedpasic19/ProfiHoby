@@ -62,7 +62,7 @@ const GroupArticles: NextPage = () => {
   }, [isVisible, fetchNextPage])
 
   return (
-    <div className='flex h-full w-full flex-col pt-[8vh]'>
+    <div className='flex h-full w-full flex-col'>
       <h1 className='mb-10 w-full text-center text-[3em] font-bold text-gray-800'>
         {group?.name}
       </h1>
