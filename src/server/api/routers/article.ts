@@ -261,10 +261,10 @@ export const articleRouter = createTRPCRouter({
         group_id: z.string(),
         pageSize: z.number(),
         pageIndex: z.number(),
-        priceFrom: z.number(),
-        priceTo: z.number(),
-        brand_id: z.string(),
-        orderByPrice: z.string(),
+        priceFrom: z.number().nullish(),
+        priceTo: z.number().nullish(),
+        brand_id: z.string().nullish(),
+        orderByPrice: z.string().nullish(),
       })
     )
     .query(async ({ input, ctx }) => {

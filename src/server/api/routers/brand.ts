@@ -18,7 +18,7 @@ export const brandRouter = createTRPCRouter({
           articles: {
             connect: input.article_ids.map((id) => ({ id })), // relate articles to brand
           },
-          group_id: input.group_id,
+          ...(input.group_id ? { group_id: input.group_id } : {}),
         },
       })
 
@@ -42,7 +42,7 @@ export const brandRouter = createTRPCRouter({
           articles: input.article_ids.length // update article relation
             ? { set: input.article_ids.map((id) => ({ id })) }
             : {},
-          group_id: input.group_id,
+          ...(input.group_id ? { group_id: input.group_id } : {}),
         },
       })
 

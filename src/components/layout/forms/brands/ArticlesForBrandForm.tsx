@@ -65,8 +65,12 @@ const ArticlesForBrandForm = ({
 
   // Assign new articles to a brand
   const { mutate: updateBrand, isLoading: loadingCreate } = useMutation(
-    (input: { id: string; name: string; article_ids: string[] }) =>
-      trpcClient.brand.updateBrand.mutate(input),
+    (input: {
+      id: string
+      name: string
+      article_ids: string[]
+      group_id: string
+    }) => trpcClient.brand.updateBrand.mutate(input),
     {
       onSuccess: async () => {
         await queryClient.invalidateQueries(['brand.getAllBrands'])
@@ -109,7 +113,12 @@ const ArticlesForBrandForm = ({
     const article_ids = selectedArticles.map((art) => art.id)
 
     // Relate articles the brand
-    updateBrand({ id: brand.id, name: brand.name, article_ids })
+    updateBrand({
+      id: brand.id,
+      name: brand.name,
+      article_ids,
+      group_id: brand.group_id || '',
+    })
   }
 
   return (
