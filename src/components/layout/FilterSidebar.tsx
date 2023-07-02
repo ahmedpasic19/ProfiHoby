@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../utils/api'
 
@@ -8,10 +8,13 @@ import { BsFilterLeft } from 'react-icons/bs'
 import { AiFillCloseCircle } from 'react-icons/ai'
 
 type TProps = {
+  orderByPrice?: string
+  group_id?: string
   isLoading: boolean
   brand: string
   priceFrom: number
   priceTo: number
+  setOrderByPrice: React.Dispatch<React.SetStateAction<string>>
   setPriceFrom: React.Dispatch<React.SetStateAction<number>>
   setPriceTo: React.Dispatch<React.SetStateAction<number>>
   setBrand: React.Dispatch<React.SetStateAction<string>>
@@ -19,19 +22,31 @@ type TProps = {
 }
 
 const FilterSidebar = ({
+  orderByPrice,
+  group_id,
   isLoading,
   brand,
   priceFrom,
   priceTo,
   setBrand,
+  setOrderByPrice,
   setPriceFrom,
   setPriceTo,
   refetch,
 }: TProps) => {
   const [open, setOpen] = useState(false)
 
+  function scrollToTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
+
   const { data: brands } = useQuery(['brand.getAllBrands'], () =>
-    trpcClient.brand.getAllBrands.query()
+    group_id
+      ? trpcClient.brand.getBrandsByGroupId.query({ group_id })
+      : trpcClient.brand.getAllBrands.query()
   )
 
   const brandOptions =
@@ -39,11 +54,40 @@ const FilterSidebar = ({
       label: brand.name,
       value: brand.id,
     })) || []
+  const orderOptions = [
+    { label: 'Bez filtera', value: '' },
+    { label: 'Najvišoj', value: 'desc' },
+    { label: 'Najnižoj', value: 'asc' },
+  ]
+
+  brandOptions.splice(0, 0, { label: 'Odaberi brend', value: '' })
 
   const brand_value = useMemo(
     () => brandOptions?.find((option) => option.value === brand),
     [brand]
   )
+  const order_value = useMemo(
+    () => orderOptions?.find((option) => option.value === orderByPrice),
+    [orderByPrice]
+  )
+
+  // Prevent scrolling when the modal is open
+  useEffect(() => {
+    if (open) {
+      // Disable scrolling
+      document.body.style.overflow = 'hidden'
+    } else {
+      // Re-enable scrolling
+      document.body.style.overflow = 'auto'
+    }
+  }, [open])
+
+  useEffect(() => {
+    setTimeout(() => {
+      refetch()
+      scrollToTop()
+    }, 200)
+  }, [orderByPrice])
 
   return (
     <>
@@ -87,19 +131,39 @@ const FilterSidebar = ({
         </fieldset>
         <fieldset className='mb-2 flex flex-col'>
           <label htmlFor='do' className='mb-1 font-semibold'>
-            Brend
+            Filtriraj po cijeni
           </label>
           <Select
-            placeholder='Brend . . . '
-            options={brandOptions}
-            value={brand_value || null}
-            onChange={(option) => option && setBrand(option.value)}
+            placeholder='Filtriraj po cijeni . . . '
+            options={orderOptions}
+            value={order_value || null}
+            onChange={(option) => {
+              if (option) {
+                setOpen(false)
+                setOrderByPrice(option.value)
+                scrollToTop()
+              }
+            }}
           />
         </fieldset>
+        {group_id && (
+          <fieldset className='mb-2 flex flex-col'>
+            <label htmlFor='do' className='mb-1 font-semibold'>
+              Brend
+            </label>
+            <Select
+              placeholder='Brend . . . '
+              options={brandOptions}
+              value={brand_value || null}
+              onChange={(option) => option && setBrand(option.value)}
+            />
+          </fieldset>
+        )}
         <button
           onClick={() => {
             refetch()
             setOpen(false)
+            scrollToTop()
           }}
           className='flex w-full items-center justify-center bg-gray-800 p-2 text-lg text-white'
         >

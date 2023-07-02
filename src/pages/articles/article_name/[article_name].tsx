@@ -12,6 +12,7 @@ const ArticleNamePage = () => {
   const [priceFrom, setPriceFrom] = useState(0)
   const [priceTo, setPriceTo] = useState(0)
   const [brand, setBrand] = useState('')
+  const [orderByPrice, setOrderByPrice] = useState('' as string)
 
   const [isVisible, setIsVisible] = useState(false)
 
@@ -34,6 +35,9 @@ const ArticleNamePage = () => {
         name,
         pageSize: 12,
         pageIndex: pageParam as number,
+        priceFrom: priceFrom || 0,
+        priceTo: priceTo || 0,
+        orderByPrice: orderByPrice || '',
       }),
     {
       getNextPageParam: (data) => {
@@ -75,11 +79,13 @@ const ArticleNamePage = () => {
       <div className='flex w-full items-center justify-center'>
         <div className='flex h-full w-full flex-col sm:flex-row'>
           <FilterSidebar
+            orderByPrice={orderByPrice}
             isLoading={isLoading}
             brand={brand}
             priceFrom={priceFrom}
             priceTo={priceTo}
             setBrand={setBrand}
+            setOrderByPrice={setOrderByPrice}
             setPriceFrom={setPriceFrom}
             setPriceTo={setPriceTo}
             refetch={refetch}
