@@ -1,4 +1,4 @@
-import { FormEvent, useState, useMemo } from 'react'
+import { FormEvent, useState, useMemo, useRef } from 'react'
 import { useRouter } from 'next/router'
 
 import { useQuery } from '@tanstack/react-query'
@@ -15,6 +15,8 @@ type TListedArticleProps = {
 
 const SearchBar = () => {
   const [name, setName] = useState('')
+
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const router = useRouter()
 
@@ -39,6 +41,7 @@ const SearchBar = () => {
     e.preventDefault()
     setName('')
     await router.push(`/articles/article_name/${name}`)
+    inputRef.current?.blur()
   }
 
   const articles = useMemo(() => articleData?.articles || [], [articleData])
@@ -46,6 +49,7 @@ const SearchBar = () => {
   return (
     <div className='z-30 flex items-center border-b-2 border-gray-50'>
       <SearchComponent
+        inputRef={inputRef}
         filter={name}
         filter_name='name'
         refetch={refetch}

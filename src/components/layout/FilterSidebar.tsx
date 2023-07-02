@@ -101,7 +101,7 @@ const FilterSidebar = ({
       <div
         className={`${
           open ? 'absolute inset-0 z-50 flex justify-end bg-white' : 'hidden'
-        } h-full w-full max-w-xs flex-col pl-2 pb-4 sm:sticky sm:top-[14vh] sm:flex sm:max-w-[16rem] sm:pb-0`}
+        } h-full w-full flex-col px-2 pb-4 sm:sticky sm:top-[14vh] sm:flex sm:max-w-[16rem] sm:pl-2 sm:pb-0`}
       >
         <fieldset className='mb-2 flex flex-col'>
           <label htmlFor='od' className='mb-1 font-semibold'>
