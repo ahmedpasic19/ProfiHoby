@@ -95,7 +95,7 @@ export const categoryRouter = createTRPCRouter({
           groups: {
             where: { articles: { some: {} } },
             skip: input.pageSize * input.pageIndex,
-            take: input.pageSize,
+            take: 3,
             include: {
               articles: {
                 orderBy: { article: { action: { createdAt: 'asc' } } },

@@ -51,13 +51,13 @@ export const articleRouter = createTRPCRouter({
           },
         },
         skip: input.pageSize * input.pageIndex,
-        take: input.pageSize,
+        take: 3,
         orderBy: { createdAt: 'desc' },
       })
 
       const total_groups = await ctx.prisma.group.count()
 
-      const pageCount = Math.ceil(total_groups / input.pageSize)
+      const pageCount = Math.ceil(total_groups / 3)
 
       return {
         group_articles: groups_with_articles,
