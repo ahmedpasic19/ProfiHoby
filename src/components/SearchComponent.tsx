@@ -2,6 +2,7 @@ import { useEffect, FormEvent, ChangeEvent } from 'react'
 import { debounce } from '../utils/debounce'
 
 type TProps = {
+  inputRef: React.Ref<HTMLInputElement>
   displayBtn?: boolean
   filter_name: string
   filter: string
@@ -11,6 +12,7 @@ type TProps = {
 }
 
 const SearchComponent = ({
+  inputRef,
   filter_name,
   filter,
   refetch,
@@ -28,6 +30,7 @@ const SearchComponent = ({
   return (
     <form onSubmit={search} className='flex w-full p-2 sm:max-w-[15em]'>
       <input
+        ref={inputRef}
         autoComplete='off'
         placeholder='Pretraži artikle...'
         name={filter_name}
