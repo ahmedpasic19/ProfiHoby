@@ -2,7 +2,7 @@ import { useEffect, FormEvent, ChangeEvent } from 'react'
 import { debounce } from '../utils/debounce'
 
 type TProps = {
-  inputRef: React.Ref<HTMLInputElement>
+  inputRef?: React.Ref<HTMLInputElement>
   displayBtn?: boolean
   filter_name: string
   filter: string
