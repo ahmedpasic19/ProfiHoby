@@ -8,8 +8,9 @@ const useProtectRoute = () => {
   const router = useRouter()
   const { data, status } = useSession()
 
-  const { data: allWorkers } = useQuery(['workers.getAllWorkers'], () =>
-    trpcClient.workers.getAllWorkers.query()
+  const { data: allWorkers, isFetched } = useQuery(
+    ['workers.getAllWorkers'],
+    () => trpcClient.workers.getAllWorkers.query()
   )
 
   useEffect(() => {
@@ -22,7 +23,8 @@ const useProtectRoute = () => {
       (worker) => worker.user.email === data?.user?.email
     )
 
-    if (status === 'unauthenticated' || !worker) navigate().catch(console.error)
+    if ((isFetched && status === 'unauthenticated') || (isFetched && !worker))
+      navigate().catch(console.error)
   }, [data, status, router, allWorkers])
 }
 
