@@ -4,7 +4,13 @@ import { createTRPCRouter, publicProcedure, adminProcedure } from '../trpc'
 
 export const brandRouter = createTRPCRouter({
   createBrand: adminProcedure
-    .input(z.object({ name: z.string(), article_ids: z.array(z.string()) }))
+    .input(
+      z.object({
+        name: z.string(),
+        article_ids: z.array(z.string()),
+        group_id: z.string(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const brand = await ctx.prisma.brand.create({
         data: {
@@ -12,6 +18,7 @@ export const brandRouter = createTRPCRouter({
           articles: {
             connect: input.article_ids.map((id) => ({ id })), // relate articles to brand
           },
+          ...(input.group_id ? { group_id: input.group_id } : {}),
         },
       })
 
@@ -24,6 +31,7 @@ export const brandRouter = createTRPCRouter({
         id: z.string(),
         name: z.string(),
         article_ids: z.array(z.string()),
+        group_id: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -34,6 +42,7 @@ export const brandRouter = createTRPCRouter({
           articles: input.article_ids.length // update article relation
             ? { set: input.article_ids.map((id) => ({ id })) }
             : {},
+          ...(input.group_id ? { group_id: input.group_id } : {}),
         },
       })
 
@@ -51,8 +60,20 @@ export const brandRouter = createTRPCRouter({
     }),
 
   getAllBrands: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.brand.findMany({ orderBy: { createdAt: 'asc' } })
+    return await ctx.prisma.brand.findMany({
+      orderBy: { createdAt: 'asc' },
+      include: { group: true },
+    })
   }),
+
+  getBrandsByGroupId: publicProcedure
+    .input(z.object({ group_id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.brand.findMany({
+        orderBy: { createdAt: 'asc' },
+        where: { group_id: input.group_id },
+      })
+    }),
 
   getBrand: publicProcedure
     .input(z.object({ id: z.string() }))

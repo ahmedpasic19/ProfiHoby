@@ -42,6 +42,10 @@ const Brands: NextPage = () => {
       accessorKey: 'name',
     },
     {
+      header: 'Grupa',
+      accessorKey: 'group.name',
+    },
+    {
       header: 'Akcije',
       accessorKey: 'actions',
       cell: ({ row }: { row: TRow }) => {

@@ -62,7 +62,7 @@ const Home: NextPage = () => {
   }, [isVisible, fetchNextPage])
 
   return (
-    <div className='mt-14 flex h-full min-h-screen w-full flex-col items-center justify-center'>
+    <div className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
       <section className='relative flex w-full flex-col-reverse items-center justify-center border-b-4 border-r-gray-500 sm:grid sm:grid-cols-[minmax(20em,20%)_1fr] sm:grid-rows-1'>
         {/* Categories */}
         <div className='hidden h-full w-full flex-col border-r-2 border-gray-800/30 sm:flex'>

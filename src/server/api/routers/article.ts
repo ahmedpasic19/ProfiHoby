@@ -74,6 +74,9 @@ export const articleRouter = createTRPCRouter({
         pageSize: z.number(),
         pageIndex: z.number(),
         name: z.string(),
+        priceFrom: z.number().nullish(),
+        priceTo: z.number().nullish(),
+        orderByPrice: z.string().nullish(),
       })
     )
     .query(async ({ input, ctx }) => {
@@ -102,10 +105,24 @@ export const articleRouter = createTRPCRouter({
             contains: name,
             mode: 'insensitive',
           },
+          ...(input.priceFrom || input.priceTo
+            ? {
+                base_price: {
+                  ...(input.priceFrom ? { gte: input.priceFrom } : {}),
+                  ...(input.priceTo ? { lte: input.priceTo } : {}),
+                },
+              }
+            : {}),
         },
         skip: input.pageSize * input.pageIndex,
         take: input.pageSize,
-        orderBy: { createdAt: 'desc' },
+        ...(input.orderByPrice
+          ? {
+              orderBy: {
+                base_price: input.orderByPrice === 'desc' ? 'desc' : 'asc',
+              },
+            }
+          : {}),
       })
 
       const totalArticles = await ctx.prisma.article.count({
@@ -244,6 +261,10 @@ export const articleRouter = createTRPCRouter({
         group_id: z.string(),
         pageSize: z.number(),
         pageIndex: z.number(),
+        priceFrom: z.number().nullish(),
+        priceTo: z.number().nullish(),
+        brand_id: z.string().nullish(),
+        orderByPrice: z.string().nullish(),
       })
     )
     .query(async ({ input, ctx }) => {
@@ -251,7 +272,36 @@ export const articleRouter = createTRPCRouter({
         where: { id: input.group_id },
         include: {
           articles: {
-            orderBy: { article: { action: { createdAt: 'asc' } } },
+            // Filter articles by brand and price range
+            ...(input.priceFrom || input.priceTo || input.brand_id
+              ? {
+                  where: {
+                    article: {
+                      ...(input.priceFrom || input.priceTo
+                        ? {
+                            base_price: {
+                              ...(input.priceFrom
+                                ? { gte: input.priceFrom }
+                                : {}),
+                              ...(input.priceTo ? { lte: input.priceTo } : {}),
+                            },
+                          }
+                        : {}),
+                      ...(input.brand_id ? { brand_id: input.brand_id } : {}),
+                    },
+                  },
+                }
+              : {}),
+            ...(input.orderByPrice
+              ? {
+                  orderBy: {
+                    article: {
+                      base_price:
+                        input.orderByPrice === 'desc' ? 'desc' : 'asc',
+                    },
+                  },
+                }
+              : { orderBy: { article: { action: { createdAt: 'asc' } } } }),
             skip: input.pageSize * input.pageIndex,
             take: input.pageSize,
             include: {

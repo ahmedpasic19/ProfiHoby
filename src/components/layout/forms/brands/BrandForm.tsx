@@ -1,8 +1,9 @@
 import { useState, FormEvent, useEffect } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../../../utils/api'
 import { Brand } from '@prisma/client'
 
+import Select from 'react-select'
 import FieldSet from '../../../Fieldset'
 import { AiFillCloseCircle } from 'react-icons/ai'
 
@@ -22,6 +23,7 @@ const BrandForm = ({
   setBrand,
 }: TProps) => {
   const [name, setName] = useState('')
+  const [group, setGroup] = useState({} as { label: string; value: string })
 
   const queryClient = useQueryClient()
 
@@ -31,20 +33,35 @@ const BrandForm = ({
     await queryClient.invalidateQueries(['article.index.page'])
   }
 
+  const { data: allGroups } = useQuery(['group.getAllGroups'], () =>
+    trpcClient.group.getAllGroups.query()
+  )
+
+  const groupOptions =
+    allGroups?.map((group) => ({
+      label: group.name,
+      value: group.id,
+    })) || []
+
   const { mutate: createBrand } = useMutation(
-    (input: { name: string; article_ids: string[] }) =>
+    (input: { name: string; article_ids: string[]; group_id: string }) =>
       trpcClient.brand.createBrand.mutate(input),
     {
       onSuccess: async () => {
         await invalidateQueries()
         setIsOpen && setIsOpen(false)
         setName('')
+        setGroup({} as { label: string; value: string })
       },
     }
   )
   const { mutate: updateBrand } = useMutation(
-    (input: { id: string; name: string; article_ids: string[] }) =>
-      trpcClient.brand.updateBrand.mutate(input),
+    (input: {
+      id: string
+      name: string
+      article_ids: string[]
+      group_id: string
+    }) => trpcClient.brand.updateBrand.mutate(input),
     {
       onSuccess: async () => {
         await invalidateQueries()
@@ -69,12 +86,14 @@ const BrandForm = ({
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     if (!name) return
-    if (!isEditing && !isDeleting) createBrand({ name, article_ids: [] })
+    if (!isEditing && !isDeleting)
+      createBrand({ name, article_ids: [], group_id: group.value })
     if (isEditing && brand?.id)
       updateBrand({
         id: brand.id,
         name,
         article_ids: [],
+        group_id: group.value,
       })
     if (isDeleting && brand?.id) deleteBrand({ id: brand.id })
   }
@@ -105,6 +124,17 @@ const BrandForm = ({
           onChange={(e) => setName(e.target.value)}
           type='text'
         />
+        <fieldset className='flex w-4/5 flex-col'>
+          <label className='text-cl mb-2 text-start text-xl font-semibold text-gray-800'>
+            Grupa
+          </label>
+          <Select
+            options={groupOptions}
+            value={Object.keys(group).length ? group : null}
+            onChange={(option) => option && setGroup(option)}
+            placeholder='Odaberi grupu'
+          />
+        </fieldset>
         <section className='mt-10 flex w-full items-center justify-center'>
           <button
             disabled={!name}
