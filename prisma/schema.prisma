@@ -87,6 +87,7 @@ model Article {
     Worker            Worker?               @relation(fields: [workerId], references: [id])
     workerId          String?
 
+    published         Boolean @default(false)
     brand_id          String?
     warranty          String?
     short_description String?

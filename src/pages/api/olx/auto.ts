@@ -26,15 +26,33 @@ function containsNonLatinChars(str: string) {
   return !latinRegex.test(str)
 }
 
+function checkFor2Words(title: string) {
+  const words = title.split(' ')
+  console.log('WORDS; ', words.length)
+  if (words.length < 2) return false
+  else return true
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   // try {
   const articles = await prisma.article.findMany({
-    where: { olx_id: null },
-    take: 300,
-    orderBy: { createdAt: 'asc' },
+    where: { olx_id: null, AND: { published: true } },
+    include: {
+      groups: {
+        include: {
+          group: {
+            select: {
+              olx_category_id: true,
+            },
+          },
+        },
+      },
+    },
+    // take: 300,
+    orderBy: { createdAt: 'desc' }, // kada dodajes artikle stavi -> asc kada ne dodajes stavi desc
   })
 
   const auth: { data: { token?: string } } = await axios.post(
@@ -70,6 +88,12 @@ export default async function handler(
     if (containsNonLatinChars(article?.name || '')) {
       // Skip non-Latin strings
       console.log('Non latin character!!! ', article?.name)
+      continue
+    }
+    // Check if title has 2 words
+    if (!checkFor2Words(article?.name || '')) {
+      // Skip non-Latin strings
+      console.log('2 words needed!!! ', article?.name)
       continue
     }
 
@@ -109,6 +133,7 @@ export default async function handler(
 
     // Category "sve ostalo" in case category is not found
     const backup_category_id = 947
+    const category_id = article.groups[0]?.group.olx_category_id
     // const backup_category_id = 1578
 
     const attributes: { data: { data: object[] } } = await axios.get(
@@ -123,7 +148,7 @@ export default async function handler(
     console.log('POST LISTING BODY: ', {
       title: article?.name.substring(0, 54), // required and min 2 words
       listing_type: 'sell', // required
-      category_id: backup_category_id, // required
+      category_id: category_id, // required
       short_description: `${
         article.warranty ? `Garancija: ${article.warranty}\n` : ''
       }${parseTextFormat(
@@ -160,7 +185,7 @@ export default async function handler(
         {
           title: article?.name.substring(0, 54), // required and min 2 words
           listing_type: 'sell', // required
-          category_id: category?.id || backup_category_id, // required
+          category_id: category_id, // required
           short_description: `${
             article.warranty ? `Garancija: ${article.warranty}\n` : ''
           }${parseTextFormat(

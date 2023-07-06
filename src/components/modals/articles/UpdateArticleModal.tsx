@@ -19,6 +19,8 @@ import { Dialog } from '@headlessui/react'
 import * as Ai from 'react-icons/ai'
 
 import { formatTextContent, parseTextFormat } from '../../../utils/formatText'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 type TArticle = Article & {
   image: Image[]
@@ -171,6 +173,12 @@ const UpdateArticleModal = ({
     {
       onSuccess: async () => {
         await queryClient.invalidateQueries(['articles.getAllArticles'])
+
+        axios
+          .put(`/api/olx/listings?id=${article.id}`)
+          .then(() => toast.success('Izmjenjeno na OLX-u'))
+          .catch(() => toast.error('Došlo je do greške pri izmjeni na OLX-u'))
+
         setArticle({} as TArticle)
         setIsOpen(false)
       },

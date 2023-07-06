@@ -3,35 +3,13 @@ import { PrismaClient } from '@prisma/client'
 import axios from 'axios'
 
 import { env } from '../../../env/server.mjs'
+import { parseTextFormat } from '../../../utils/formatText'
 
 const prisma = new PrismaClient()
 
 const OLX_API = env.OLX_API
 const USERNAME = env.OLX_USERNAME
 const PASSWORD = env.OLX_PASSWORD
-
-// type City = {
-//   id: number
-//   name: string
-//   location: {
-//     lat: string
-//     lon: string
-//   }
-//   canton_id: number
-// }
-
-// type Canton = {
-//   id: number
-//   name: string
-//   cities: City[]
-// }
-
-// type Entitet = {
-//   id: number
-//   name: string
-//   code: string
-//   cantons: Canton[]
-// }
 
 type Country = { id: number; name: string; code: string }
 
@@ -42,6 +20,17 @@ type Category = {
   parent_categories: string[]
 }
 
+function containsNonLatinChars(str: string) {
+  const latinRegex = /^[a-zA-Z0-9\sčšćžđ+,\.\-'/]+$/
+  return !latinRegex.test(str)
+}
+
+function checkFor2Words(title: string) {
+  const words = title.split(' ')
+  if (words.length < 2) return false
+  else return true
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -49,9 +38,24 @@ export default async function handler(
   if (req.method === 'POST') {
     try {
       if (!req.query.id)
-        return res.status(400).json({ message: 'Article id required' })
+        return res.status(400).json({ message: 'Article ID required' })
 
-      // GET the token from remote api
+      const article = await prisma.article.findUnique({
+        where: { id: req.query.id as string },
+        include: {
+          groups: {
+            include: {
+              group: {
+                select: {
+                  olx_category_id: true,
+                },
+              },
+            },
+          },
+        },
+      })
+
+      // GET auth token
       const auth: { data: { token?: string } } = await axios.post(
         OLX_API + '/auth/login',
         {
@@ -69,36 +73,30 @@ export default async function handler(
       if (!auth.data.token)
         return res.status(403).json({ message: 'No token recieved' })
 
-      // GET new article
-      const article = await prisma.article.findUnique({
-        where: { id: typeof req.query.id === 'string' ? req.query.id : '' },
-      })
+      if (
+        article?.name === 'Villager hidropak hidrofor VGP 800' ||
+        article?.name === 'Einhell kofer za alat E-Box L70/35' ||
+        article?.name === 'Villager kompresor za vazduh VAT 24 L' ||
+        article?.name === 'Villager kompresor za vazduh VAT 50 L' ||
+        article?.name === 'Vrtni električni trimer 2u1 550 W VERTO 52G552' ||
+        article?.name === 'Villager hidropak hidrofor VGP 800'
+      )
+        return
 
+      if (containsNonLatinChars(article?.name || '')) {
+        // Skip non-Latin strings
+        return res.status(400).json({ message: 'Non latin character!!! ' })
+      }
+      // Check if title has 2 words
+      if (!checkFor2Words(article?.name || '')) {
+        // Skip non-Latin strings
+        return res.status(400).json({ message: '2 words needed!!!' })
+      }
+
+      /////////////////////
+      // GET new article
       if (!article)
         return res.status(404).json({ message: 'Article not found' })
-
-      // GET city form olx api
-      // const cities: {
-      //   data: { data: Entitet[] }
-      // } = await axios.get(OLX_API + '/cities')
-
-      // if (!cities.data)
-      //   return res.status(500).json({ message: 'Cannot GET /cities' })
-      // console.log(cities.data)
-
-      // const entity = cities?.data?.data?.find(
-      //   (entity) => entity.code === 'FBiH'
-      // )
-      // console.log('entity: ', entity)
-      // const cantoon = entity?.cantons.find(
-      //   (cantoon) => (cantoon.name = 'Zeničko-dobojski kanton')
-      // )
-      // console.log('cantoon: ', cantoon)
-      // console.log('cantoon cities: ', cantoon?.cities)
-      // // Find "Tesanj" in cities response
-      // const city = cantoon?.cities?.find((city) => city.name === 'Tešanj')
-      // console.log('city: ', city)
-      // if (!city) return res.status(500).json({ message: "Can't find Tešanj" })
 
       const countries: { data: { data: Country[] } } = await axios.get(
         OLX_API + '/countries'
@@ -114,30 +112,31 @@ export default async function handler(
 
       if (!country) return res.status(500).json({ message: "Can't find BiH" })
 
-      // Sugested categories by the OLX api
-      const categories: { data: { data: Category[] } } = await axios.get(
-        OLX_API + `/categories/suggest?keyword=${article.name}`
+      const uri = encodeURI(
+        OLX_API +
+          `/categories/suggest?keyword=${article.name.replace(/\s/g, '%')}`
       )
+
+      // Sugested categories by the OLX api
+      const categories: { data: { data: Category[] } } = await axios.get(uri)
 
       if (!categories.data)
         return res
           .status(500)
           .json({ message: 'Cannot GET /categories/suggest?keyword' })
 
-      const category = categories.data.data[0]
+      const category_id = article.groups[0]?.group.olx_category_id
 
-      if (!category) {
-        console.log('Cannot find category')
-        return res
-          .status(500)
-          .json({ message: 'Cannot find suggested category' })
-      }
+      if (!category_id)
+        return res.status(404).json({ message: 'No group category' })
 
+      // const backup_category_id = 1578
+      console.log('category: ', category_id)
       const attributes: { data: { data: object[] } } = await axios.get(
-        OLX_API + `/categories/${category.id}/attributes`
+        OLX_API + `/categories/${category_id}/attributes`
       )
 
-      console.log('attributes:', attributes)
+      console.log('attributes:', attributes.data.data)
 
       // POST article to olx api
       // const response: { data: { error: string } } = await
@@ -145,11 +144,29 @@ export default async function handler(
         .post(
           OLX_API + '/listings',
           {
-            title: article?.name, // required and min 2 words
+            title: article?.name.substring(0, 54), // required and min 2 words
             listing_type: 'sell', // required
-            category_id: category.id, // required
-            short_description: article.description,
-            description: article.description,
+            category_id: category_id, // required
+            short_description: `${
+              article.warranty ? `Garancija: ${article.warranty}\n` : ''
+            }${parseTextFormat(
+              article.description
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&amp;/g, '&')
+                .replace(/&quot;/g, '"')
+                .replace(/&#39;/g, "'")
+            )}`.substring(0, 244),
+            description: `${
+              article.warranty ? `Garancija: ${article.warranty}\n` : ''
+            }${parseTextFormat(
+              article.description
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
+                .replace(/&amp;/g, '&')
+                .replace(/&quot;/g, '"')
+                .replace(/&#39;/g, "'")
+            )}`.substring(0, 244),
             country_id: country.id,
             city_id: 35,
             price: article.base_price,
@@ -172,19 +189,223 @@ export default async function handler(
             where: { id: article.id },
             data: { olx_id: response.data.id },
           })
+        })
+      ////////////////////////
 
-          return res.status(200).json({ message: 'Article posted to olx' })
+      ///////////////////////////
+
+      // GET article olx_id
+      const article1 = await prisma.article.findUnique({
+        where: { id: article?.id },
+        select: { id: true, olx_id: true },
+      })
+
+      if (!article1)
+        return res.status(404).json({ message: 'Article not found' })
+
+      if (!article1?.olx_id) {
+        console.log("Article isn't assigned a listing id.... CONTINUE")
+        return
+      }
+
+      // GET S3 access_url from article1 images
+      const images = await prisma.image.findMany({
+        where: {
+          article_id: article1.id,
+        },
+        select: {
+          access_url: true,
+          key: true,
+        },
+      })
+
+      if (!images || !images.length) {
+        console.log('IMAGES NOT FOUND... CONTINUTING')
+        return
+      }
+
+      // POST all images to OLX
+      for (let i = 0; i < images.length; i++) {
+        if (!images[i]?.access_url || !images[i]?.key)
+          return console.log('No file image')
+
+        const image = await fetch(images[i]?.access_url || '')
+
+        const imageBlob = await image.blob()
+
+        const formData = new FormData()
+
+        formData.append('images[]', imageBlob, images[i]?.key)
+        console.log('IMAGE UPLOAD FORMDATA: ', formData)
+
+        fetch(OLX_API + `/listings/${article1.olx_id}/image-upload`, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            Authorization: `Bearer ${auth.data.token}`,
+          },
         })
-        .catch(() => {
-          // console.log('error')
-          // @ts-ignore
-          // console.log(err.response.data)
-          // Handle errors here
-          return res.status(500).json({ message: 'Article NOT posted to olx' })
-        })
+          .then((response) => response.text())
+          .then((data) => {
+            console.log('UPLOAD RESPONSE: ', data)
+            // Process the response data here
+          })
+          .catch((error) => {
+            console.error('Error:', error)
+          })
+      }
+
+      // When listing is added to olx api its in a "draft" state
+      // It needs to be published for listing upload to be finished
+      await axios.post(
+        OLX_API + `/listings/${article1.olx_id}/publish`,
+        {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${auth.data.token}`,
+          },
+        }
+      )
+
+      ////////////////////
+
+      return res.status(200).json({ message: 'Syncing completed.' })
     } catch (error) {
       console.log('eeror 2')
+      // console.log(Object.keys(error.response.data.error || {}))
+      // console.log(error.response.data.error)
       res.status(500).json(error)
+    }
+  } else if (req.method === 'PUT') {
+    try {
+      if (!req.query?.id)
+        return res.status(400).json({ message: 'Article ID required' })
+
+      const article = await prisma.article.findUnique({
+        where: { id: req.query.id as string },
+        include: {
+          groups: {
+            include: {
+              group: {
+                select: {
+                  olx_category_id: true,
+                },
+              },
+            },
+          },
+        },
+      })
+
+      if (!article || !article.olx_id)
+        return res.status(404).json({ message: 'Article was not found' })
+
+      // GET auth token
+      const auth: { data: { token?: string } } = await axios.post(
+        OLX_API + '/auth/login',
+        {
+          username: USERNAME,
+          password: PASSWORD,
+          device_name: 'integration',
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      if (!auth.data.token)
+        return res.status(403).json({ message: 'No token recieved' })
+
+      const countries: { data: { data: Country[] } } = await axios.get(
+        OLX_API + '/countries'
+      )
+
+      if (!countries.data)
+        return res.status(500).json({ message: 'Cannot GET /countries' })
+
+      // Find BiH in countries response
+      const country = countries?.data?.data?.find(
+        (country) => country.code === 'BA'
+      )
+
+      if (!country) return res.status(500).json({ message: "Can't find BiH" })
+
+      const updatedListing = await axios.put(
+        OLX_API + `/listings/${article.olx_id}`,
+        {
+          title: article?.name.substring(0, 54), // required and min 2 words
+          // short_description: `${
+          //   article.warranty ? `Garancija: ${article.warranty}\n` : ''
+          // }${parseTextFormat(
+          //   article.description
+          //     .replace(/&lt;/g, '<')
+          //     .replace(/&gt;/g, '>')
+          //     .replace(/&amp;/g, '&')
+          //     .replace(/&quot;/g, '"')
+          //     .replace(/&#39;/g, "'")
+          // )}`.substring(0, 244),
+          description: `${
+            article.warranty ? `Garancija: ${article.warranty}\n` : ''
+          }${parseTextFormat(
+            article.description
+              .replace(/&lt;/g, '<')
+              .replace(/&gt;/g, '>')
+              .replace(/&amp;/g, '&')
+              .replace(/&quot;/g, '"')
+              .replace(/&#39;/g, "'")
+          )}`.substring(0, 244),
+          price: article.base_price,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${auth.data.token}`,
+          },
+        }
+      )
+
+      res.status(200).json(updatedListing.data)
+    } catch (error) {
+      return res.status(500).json(error)
+    }
+  } else if (req.method === 'DELETE') {
+    try {
+      if (!req.query?.id)
+        return res.status(400).json({ message: 'Article ID required' })
+
+      // GET auth token
+      const auth: { data: { token?: string } } = await axios.post(
+        OLX_API + '/auth/login',
+        {
+          username: USERNAME,
+          password: PASSWORD,
+          device_name: 'integration',
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      if (!auth.data.token)
+        return res.status(403).json({ message: 'No token recieved' })
+
+      const deletedListing = await axios.delete(
+        OLX_API + `/listings/${req.query.id as string}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${auth.data.token}`,
+          },
+        }
+      )
+
+      res.status(200).json(deletedListing.data)
+    } catch (error) {
+      return res.status(500).json(error)
     }
   } else {
     return res
