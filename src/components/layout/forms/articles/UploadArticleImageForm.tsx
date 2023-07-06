@@ -2,12 +2,13 @@ import { useState, FormEvent, useEffect, useCallback } from 'react'
 import { trpcClient } from '../../../../utils/api'
 import { useRouter } from 'next/router'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-// import axios from 'axios'
 
 import { useDropzone } from 'react-dropzone'
 
 import Image from 'next/image'
 import Spinner from '../../../Spinner'
+import { toast } from 'react-toastify'
+import axios from 'axios'
 
 type TProps = {
   setOpenAddArticle: React.Dispatch<React.SetStateAction<boolean>>
@@ -28,6 +29,17 @@ const UploadArticleImageForm = ({
   const router = useRouter()
 
   const queryClient = useQueryClient()
+
+  // Publish article to OLX
+  const postToOLX = async (article_id: string) => {
+    try {
+      await axios.post(`/api/olx/listings?id=${article_id}`)
+
+      toast.success('Objavljeno na OLX')
+    } catch (error) {
+      toast.error('Došlo je do greške')
+    }
+  }
 
   const { data: images, isLoading: loadingFetchImages } = useQuery(
     ['image.getAllRelatedImages', { article_id, action_id }],
@@ -146,17 +158,6 @@ const UploadArticleImageForm = ({
     })
   }
 
-  // Upload images to olx
-  // const handleSyncImages = async () => {
-  //   try {
-  //     const response = await axios.post(`/api/olx/image?id=${article_id || ''}`)
-
-  //     return response
-  //   } catch (error) {
-  //     console.error(error)
-  //   }
-  // }
-
   // Display empty slots if array of images length is < 8
   const insertPlaceholderImages = (article_images: typeof images) => {
     if (article_images?.length === 0) {
@@ -209,12 +210,7 @@ const UploadArticleImageForm = ({
         </button>
         <button
           onClick={() => {
-            // handleSyncImages()
-            //   .then(() => {
-            //     setPageIndex(0)
-            //     setOpenAddArticle(false)
-            //   })
-            //   .catch(console.error)
+            postToOLX(article_id as string).catch(console.error)
             setOpenAddArticle(false)
           }}
           className='w-4/5 max-w-[200px] rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'

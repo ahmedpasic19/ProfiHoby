@@ -14,6 +14,8 @@ import FieldSet from '../../Fieldset'
 import Select from 'react-select'
 import { Dialog } from '@headlessui/react'
 import * as Ai from 'react-icons/ai'
+import { toast } from 'react-toastify'
+import axios from 'axios'
 
 type TArticle = Article & {
   image: Image[]
@@ -73,6 +75,13 @@ const DeleteArticleModal = ({
     {
       onSuccess: async () => {
         await queryClient.invalidateQueries(['articles.getAllArticles'])
+
+        if (article.olx_id) {
+          axios
+            .delete(`/api/olx/listings?id=${article.olx_id}`)
+            .then(() => toast.success('Obrisano na OLX-u'))
+            .catch(() => toast.error('Došlo je do greške pri izmjeni na OLX-u'))
+        }
         setArticle({} as TArticle)
         setIsOpen(false)
       },
@@ -81,6 +90,7 @@ const DeleteArticleModal = ({
 
   const handleSubmit = (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
+
     deleteArticle()
   }
 

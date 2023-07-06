@@ -90,10 +90,19 @@ export const imageRouter = createTRPCRouter({
         where: { key: input.key },
       })
 
-      if (!image?.key) return
+      if (!image?.key || !image.article_id) return
 
       // Permanent access url
       const access_url = `https://${BUCKET_NAME}.s3.${BUCKET_REGION}.amazonaws.com/${input.key}`
+
+      // Mark article as published
+      // This is to know what articles have been fully added
+      await ctx.prisma.article.update({
+        where: { id: image.article_id },
+        data: {
+          published: true,
+        },
+      })
 
       await ctx.prisma.image.update({
         where: { id: image?.id },

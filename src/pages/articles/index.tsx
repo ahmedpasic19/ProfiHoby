@@ -32,6 +32,8 @@ import { HiOutlineRectangleGroup } from 'react-icons/hi2'
 import { ImCancelCircle } from 'react-icons/im'
 
 import { parseTextFormat } from '../../utils/formatText'
+import { toast } from 'react-toastify'
+import axios from 'axios'
 
 type TArticle = Article & {
   image: Image[]
@@ -91,6 +93,17 @@ const Articles: NextPage = () => {
       })
   )
 
+  // Publish article to OLX
+  const postToOLX = async (article_id: string) => {
+    try {
+      await axios.post(`/api/olx/listings?id=${article_id}`)
+
+      toast.success('Objavljeno na OLX')
+    } catch (error) {
+      toast.error('Došlo je do greške')
+    }
+  }
+
   const articleColumns = [
     {
       header: 'Naziv',
@@ -121,11 +134,33 @@ const Articles: NextPage = () => {
       accessorKey: 'warranty',
     },
     {
+      header: 'Objavljeno',
+      accessorKey: 'olx_id',
+      cell: ({ row }: { row: TRow }) =>
+        row.original.olx_id ? 'Objavljen ✔️' : 'Nije objavljen ❌',
+    },
+    {
+      header: 'Objavi',
+      accessorKey: 'post_to_olx',
+      cell: ({ row }: { row: TRow }) => {
+        return (
+          <div className='flex w-full justify-evenly'>
+            <button
+              className='rounded-lg bg-blue-500 p-2 text-lg font-bold text-white hover:bg-blue-600'
+              onClick={() => postToOLX(row.original.id)}
+            >
+              OLX
+            </button>
+          </div>
+        )
+      },
+    },
+    {
       header: 'Akcije',
       accessorKey: 'actions',
       cell: ({ row }: { row: TRow }) => {
         return (
-          <div className='flex w-full justify-evenly'>
+          <div className='flex w-full justify-evenly gap-1 px-2'>
             <button
               className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
               onClick={() => {
@@ -162,6 +197,16 @@ const Articles: NextPage = () => {
             >
               <AiFillEdit className='h-8 w-8' />
             </button>
+          </div>
+        )
+      },
+    },
+    {
+      header: 'Obriši',
+      accessorKey: 'delete',
+      cell: ({ row }: { row: TRow }) => {
+        return (
+          <div className='flex w-full justify-evenly'>
             <button
               className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
               onClick={() => {
