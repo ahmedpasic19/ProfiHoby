@@ -6,11 +6,6 @@ import Image from 'next/image'
 const HighlightedArticles = () => {
   const [itemIndex, setItemIndex] = useState(0)
 
-  const { data: actions } = useQuery(
-    ['article_action.getAllArticleActions'],
-    () => trpcClient.article_action.getAllArticleActions.query()
-  )
-
   // 5 random articles
   const { data: articles } = useQuery(['article.getRandomArticles'], () =>
     trpcClient.article.getRandomArticles.query()
@@ -38,22 +33,12 @@ const HighlightedArticles = () => {
             transition: 'transform 0.5s ease-in',
           }}
         >
-          {actions?.length
-            ? actions.map(
-                (action, index) =>
-                  index <= 4 && (
-                    <HiglightedArticle
-                      key={Math.random()}
-                      url={action.image[0]?.access_url || ''}
-                    />
-                  )
-              )
-            : articles?.map((article) => (
-                <HiglightedArticle
-                  key={Math.random()}
-                  url={article.image[0]?.access_url || ''}
-                />
-              ))}
+          {articles?.map((article) => (
+            <HiglightedArticle
+              key={Math.random()}
+              url={article.image[0]?.access_url || ''}
+            />
+          ))}
         </ul>
       </div>
       <div className='absolute bottom-5 left-1/2 z-20 flex -translate-x-1/2 space-x-3'>

@@ -97,8 +97,9 @@ const ArticleNamePage = () => {
                   <Article
                     key={article.id}
                     name={article.name}
-                    action={article.article_action_id ? true : false}
-                    actionPercentage={article?.action?.discount}
+                    discountPercentage={article.discountPercentage || 0}
+                    discountPrice={article.discountPrice || 0}
+                    onDiscount={article.onDiscount || false}
                     imageURL={article.image[0]?.access_url || ''}
                     price={article.base_price}
                     categories={article.categories}

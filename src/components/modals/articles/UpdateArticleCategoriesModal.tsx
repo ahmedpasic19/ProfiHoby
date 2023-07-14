@@ -2,13 +2,7 @@ import { FormEvent, useState } from 'react'
 import { Dialog } from '@headlessui/react'
 import Select, { MultiValue } from 'react-select'
 import * as Ai from 'react-icons/ai'
-import {
-  Article,
-  ArticleAction,
-  CategoriesOnArticle,
-  Category,
-  Image,
-} from '@prisma/client'
+import { Article, CategoriesOnArticle, Category, Image } from '@prisma/client'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { trpcClient } from '../../../utils/api'
 
@@ -20,7 +14,6 @@ type TArticle = Article & {
   categories: (CategoriesOnArticle & {
     category: Category
   })[]
-  action: ArticleAction | null
   attributes: { title: string; text: string; id: string }[]
 }
 

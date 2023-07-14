@@ -108,8 +108,11 @@ const GroupArticles: NextPage = () => {
                     className='flex w-full items-center justify-center'
                   >
                     <Article
-                      action={article.article.article_action_id ? true : false}
-                      actionPercentage={article.article.action?.discount}
+                      discountPercentage={
+                        article.article.discountPercentage || 0
+                      }
+                      discountPrice={article.article.discountPrice || 0}
+                      onDiscount={article.article.onDiscount || false}
                       categories={article.article.categories}
                       imageURL={
                         //@ts-ignore // Error: "url doesn't exits on image", but it does exits

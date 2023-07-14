@@ -4,7 +4,6 @@ import { articleRouter } from './routers/article'
 import { imageRouter } from './routers/image'
 import { categoryRouter } from './routers/category'
 import { categoryOnArticleRelationRouter } from './routers/categoryOnArticle'
-import { articleActionRouter } from './routers/articleActions'
 import { groupRouter } from './routers/groups'
 import { articleGroups } from './routers/articleGroups'
 import { userRouter } from './routers/user'
@@ -17,7 +16,6 @@ export const appRouter = createTRPCRouter({
   image: imageRouter,
   category: categoryRouter,
   article_category_relation: categoryOnArticleRelationRouter,
-  article_action: articleActionRouter,
   group: groupRouter,
   articleGroups: articleGroups,
   users: userRouter,

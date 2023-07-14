@@ -1,12 +1,6 @@
 import { useState } from 'react'
 import { Dialog } from '@headlessui/react'
-import {
-  Article,
-  ArticleAction,
-  CategoriesOnArticle,
-  Category,
-  Image,
-} from '@prisma/client'
+import { Article, CategoriesOnArticle, Category, Image } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../../utils/api'
 
@@ -23,7 +17,6 @@ type TArticle = Article & {
   categories: (CategoriesOnArticle & {
     category: Category
   })[]
-  action: ArticleAction | null
   attributes: { title: string; text: string; id: string }[]
 }
 
@@ -43,11 +36,10 @@ const UpdateArticleImagesModal = ({
   const [pageIndex, setPageIndex] = useState(0)
 
   const { data: article_images } = useQuery(
-    ['image.getAllRelatedImages', { article_id: article.id, action_id: '' }],
+    ['image.getAllRelatedImages', { article_id: article.id }],
     () =>
       trpcClient.image.getAllRelatedImages.query({
         article_id: article.id,
-        action_id: null,
       }),
     {
       enabled: article.id ? true : false,
@@ -75,7 +67,6 @@ const UpdateArticleImagesModal = ({
                 <ImageGrid
                   images={article_images || []}
                   article_id={article.id}
-                  action_id=''
                   isDelete
                 />
               </section>
@@ -102,7 +93,6 @@ const UpdateArticleImagesModal = ({
             <UploadImageForm
               navigateBack
               article_id={article.id}
-              action_id=''
               setPageIndex={setPageIndex}
             />
           </main>

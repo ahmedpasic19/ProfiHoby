@@ -11,13 +11,11 @@ import * as Bs from 'react-icons/bs'
 type TProps = {
   setPageIndex: React.Dispatch<React.SetStateAction<number>>
   article_id: string | null
-  action_id: string | null
   navigateBack?: boolean
 }
 const UploadImageForm = ({
   setPageIndex,
   article_id,
-  action_id,
   navigateBack,
 }: TProps) => {
   const [articleImage, setArticleImage] = useState<string>('')
@@ -28,11 +26,10 @@ const UploadImageForm = ({
   const queryClient = useQueryClient()
 
   const { data: images } = useQuery(
-    ['image.getAllRelatedImages', { article_id, action_id }],
+    ['image.getAllRelatedImages', { article_id }],
     () =>
       trpcClient.image.getAllRelatedImages.query({
         article_id: article_id || null,
-        action_id: action_id || null,
       }),
     {
       enabled: article_id ? true : false,
@@ -45,12 +42,8 @@ const UploadImageForm = ({
   )
 
   const { mutate: createImage } = useMutation(
-    (input: {
-      name: string
-      article_id: string
-      action_id: string
-      contentType: string
-    }) => trpcClient.image.createPresignedURL.mutate(input),
+    (input: { name: string; article_id: string; contentType: string }) =>
+      trpcClient.image.createPresignedURL.mutate(input),
     {
       onSuccess: async (data) => {
         setArticleImage('')
@@ -93,7 +86,7 @@ const UploadImageForm = ({
               queryClient
                 .invalidateQueries([
                   'image.getAllRelatedImages',
-                  { article_id, action_id },
+                  { article_id },
                 ])
                 .catch(console.error)
             },
@@ -132,18 +125,11 @@ const UploadImageForm = ({
   const handleUploadImage = (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
 
-    if (
-      !files ||
-      article_id === null ||
-      article_id === undefined ||
-      action_id === null ||
-      action_id === undefined
-    )
+    if (!files || article_id === null || article_id === undefined)
       return console.log('empty')
 
     createImage({
       article_id,
-      action_id,
       name: files[0]?.name || '',
       contentType: files[0]?.type || 'image/jpeg',
     })

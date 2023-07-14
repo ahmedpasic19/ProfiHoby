@@ -1,13 +1,7 @@
 import { FormEvent } from 'react'
 import { trpcClient } from '../../../utils/api'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
-import {
-  Article,
-  CategoriesOnArticle,
-  Image,
-  Category,
-  ArticleAction,
-} from '@prisma/client'
+import { Article, CategoriesOnArticle, Image, Category } from '@prisma/client'
 
 import Textarea from '../../Textarea'
 import FieldSet from '../../Fieldset'
@@ -25,7 +19,6 @@ type TArticle = Article & {
   categories: (CategoriesOnArticle & {
     category: Category
   })[]
-  action: ArticleAction | null
   attributes: { title: string; text: string; id: string }[]
 }
 

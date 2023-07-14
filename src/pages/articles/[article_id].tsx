@@ -19,11 +19,10 @@ const ArticlePage = () => {
   )
 
   const { data: artilce_images } = useQuery(
-    ['image.getAllArticleImges', { article_id: articleId, action_id: null }],
+    ['image.getAllArticleImges', { article_id: articleId }],
     () =>
       trpcClient.image.getAllRelatedImages.query({
         article_id: articleId,
-        action_id: null,
       }),
     {
       enabled: articleId ? true : false,

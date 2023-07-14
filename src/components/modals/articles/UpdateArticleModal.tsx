@@ -1,13 +1,9 @@
 import { ChangeEvent, FormEvent, useRef, useState } from 'react'
-import {
-  Article,
-  Image,
-  CategoriesOnArticle,
-  Category,
-  ArticleAction,
-} from '@prisma/client'
+import { Article, Image, CategoriesOnArticle, Category } from '@prisma/client'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../../utils/api'
+import { toast } from 'react-toastify'
+import axios from 'axios'
 
 import FieldSet from '../../Fieldset'
 import Textarea from '../../Textarea'
@@ -19,8 +15,6 @@ import { Dialog } from '@headlessui/react'
 import * as Ai from 'react-icons/ai'
 
 import { formatTextContent, parseTextFormat } from '../../../utils/formatText'
-import axios from 'axios'
-import { toast } from 'react-toastify'
 
 type TArticle = Article & {
   image: Image[]
@@ -30,7 +24,6 @@ type TArticle = Article & {
   categories: (CategoriesOnArticle & {
     category: Category
   })[]
-  action: ArticleAction | null
   attributes: { title: string; text: string; id: string }[]
 }
 

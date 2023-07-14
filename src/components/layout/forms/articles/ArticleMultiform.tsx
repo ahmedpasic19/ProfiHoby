@@ -75,7 +75,6 @@ const ArticleMultiformModal = ({
                   setOpenAddArticle={setOpenAddArticle}
                   setPageIndex={setPageIndex}
                   article_id={articleId}
-                  action_id=''
                 />
               )}{' '}
               <AiFillCloseCircle

@@ -49,10 +49,6 @@ const Navbar = () => {
       label: 'Brendovi',
     },
     {
-      href: '/actions',
-      label: 'Akcije',
-    },
-    {
       href: '/sales',
       label: 'Sniženja',
     },

@@ -1,12 +1,14 @@
 import { CategoriesOnArticle, Category } from '@prisma/client'
 import { useRouter } from 'next/router'
+import { applyDiscount } from '../utils/utils'
 
 import Image from 'next/image'
 
 type TArticleProps = {
   disableLink?: boolean
-  action?: boolean
-  actionPercentage?: number
+  discountPercentage?: number
+  discountPrice?: number
+  onDiscount?: boolean
   name: string
   price: number
   imageURL: string
@@ -20,8 +22,9 @@ const Article = ({
   price,
   imageURL,
   article_id,
-  action,
-  actionPercentage,
+  discountPercentage,
+  discountPrice,
+  onDiscount,
 }: TArticleProps) => {
   const router = useRouter()
 
@@ -43,9 +46,14 @@ const Article = ({
             fill
           />
         </div>
-        {action && (
-          <span className='absolute bottom-0 left-0 right-0 h-10 bg-yellow-400 pl-4 text-xl font-semibold text-black'>
-            Sniženje {actionPercentage}%
+        {onDiscount && (
+          // <span className='absolute bottom-0 left-0 right-0 h-10 bg-yellow-400 pl-4 text-xl font-semibold text-black'>
+          //   Sniženje
+          // </span>
+          <span className='absolute left-0 -right-52 top-0 h-10 rotate-45 bg-yellow-400 pl-4 text-center text-xl font-semibold text-black drop-shadow-[0px_2px_2px_rgba(0,0,0,0.25)]'>
+            <p className='mt-2 mr-3'>
+              {discountPercentage ? `${discountPercentage}%` : null}
+            </p>
           </span>
         )}
       </section>
@@ -53,8 +61,19 @@ const Article = ({
         <h1 className='h- h-full w-full truncate break-words px-2 pt-2 text-sm'>
           {name}
         </h1>
-        <h2 className='w-full pr-4 pb-2 text-end text-lg font-bold text-gray-800 sm:text-xl'>
-          {price} KM
+        <h2 className='relative w-full flex-col pr-4 pb-2 text-end text-lg font-bold text-gray-800 sm:text-xl'>
+          {onDiscount ? (
+            <s className='text-balck text-sm'>{price}KM</s>
+          ) : (
+            <p>{price}KM</p>
+          )}
+          {onDiscount && discountPrice ? (
+            <p className='text-red'>{discountPrice}KM</p>
+          ) : discountPercentage ? (
+            <p className='text-red'>
+              {applyDiscount(price, discountPercentage)}KM
+            </p>
+          ) : null}
         </h2>
       </section>
     </article>

@@ -60,7 +60,7 @@ const MainTable = <T extends object>({
                   <tr key={Math.random()} className='border-b" bg-white'>
                     {row.getVisibleCells().map((cell) => (
                       <td
-                        className={`max-w-[10rem] overflow-hidden overflow-ellipsis whitespace-nowrap px-6 py-2 text-sm font-light text-gray-900 ${
+                        className={`max-w-md overflow-hidden overflow-ellipsis whitespace-nowrap px-6 py-2 text-sm font-light text-gray-900 ${
                           index % 2 === 0 ? 'bg-white' : 'bg-gray-200'
                         }`}
                         key={Math.random()}
