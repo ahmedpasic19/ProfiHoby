@@ -63,15 +63,37 @@ const Article = ({
         </h1>
         <h2 className='relative w-full flex-col pr-4 pb-2 text-end text-lg font-bold text-gray-800 sm:text-xl'>
           {onDiscount ? (
-            <s className='text-balck text-sm'>{price}KM</s>
+            <s className='text-balck text-sm'>
+              {price.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+              KM
+            </s>
           ) : (
-            <p>{price}KM</p>
+            <p>
+              {price.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+              KM
+            </p>
           )}
           {onDiscount && discountPrice ? (
-            <p className='text-red'>{discountPrice}KM</p>
+            <p className='text-red'>
+              {discountPrice.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+              KM
+            </p>
           ) : discountPercentage ? (
             <p className='text-red'>
-              {applyDiscount(price, discountPercentage)}KM
+              {applyDiscount(price, discountPercentage).toLocaleString(
+                undefined,
+                { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+              )}
+              KM
             </p>
           ) : null}
         </h2>

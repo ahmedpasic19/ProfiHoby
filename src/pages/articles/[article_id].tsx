@@ -98,19 +98,38 @@ const ArticlePage = () => {
               <h1 className='p-10 text-[4em] font-extrabold tracking-tight text-gray-600'>
                 {article?.onDiscount ? (
                   <s className='text-[0.6em] font-semibold text-black'>
-                    {article?.base_price}KM
+                    {article?.base_price.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                    KM
                   </s>
                 ) : (
-                  <p>{article?.base_price}KM</p>
+                  <p>
+                    {article?.base_price.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                    KM
+                  </p>
                 )}
                 {article?.onDiscount && article?.discountPrice ? (
-                  <p className='text-red-600'>{article?.discountPrice}KM</p>
+                  <p className='text-red-600'>
+                    {article?.discountPrice.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                    KM
+                  </p>
                 ) : article?.discountPercentage ? (
                   <p>
                     {applyDiscount(
                       article?.base_price,
                       article?.discountPercentage
-                    )}
+                    ).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                     KM
                   </p>
                 ) : null}

@@ -138,11 +138,25 @@ const AddToCart = ({
                   <label className='mr-2 text-start text-base tracking-wide'>
                     Cijena:
                   </label>
-                  <p className='text-base'>{basePrice}KM</p>
+                  <p className='text-base'>
+                    {basePrice.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                    KM
+                  </p>
                   {onDiscount ? (
                     <p className='ml-2 text-base text-red-600'>
                       {' '}
-                      -{(amount * (basePrice - sellingPrice)).toFixed(2)}KM
+                      -
+                      {(amount * (basePrice - sellingPrice)).toLocaleString(
+                        undefined,
+                        {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }
+                      )}
+                      KM
                     </p>
                   ) : null}
                 </div>
@@ -151,7 +165,11 @@ const AddToCart = ({
                     Ukupno:
                   </label>
                   <p className='text-base'>
-                    {(sellingPrice * amount).toFixed(2)}KM
+                    {(sellingPrice * amount).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                    KM
                   </p>
                 </div>
               </section>

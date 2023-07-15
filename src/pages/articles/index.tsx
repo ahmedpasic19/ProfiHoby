@@ -107,6 +107,11 @@ const Articles: NextPage = () => {
     {
       header: 'Cijena',
       accessorKey: 'base_price',
+      cell: ({ row }: { row: TRow }) =>
+        row.original.base_price.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
     },
     {
       header: 'Brend',
