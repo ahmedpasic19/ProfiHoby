@@ -7,6 +7,7 @@ import ImageCarousel from '../../components/layout/ImageCarousel'
 import Image from 'next/image'
 
 import { parseTextFormat, reverseFormatContent } from '../../utils/formatText'
+import { applyDiscount } from '../../utils/utils'
 
 const ArticlePage = () => {
   const router = useRouter()
@@ -78,7 +79,24 @@ const ArticlePage = () => {
               {article?.name}
             </h2>
             <h1 className='p-10 text-[4em] font-extrabold tracking-tight text-gray-600'>
-              {article?.base_price}KM
+              {article?.onDiscount ? (
+                <s className='text-[0.6em] font-semibold text-black'>
+                  {article?.base_price}KM
+                </s>
+              ) : (
+                <p>{article?.base_price}KM</p>
+              )}
+              {article?.onDiscount && article?.discountPrice ? (
+                <p className='text-red-600'>{article?.discountPrice}KM</p>
+              ) : article?.discountPercentage ? (
+                <p>
+                  {applyDiscount(
+                    article?.base_price,
+                    article?.discountPercentage
+                  )}
+                  KM
+                </p>
+              ) : null}
             </h1>
             {article?.warranty && (
               <div className='flex w-full items-center justify-center'>
