@@ -7,7 +7,8 @@ import { trpcClient } from '../../utils/api'
 
 import useGrantUniqueToken from '../../hooks/useGrantUniqueToken'
 
-import Logo from '../../assets/logo.png'
+import Logo1 from '../../assets/logo1.png'
+import Logo2 from '../../assets/logo2.png'
 import Image from 'next/image'
 import Link from 'next/link'
 import DropdownMenu from './navbar/DropdownMenu'
@@ -130,11 +131,15 @@ const Navbar = () => {
         <div className='mx-auto flex justify-between sm:justify-evenly'>
           <Link href='/' className='relative flex items-center justify-center'>
             <Image
-              src={Logo}
-              // fill
-              height={50}
-              width={50}
-              className='object-contain'
+              src={Logo2}
+              width={75}
+              height={75}
+              className='block h-1/2 w-1/2 object-contain'
+              alt='Profihoby Logo'
+            />
+            <Image
+              src={Logo1}
+              className='block h-1/3 w-1/3 object-fill'
               alt='Profihoby Logo'
             />
             <h2 className='w-full text-center text-2xl font-bold tracking-tighter'>
@@ -238,7 +243,7 @@ const NavLink = ({ href, label }: { href: string; label: string }) => {
     <li>
       <Link
         href={href}
-        className={`block rounded bg-blue-700 py-2 pl-3 pr-4 md:bg-transparent md:p-0 ${
+        className={`block rounded bg-blue-700 py-2 pl-3 pr-4 text-lg md:bg-transparent md:p-0 ${
           router.pathname === href ? 'text-blue-700' : 'text-gray-800'
         }`}
         aria-current={router.pathname === href}
