@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { trpcClient } from '../../../utils/api'
 import { toast } from 'react-toastify'
 
@@ -33,14 +33,16 @@ const AddToCart = ({
   setIsOpen,
 }: TProps) => {
   const [finish, setFinish] = useState(false)
+  const [token, setToken] = useState('')
 
   const router = useRouter()
 
   const queryClient = useQueryClient()
 
-  // This token is generated when user first enters the page
-  // Check "useGrantUserToken.ts" hook
-  const uniqueToken = localStorage.getItem('token') || ''
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    setToken(token || '')
+  }, [token])
 
   const { mutate: addArticle, isLoading: loadingAdd } = useMutation(
     (input: {
@@ -75,7 +77,7 @@ const AddToCart = ({
       amount,
       price: basePrice,
       article_id: articleId,
-      token: uniqueToken,
+      token,
     })
   }
 
@@ -89,7 +91,7 @@ const AddToCart = ({
       amount,
       price: basePrice,
       article_id: articleId,
-      token: uniqueToken,
+      token,
     })
   }
 
