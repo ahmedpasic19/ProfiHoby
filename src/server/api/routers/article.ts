@@ -403,20 +403,6 @@ export const articleRouter = createTRPCRouter({
       return brand_articles
     }),
 
-  getRandomArticles: publicProcedure.query(async ({ ctx }) => {
-    const articles = await ctx.prisma.article.findMany({
-      take: 5,
-      orderBy: {
-        base_price: 'desc',
-      },
-      include: {
-        image: true,
-      },
-    })
-
-    return articles
-  }),
-
   createArticle: adminProcedure
     .input(
       z.object({
