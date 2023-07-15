@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'
 
 import ImageCarousel from '../../components/layout/ImageCarousel'
 import Image from 'next/image'
+import Article from '../../components/mics/Article'
 import Counter from '../../components/mics/Counter'
 import AddToCart from '../../components/modals/cart/AddToCart'
 import { AiOutlineDropbox, AiOutlineShoppingCart } from 'react-icons/ai'
@@ -24,6 +25,18 @@ const ArticlePage = () => {
 
   const { data: article } = useQuery(['article', { id: article_id }], () =>
     trpcClient.article.getArticle.query({ article_id: articleId })
+  )
+  const { data: groupArticles } = useQuery(
+    ['sdf'],
+    () =>
+      trpcClient.article.getArticlesByGroupID.query({
+        group_id: article?.groups[0]?.group_id || '',
+        pageIndex: 1,
+        pageSize: 12,
+      }),
+    {
+      enabled: article?.groups[0]?.group_id ? true : false,
+    }
   )
 
   const { data: artilce_images } = useQuery(
@@ -228,6 +241,38 @@ const ArticlePage = () => {
             </section>
           ) : null}
         </div>
+
+        {/* Articles from the same group */}
+        <section className='h-screen w-full pb-10'>
+          <h3 className='mb-10 w-full text-center text-[3em] font-bold text-gray-800'>
+            {groupArticles?.group?.name}
+          </h3>
+
+          <div className='article_grid_layout'>
+            {groupArticles?.group?.articles.map((article) => {
+              return (
+                <li
+                  key={Math.random()}
+                  className='flex w-full items-center justify-center'
+                >
+                  <Article
+                    discountPercentage={article.article.discountPercentage || 0}
+                    discountPrice={article.article.discountPrice || 0}
+                    onDiscount={article.article.onDiscount || false}
+                    categories={article.article.categories}
+                    imageURL={
+                      //@ts-ignore // Error: "url doesn't exits on image", but it does exits
+                      (article.article.image[0]?.access_url as string) || ''
+                    }
+                    price={article.article.base_price}
+                    article_id={article.article_id}
+                    name={article.article.name}
+                  />
+                </li>
+              )
+            })}
+          </div>
+        </section>
       </div>
       <AddToCart
         amount={count}
