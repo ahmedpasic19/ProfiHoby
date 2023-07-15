@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Article" ALTER COLUMN "base_price" SET DATA TYPE DOUBLE PRECISION;

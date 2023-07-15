@@ -73,7 +73,7 @@ model Article {
     id          String @id @default(cuid())
     name        String
     description String
-    base_price  Int
+    base_price  Float
 
     image              Image[]
     categories         CategoriesOnArticle[]
