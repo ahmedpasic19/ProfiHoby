@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../utils/api'
 
 import Select from 'react-select'
-import Spinner from '../Spinner'
+import Spinner from '../mics/Spinner'
 import { BsFilterLeft } from 'react-icons/bs'
 import { AiFillCloseCircle } from 'react-icons/ai'
 

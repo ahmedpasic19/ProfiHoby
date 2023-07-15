@@ -1,6 +1,6 @@
 import { CategoriesOnArticle, Category } from '@prisma/client'
 import { useRouter } from 'next/router'
-import { applyDiscount } from '../utils/utils'
+import { applyDiscount } from '../../utils/utils'
 
 import Image from 'next/image'
 

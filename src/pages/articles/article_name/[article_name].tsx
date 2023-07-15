@@ -4,8 +4,8 @@ import { useState, useRef, useEffect } from 'react'
 import { trpcClient } from '../../../utils/api'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import Article from '../../../components/Article'
-import Spinner from '../../../components/Spinner'
+import Article from '../../../components/mics/Article'
+import Spinner from '../../../components/mics/Spinner'
 import FilterSidebar from '../../../components/layout/FilterSidebar'
 
 const ArticleNamePage = () => {

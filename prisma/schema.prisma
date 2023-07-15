@@ -92,6 +92,7 @@ model Article {
     warranty           String?
     short_description  String?
     olx_id             Int?
+    OrderArticle       OrderArticle[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -183,6 +184,35 @@ model Attribute {
 
     article    Article @relation(fields: [article_id], references: [id])
     article_id String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model OrderArticle {
+    id         String  @id @default(cuid())
+    amount     Int
+    price      Float   @default(0)
+    totalPrice Float   @default(0)
+    article    Article @relation(fields: [article_id], references: [id])
+    article_id String
+    order      Order   @relation(fields: [order_id], references: [id])
+    order_id   String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Order {
+    id           String         @id @default(cuid())
+    token        String         @unique
+    price        Float
+    address      String?        @default(" ")
+    phone_number String?        @default(" ")
+    note         String?        @default(" ")
+    articles     OrderArticle[]
+    finished     Boolean        @default(false)
+    isLocked     Boolean        @default(false)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

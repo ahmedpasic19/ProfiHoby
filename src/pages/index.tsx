@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from 'react'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../utils/api'
 
-import SidebarCategory from '../components/SidebarCategory'
-import Spinner from '../components/Spinner'
+import SidebarCategory from '../components/mics/SidebarCategory'
+import Spinner from '../components/mics/Spinner'
 import ArticleCarouselContainer from '../components/layout/articles/ArticleCarouselContainer'
 import HighlightedArticles from '../components/layout/articles/HighlightedArticles'
 

@@ -4,9 +4,9 @@ import { trpcClient } from '../../../../utils/api'
 import { Group, Category } from '@prisma/client'
 import { TArticle } from '../../../../types/article'
 
-import SearchComponent from '../../../SearchComponent'
-import FormButton from '../../../FormButton'
-import Article from '../../../Article'
+import SearchComponent from '../../../mics/SearchComponent'
+import FormButton from '../../../mics/FormButton'
+import Article from '../../../mics/Article'
 import { ImCheckboxChecked } from 'react-icons/im'
 import { AiFillCloseCircle } from 'react-icons/ai'
 

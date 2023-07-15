@@ -5,7 +5,7 @@ import ArticleForm from './ArticleForm'
 import ArticleCategoryForm from './ArticleCategoryForm'
 import ArticleGroupForm from './ArticleGroupForm'
 import UploadArticleImageForm from './UploadArticleImageForm'
-import MultiformPageStepper from '../../../MultiformPageStepper'
+import MultiformPageStepper from '../../../mics/MultiformPageStepper'
 
 import { Article } from '@prisma/client'
 import { AiFillCloseCircle } from 'react-icons/ai'

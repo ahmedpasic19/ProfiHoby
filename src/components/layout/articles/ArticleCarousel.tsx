@@ -1,5 +1,5 @@
 import { TArticle } from '../../../types/article'
-import Article from '../../Article'
+import Article from '../../mics/Article'
 
 const ArticleCarousel = ({ articles }: { articles: TArticle[] }) => {
   return (

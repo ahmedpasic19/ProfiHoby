@@ -5,8 +5,8 @@ import { trpcClient } from '../../../utils/api'
 import { applyDiscount } from '../../../utils/utils'
 import { toast } from 'react-toastify'
 
-import FieldSet from '../../Fieldset'
-import FormButton from '../../FormButton'
+import FieldSet from '../../mics/Fieldset'
+import FormButton from '../../mics/FormButton'
 import { Dialog } from '@headlessui/react'
 
 type TArticle = Article & {

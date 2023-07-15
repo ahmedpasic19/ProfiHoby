@@ -3,8 +3,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { trpcClient } from '../utils/api'
 
-import Article from '../components/Article'
-import Spinner from '../components/Spinner'
+import Article from '../components/mics/Article'
+import Spinner from '../components/mics/Spinner'
 import FilterSidebar from '../components/layout/FilterSidebar'
 
 const Sales: NextPage = () => {

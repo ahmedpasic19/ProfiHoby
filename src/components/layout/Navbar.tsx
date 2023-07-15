@@ -1,23 +1,44 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
 
 import { useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../utils/api'
 
+import useGrantUniqueToken from '../../hooks/useGrantUniqueToken'
+
 import Logo from '../../assets/logo.png'
 import Image from 'next/image'
 import Link from 'next/link'
 import DropdownMenu from './navbar/DropdownMenu'
-import { AiFillHome } from 'react-icons/ai'
-import SearchBar from '../SearchBar'
+import SearchBar from '../mics/SearchBar'
+import { AiFillHome, AiOutlineShoppingCart } from 'react-icons/ai'
 
 const Navbar = () => {
+  const [token, setToken] = useState('')
   const [openDropDown, setOpenDropDown] = useState(false)
   const [dropdownWasOpen, setDropdownWasOpen] = useState(false) // Check if dropdown was open to determin the correct css
 
+  // Grant user a unique token
+  useGrantUniqueToken()
+
+  useEffect(() => {
+    const uniqueToken = localStorage.getItem('token') || ''
+    setToken(uniqueToken)
+  }, [])
+
   const { data: allWorkers } = useQuery(['workers.getAllWorkers'], () =>
     trpcClient.workers.getAllWorkers.query()
+  )
+  const { data: myOrder } = useQuery(['order.getMyUnfinishedOrder'], () =>
+    trpcClient.order.getMyUnfinishedOrder.query({
+      token,
+    })
+  )
+
+  const articleCount = useMemo(
+    () => myOrder?.articles?.reduce((prev) => prev + 1, 0),
+    [myOrder?.articles]
   )
 
   const { data, status } = useSession()
@@ -43,6 +64,10 @@ const Navbar = () => {
     {
       href: '/workers',
       label: 'Radnici',
+    },
+    {
+      href: '/orders',
+      label: 'Narudžbe',
     },
     {
       href: '/brands',
@@ -175,6 +200,14 @@ const Navbar = () => {
                 )
               )}
             </ul>
+            <Link href='/cart' className='relative'>
+              <AiOutlineShoppingCart className='ml-1 h-8 w-8' />
+              {articleCount ? (
+                <p className='absolute top-[-0.5rem] right-[-0.7rem] h-6 w-6 rounded-full bg-red-600 text-center font-semibold text-white'>
+                  {articleCount}
+                </p>
+              ) : null}
+            </Link>
           </div>
         </div>
       </nav>

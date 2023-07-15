@@ -4,7 +4,7 @@ import { Category, Group } from '@prisma/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import { Dialog } from '@headlessui/react'
-import FieldSet from '../../Fieldset'
+import FieldSet from '../../mics/Fieldset'
 import * as Ai from 'react-icons/ai'
 
 type TCategory = Category & { groups: Group[] }

@@ -2,7 +2,7 @@ import { FormEvent, useState, useMemo, useRef } from 'react'
 import { useRouter } from 'next/router'
 
 import { useQuery } from '@tanstack/react-query'
-import { trpcClient } from '../utils/api'
+import { trpcClient } from '../../utils/api'
 
 import Image from 'next/image'
 import SearchComponent from './SearchComponent'

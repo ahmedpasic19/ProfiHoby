@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useDropzone } from 'react-dropzone'
 
 import Image from 'next/image'
-import Spinner from '../../../Spinner'
+import Spinner from '../../../mics/Spinner'
 import { toast } from 'react-toastify'
 import axios from 'axios'
 
