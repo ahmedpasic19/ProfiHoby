@@ -72,14 +72,14 @@ export const articleRouter = createTRPCRouter({
       z.object({
         pageSize: z.number(),
         pageIndex: z.number(),
-        name: z.string(),
+        name: z.string().nullish(),
         priceFrom: z.number().nullish(),
         priceTo: z.number().nullish(),
         orderByPrice: z.string().nullish(),
       })
     )
     .query(async ({ input, ctx }) => {
-      const name = input.name
+      const name = input.name || 'katcher'
 
       const articles = await ctx.prisma.article.findMany({
         include: {

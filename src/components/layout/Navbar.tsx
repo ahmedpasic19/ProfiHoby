@@ -119,6 +119,7 @@ const Navbar = () => {
         className={`sticky top-0 left-0 ${
           pathname === '/' ||
           pathname.includes('articles/') ||
+          pathname.includes('search') ||
           pathname.includes('categories/') ||
           pathname.includes('groups/') ||
           // pathname === '/groups' ||
