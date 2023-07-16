@@ -24,7 +24,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
             <button
               onClick={handlePrev}
               disabled={currentImageIndex === 0}
-              className='absolute bottom-1/2 left-0 z-20 text-gray-800 disabled:text-gray-400'
+              className='absolute bottom-1/2 left-0 z-20 text-gray-400 disabled:text-gray-200'
             >
               <Bi.BiSkipPreviousCircle className='h-8 w-8' />
             </button>
@@ -39,7 +39,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
             <button
               onClick={handleNext}
               disabled={currentImageIndex === images?.length - 1}
-              className='absolute bottom-1/2 right-5 z-20 text-gray-800 disabled:text-gray-400'
+              className='absolute bottom-1/2 right-5 z-20 text-gray-400 disabled:text-gray-200'
             >
               <Bi.BiSkipNextCircle className='h-8 w-8' />
             </button>
