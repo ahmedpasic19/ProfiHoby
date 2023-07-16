@@ -50,8 +50,8 @@ const Article = ({
           // <span className='absolute bottom-0 left-0 right-0 h-10 bg-yellow-400 pl-4 text-xl font-semibold text-black'>
           //   Sniženje
           // </span>
-          <span className='absolute left-0 -right-52 top-0 h-10 rotate-45 bg-yellow-400 pl-4 text-center text-xl font-semibold text-black drop-shadow-[0px_2px_2px_rgba(0,0,0,0.25)]'>
-            <p className='mt-2 mr-3'>
+          <span className='absolute left-0 -right-52 top-4 h-10 rotate-45 bg-yellow-400 pl-4 text-center text-xl font-semibold text-black drop-shadow-[0px_2px_2px_rgba(0,0,0,0.25)] sm:top-0'>
+            <p className='mr-20 mt-4 sm:mt-2 sm:mr-3'>
               {discountPercentage ? `${discountPercentage}%` : null}
             </p>
           </span>
