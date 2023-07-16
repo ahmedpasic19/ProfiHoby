@@ -110,10 +110,11 @@ const AddToCart = ({
           }}
         />
 
-        <main className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
-          <div className='relative z-30 flex h-full max-h-80 w-full max-w-5xl flex-col justify-between rounded-md bg-white p-2 text-center text-xl font-semibold text-gray-800'>
-            <label className='upp mt-2 w-full pl-5 text-start font-bold uppercase'>
-              Dodajte u korpu
+        <main className='flex h-full min-h-screen w-full flex-col items-center justify-center '>
+          <div className='relative z-30 flex h-screen w-full max-w-5xl flex-col justify-between bg-white p-2 text-center text-xl font-semibold text-gray-800 sm:h-full sm:max-h-80 sm:rounded-md md:w-3/4 lg:w-4/5 xl:w-full'>
+            <label className='upp mt-2 flex w-full pl-5 text-start font-bold uppercase'>
+              <p>Dodajte u </p>
+              <strong className='ml-2 text-main'>korpu</strong>
             </label>
 
             <div className='flex w-full items-start justify-start px-3'>
@@ -127,7 +128,7 @@ const AddToCart = ({
                 />
               </div>
               <section className='flex h-full w-full flex-col items-start pl-5 uppercase'>
-                <h1 className='mb-2 w-full text-start text-xl font-semibold text-gray-800'>
+                <h1 className='mb-2 w-full text-start text-xl font-semibold text-main'>
                   {articleName}
                 </h1>
                 <div className='flex w-full max-w-md justify-start'>
@@ -177,12 +178,12 @@ const AddToCart = ({
               </section>
             </div>
 
-            <section className='flex w-full justify-between p-2 text-base'>
+            <section className='flex w-full flex-col justify-between p-2 text-base sm:flex-row'>
               <div>
                 <button
                   disabled={finish}
                   onClick={addOrderArticle}
-                  className='mt-3 flex w-full items-center justify-center rounded-sm bg-gray-800 p-2 text-white drop-shadow-[0px_3px_3px_rgba(0,0,0,0.25)] hover:bg-gray-700 disabled:bg-gray-600'
+                  className='mt-3 flex w-full items-center justify-center rounded-sm bg-main p-2 uppercase text-white drop-shadow-[0px_3px_3px_rgba(0,0,0,0.25)] hover:bg-main/80 disabled:bg-main/80'
                 >
                   {finish ? (
                     'Nastavak kupovine'
@@ -193,13 +194,13 @@ const AddToCart = ({
                   )}
                 </button>
               </div>
-              <div className='flex gap-4'>
-                <button className='mt-3 rounded-sm bg-white p-2 font-semibold drop-shadow-[0px_3px_3px_rgba(0,0,0,0.25)] hover:bg-gray-100'>
+              <div className='flex w-full justify-evenly gap-4 sm:w-fit'>
+                <button className='mt-3 rounded-sm bg-gray-800 p-2 font-semibold uppercase text-white drop-shadow-[0px_3px_3px_rgba(0,0,0,0.25)] hover:bg-gray-100'>
                   Pregled korpe
                 </button>
                 <button
                   onClick={finishPayment}
-                  className='mt-3 rounded-sm bg-gray-800 p-2 text-white drop-shadow-[0px_3px_3px_rgba(0,0,0,0.25)] hover:bg-gray-700'
+                  className='mt-3 rounded-sm bg-main p-2 uppercase text-white drop-shadow-[0px_3px_3px_rgba(0,0,0,0.25)] hover:bg-main/80'
                 >
                   {!finish ? (
                     'Zaključi prodaju'
