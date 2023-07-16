@@ -121,19 +121,20 @@ const Cart = () => {
   )
 
   const navigate = async () => {
+    console.log(order?.id)
     if (totalPrice) await router.push(`/cart/${order?.id || ''}`)
   }
 
   return (
     <>
-      <div className='flex h-full min-h-screen w-full flex-col items-center px-20 py-0 pt-0'>
+      <div className='flex h-full min-h-screen w-full flex-col items-center py-0 px-4 pt-0 sm:px-20'>
         <h1 className='w-full text-center text-[3em] font-bold text-gray-800'>
           Korpa
         </h1>
 
-        <div className='relative flex w-full justify-center overflow-y-auto'>
+        <div className='relative flex w-full flex-col justify-center xl:flex-row'>
           <MainTable data={useData()} columns={columns} />
-          <div className='flex w-full flex-col px-3'>
+          <div className='flex w-full flex-col px-3 pt-5 sm:w-1/2 xl:pt-0'>
             <h3 className='mb-2 border-b-2 border-gray-300 text-xl font-semibold uppercase'>
               Ukupni proračun
             </h3>

@@ -32,7 +32,6 @@ const AddToCart = ({
   onDiscount,
   setIsOpen,
 }: TProps) => {
-  const [finish, setFinish] = useState(false)
   const [token, setToken] = useState('')
 
   const router = useRouter()
@@ -52,6 +51,24 @@ const AddToCart = ({
       token: string
     }) => trpcClient.orderArticle.createOrderAndOrderArticle.mutate(input),
     {
+      onSuccess: async () => {
+        setIsOpen(false)
+        toast.info('Artikal dodan u korpu')
+        await queryClient.invalidateQueries(['order.getAllOrders'])
+        await queryClient.invalidateQueries(['order.getMyUnfinishedOrder'])
+        await queryClient.invalidateQueries(['orderArticle.getOrderArticles'])
+      },
+    }
+  )
+
+  const { mutate: finishOrder, isLoading: loadingFinish } = useMutation(
+    (input: {
+      amount: number
+      price: number
+      article_id: string
+      token: string
+    }) => trpcClient.orderArticle.createOrderAndOrderArticle.mutate(input),
+    {
       onSuccess: async (data) => {
         setIsOpen(false)
         toast.info('Artikal dodan u korpu')
@@ -59,11 +76,7 @@ const AddToCart = ({
         await queryClient.invalidateQueries(['order.getMyUnfinishedOrder'])
         await queryClient.invalidateQueries(['orderArticle.getOrderArticles'])
 
-        localStorage.removeItem('token')
-
-        if (finish) {
-          await router.push(`/cart/${data.id}`)
-        }
+        await router.push(`/cart/${data.id}`)
       },
     }
   )
@@ -86,8 +99,7 @@ const AddToCart = ({
     if (!articleId)
       return toast.info('Molimo vas osviježite stranicu i pokušajte ponovo')
 
-    setFinish(true)
-    addArticle({
+    finishOrder({
       amount,
       price: basePrice,
       article_id: articleId,
@@ -181,11 +193,11 @@ const AddToCart = ({
             <section className='flex w-full flex-col justify-between p-2 text-base sm:flex-row'>
               <div>
                 <button
-                  disabled={finish}
+                  disabled={loadingFinish}
                   onClick={addOrderArticle}
                   className='mt-3 flex w-full items-center justify-center rounded-sm bg-main p-2 uppercase text-white drop-shadow-[0px_3px_3px_rgba(0,0,0,0.25)] hover:bg-main/80 disabled:bg-main/80'
                 >
-                  {finish ? (
+                  {loadingFinish ? (
                     'Nastavak kupovine'
                   ) : loadingAdd ? (
                     <Spinner />
@@ -202,7 +214,7 @@ const AddToCart = ({
                   onClick={finishPayment}
                   className='mt-3 rounded-sm bg-main p-2 uppercase text-white drop-shadow-[0px_3px_3px_rgba(0,0,0,0.25)] hover:bg-main/80'
                 >
-                  {!finish ? (
+                  {!loadingFinish ? (
                     'Zaključi prodaju'
                   ) : loadingAdd ? (
                     <Spinner />

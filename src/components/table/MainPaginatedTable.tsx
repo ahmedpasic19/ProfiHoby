@@ -51,8 +51,8 @@ const MainPaginatedTable = <T extends object>({
   }, [pageCount])
 
   return (
-    <div className='flex h-fit flex-col'>
-      <div className='overflow-x-auto'>
+    <div className='flex h-fit flex-col overflow-x-auto'>
+      <div>
         <div className='relative flex w-full flex-col items-center pb-4'>
           {showNavigation ? (
             <PaginatedPagination
@@ -63,7 +63,7 @@ const MainPaginatedTable = <T extends object>({
             />
           ) : null}
           <div className='max-h-[450px] overflow-auto'>
-            <table className='w-full min-w-[1400px] text-center'>
+            <table className='w-full text-center'>
               <thead className='sticky top-0 border-b bg-gray-50'>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={Math.random()}>

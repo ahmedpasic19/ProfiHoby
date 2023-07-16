@@ -119,7 +119,7 @@ const OrderInformation = () => {
   }
 
   return (
-    <div className='flex h-full min-h-screen w-full flex-col items-center px-20 py-0 pt-0'>
+    <div className='flex h-full min-h-screen w-full flex-col items-center justify-center px-4 py-0 pt-0 sm:px-20'>
       <h1 className='mb-5 w-full text-center text-[3em] font-bold text-gray-800'>
         Upotpunite narudžbu
       </h1>
@@ -164,7 +164,9 @@ const OrderInformation = () => {
           </button>
         </section>
       </form>
-      <MainTable data={useData()} columns={columns} />
+      <div className='hidden sm:block'>
+        <MainTable data={useData()} columns={columns} />
+      </div>
     </div>
   )
 }

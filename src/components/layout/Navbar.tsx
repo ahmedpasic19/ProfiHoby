@@ -120,6 +120,7 @@ const Navbar = () => {
           pathname === '/' ||
           pathname.includes('articles/') ||
           pathname.includes('search') ||
+          pathname.includes('cart') ||
           pathname.includes('categories/') ||
           pathname.includes('groups/') ||
           // pathname === '/groups' ||
@@ -140,7 +141,7 @@ const Navbar = () => {
             />
             <Image
               src={Logo1}
-              className='block h-1/3 w-1/3 object-fill'
+              className='hidden h-1/3 w-1/3 object-fill sm:block'
               alt='Profihoby Logo'
             />
             <h2 className='w-full text-center text-2xl font-bold tracking-tighter'>
@@ -149,6 +150,7 @@ const Navbar = () => {
           </Link>
 
           <SearchBar />
+
           <div className='flex md:order-2'>
             {/* Log out btn */}
             {status === 'authenticated' && (
@@ -219,6 +221,7 @@ const Navbar = () => {
       </nav>
       {/* Dropdown */}
       <DropdownMenu
+        articleCount={articleCount || 0}
         wasOpen={dropdownWasOpen}
         isOpen={openDropDown}
         setIsOpen={setOpenDropDown}

@@ -33,7 +33,7 @@ const SearchBar = () => {
   }
 
   return (
-    <div className='z-30 flex items-center border-b-2 border-gray-50'>
+    <div className='z-30 flex w-full items-center border-b-2 border-gray-50'>
       <SearchComponent
         inputRef={inputRef}
         filter={name}
