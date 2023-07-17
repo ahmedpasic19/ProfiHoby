@@ -21,9 +21,10 @@ const HighlightedArticles = () => {
       className='relative flex w-full overflow-hidden'
       data-carousel='slide'
     >
-      <div className='relative flex h-56 overflow-hidden sm:w-screen md:h-96'>
+      <div className='relative flex h-56 overflow-hidden sm:w-full md:h-96'>
+        {/* <HiglightedArticle url={Banner1} /> */}
         <ul
-          className='flex gap-4'
+          className='flex items-center justify-center'
           style={{
             transform: `translateX(${itemIndex * 100}vw)`,
             transition: 'transform 0.5s ease-in',

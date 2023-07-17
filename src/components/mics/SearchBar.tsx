@@ -28,6 +28,7 @@ const SearchBar = () => {
     e.preventDefault()
     const encodedQuery = encodeURI(name)
 
+    setName('')
     await router.push(`/search?q=${encodedQuery}`)
     inputRef.current?.blur()
   }

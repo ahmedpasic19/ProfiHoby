@@ -63,13 +63,16 @@ const Home: NextPage = () => {
 
   return (
     <div className='flex h-full min-h-screen w-full flex-col items-center justify-center'>
-      <section className='relative flex w-full flex-col-reverse items-center justify-center border-b-4 border-r-gray-500 sm:grid sm:grid-cols-[minmax(20em,20%)_1fr] sm:grid-rows-1'>
+      <section className='relative flex w-full flex-col items-center justify-center'>
+        {/* Articles on sale or random low price articles */}
+        <HighlightedArticles />
+
         {/* Categories */}
-        <div className='hidden h-full w-full flex-col border-r-2 border-gray-800/30 sm:flex'>
-          <h2 className='w-full py-5 text-center text-2xl font-bold tracking-tighter text-gray-800 sm:text-xl'>
+        <div className='hidden h-full w-full flex-col bg-white drop-shadow-[0_1px_5px_rgba(0,0,0,0.25)] sm:flex'>
+          <h2 className='w-full bg-white py-5 text-center text-2xl font-bold uppercase tracking-tighter text-main drop-shadow-[0px_1px_1px_rgba(0,0,0,0.25)]'>
             Kategorije
           </h2>
-          <ul className='flex h-full w-full flex-col overflow-y-auto'>
+          <ul className='z-10 grid h-full w-full grid-cols-4 flex-col overflow-y-auto px-10'>
             {categories?.map((category) => (
               <SidebarCategory
                 key={category.id}
@@ -80,8 +83,6 @@ const Home: NextPage = () => {
             ))}
           </ul>
         </div>
-        {/* Articles on sale or random low price articles */}
-        <HighlightedArticles />
       </section>
 
       {/* Articles */}
