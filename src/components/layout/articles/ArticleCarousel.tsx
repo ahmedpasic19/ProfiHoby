@@ -1,5 +1,5 @@
 import { TArticle } from '../../../types/article'
-import Article from '../../Article'
+import Article from '../../mics/Article'
 
 const ArticleCarousel = ({ articles }: { articles: TArticle[] }) => {
   return (
@@ -11,8 +11,9 @@ const ArticleCarousel = ({ articles }: { articles: TArticle[] }) => {
             className='flex w-full items-center justify-center'
           >
             <Article
-              action={article.article_action_id ? true : false}
-              actionPercentage={article?.action?.discount}
+              discountPercentage={article?.discountPercentage || 0}
+              discountPrice={article?.discountPrice || 0}
+              onDiscount={article?.onDiscount || false}
               name={article.name}
               imageURL={article.image[0]?.access_url || ''}
               price={article.base_price}

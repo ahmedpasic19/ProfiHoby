@@ -23,7 +23,6 @@ export const imageRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         article_id: z.string(),
-        action_id: z.string(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -34,12 +33,11 @@ export const imageRouter = createTRPCRouter({
         return console.log('ERROR: No name and / or extention')
 
       // Key for S3
-      const key = `${name}-${input.article_id || input.action_id}.${extention}`
+      const key = `${name}-${input.article_id}.${extention}`
 
       // POST image to DB
       await ctx.prisma.image.create({
         data: {
-          action_id: input.action_id || null,
           article_id: input.article_id || null,
           name: input.name,
           key,
@@ -114,12 +112,11 @@ export const imageRouter = createTRPCRouter({
     .input(
       z.object({
         article_id: z.string().nullable(),
-        action_id: z.string().nullable(),
       })
     )
     .query(async ({ input, ctx }) => {
       const article_images = await ctx.prisma.image.findMany({
-        where: { article_id: input.article_id, action_id: input.action_id },
+        where: { article_id: input.article_id },
       })
 
       return article_images

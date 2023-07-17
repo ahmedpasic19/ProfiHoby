@@ -8,8 +8,8 @@ import axios from 'axios'
 
 import { Dialog } from '@headlessui/react'
 
-import FormButton from '../../FormButton'
-import Spinner from '../../Spinner'
+import FormButton from '../../mics/FormButton'
+import Spinner from '../../mics/Spinner'
 
 type TProps = {
   group: Group

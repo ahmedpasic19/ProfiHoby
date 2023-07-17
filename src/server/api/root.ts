@@ -4,12 +4,13 @@ import { articleRouter } from './routers/article'
 import { imageRouter } from './routers/image'
 import { categoryRouter } from './routers/category'
 import { categoryOnArticleRelationRouter } from './routers/categoryOnArticle'
-import { articleActionRouter } from './routers/articleActions'
 import { groupRouter } from './routers/groups'
 import { articleGroups } from './routers/articleGroups'
 import { userRouter } from './routers/user'
 import { workerRouter } from './routers/worker'
 import { brandRouter } from './routers/brand'
+import { orderRouter } from './routers/order'
+import { orderArticleRouter } from './routers/orderArticle'
 
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
@@ -17,12 +18,13 @@ export const appRouter = createTRPCRouter({
   image: imageRouter,
   category: categoryRouter,
   article_category_relation: categoryOnArticleRelationRouter,
-  article_action: articleActionRouter,
   group: groupRouter,
   articleGroups: articleGroups,
   users: userRouter,
   workers: workerRouter,
   brand: brandRouter,
+  order: orderRouter,
+  orderArticle: orderArticleRouter,
 })
 
 // export type definition of API

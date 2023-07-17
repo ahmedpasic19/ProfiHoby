@@ -4,7 +4,7 @@ import { trpcClient } from '../../../../utils/api'
 import { Brand } from '@prisma/client'
 
 import Select from 'react-select'
-import FieldSet from '../../../Fieldset'
+import FieldSet from '../../../mics/Fieldset'
 import { AiFillCloseCircle } from 'react-icons/ai'
 
 type TProps = {

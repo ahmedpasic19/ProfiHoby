@@ -1,14 +1,15 @@
-import { useRouter } from 'next/router'
-import { useState, useRef, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { useState, useRef, useEffect, useMemo } from 'react'
 
-import { trpcClient } from '../../../utils/api'
+import { trpcClient } from '../utils/api'
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-import Article from '../../../components/Article'
-import Spinner from '../../../components/Spinner'
-import FilterSidebar from '../../../components/layout/FilterSidebar'
+import Article from '../components/mics/Article'
+import Spinner from '../components/mics/Spinner'
+import FilterSidebar from '../components/layout/FilterSidebar'
+import { NextPage } from 'next'
 
-const ArticleNamePage = () => {
+const SearchPage: NextPage = () => {
   const [priceFrom, setPriceFrom] = useState(0)
   const [priceTo, setPriceTo] = useState(0)
   const [brand, setBrand] = useState('')
@@ -16,10 +17,8 @@ const ArticleNamePage = () => {
 
   const [isVisible, setIsVisible] = useState(false)
 
-  const router = useRouter()
-  const { article_name } = router.query
-
-  const name = typeof article_name === 'string' ? article_name : ''
+  const search = useSearchParams()
+  const name = useMemo(() => (search ? search.get('q') : null), [search])
 
   const {
     data,
@@ -45,8 +44,14 @@ const ArticleNamePage = () => {
           ? undefined
           : data.pageIndex + 1
       },
+      enabled: name ? true : false,
     }
   )
+  console.log(name)
+  console.log(data)
+  useEffect(() => {
+    refetch().catch(console.error)
+  }, [name])
 
   // ref to the div at the bottom of the page
   const ref = useRef<HTMLDivElement>(null)
@@ -97,8 +102,9 @@ const ArticleNamePage = () => {
                   <Article
                     key={article.id}
                     name={article.name}
-                    action={article.article_action_id ? true : false}
-                    actionPercentage={article?.action?.discount}
+                    discountPercentage={article.discountPercentage || 0}
+                    discountPrice={article.discountPrice || 0}
+                    onDiscount={article.onDiscount || false}
                     imageURL={article.image[0]?.access_url || ''}
                     price={article.base_price}
                     categories={article.categories}
@@ -109,6 +115,19 @@ const ArticleNamePage = () => {
           </div>
         </div>
       </div>
+
+      {isSuccess && data?.pages?.at(0)?.articles?.length === 0 ? (
+        <div className='w-full text-center text-2xl font-bold text-gray-800'>
+          Nema rezultata
+        </div>
+      ) : null}
+
+      {isLoading && (
+        <div className='flex w-full items-center justify-center text-center'>
+          <Spinner />
+          Učitavanje...
+        </div>
+      )}
 
       {isFetchingNextPage && (
         <div className='flex w-full items-center justify-center text-center'>
@@ -125,4 +144,4 @@ const ArticleNamePage = () => {
   )
 }
 
-export default ArticleNamePage
+export default SearchPage

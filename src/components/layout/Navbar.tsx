@@ -1,23 +1,45 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import { signOut, useSession } from 'next-auth/react'
 
 import { useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../utils/api'
 
-import Logo from '../../assets/logo.png'
+import useGrantUniqueToken from '../../hooks/useGrantUniqueToken'
+
+import Logo1 from '../../assets/logo1.png'
+import Logo2 from '../../assets/logo2.png'
 import Image from 'next/image'
 import Link from 'next/link'
 import DropdownMenu from './navbar/DropdownMenu'
-import { AiFillHome } from 'react-icons/ai'
-import SearchBar from '../SearchBar'
+import SearchBar from '../mics/SearchBar'
+import { AiFillHome, AiOutlineShoppingCart } from 'react-icons/ai'
 
 const Navbar = () => {
+  const [token, setToken] = useState('')
   const [openDropDown, setOpenDropDown] = useState(false)
   const [dropdownWasOpen, setDropdownWasOpen] = useState(false) // Check if dropdown was open to determin the correct css
 
+  // Grant user a unique token
+  useGrantUniqueToken()
+
+  useEffect(() => {
+    const uniqueToken = localStorage.getItem('token') || ''
+    setToken(uniqueToken)
+  }, [])
+
   const { data: allWorkers } = useQuery(['workers.getAllWorkers'], () =>
     trpcClient.workers.getAllWorkers.query()
+  )
+  const { data: myOrder } = useQuery(['order.getMyUnfinishedOrder'], () =>
+    trpcClient.order.getMyUnfinishedOrder.query({
+      token,
+    })
+  )
+
+  const articleCount = useMemo(
+    () => myOrder?.articles?.reduce((prev) => prev + 1, 0),
+    [myOrder?.articles]
   )
 
   const { data, status } = useSession()
@@ -45,12 +67,12 @@ const Navbar = () => {
       label: 'Radnici',
     },
     {
-      href: '/brands',
-      label: 'Brendovi',
+      href: '/orders',
+      label: 'Narudžbe',
     },
     {
-      href: '/actions',
-      label: 'Akcije',
+      href: '/brands',
+      label: 'Brendovi',
     },
     {
       href: '/sales',
@@ -97,6 +119,8 @@ const Navbar = () => {
         className={`sticky top-0 left-0 ${
           pathname === '/' ||
           pathname.includes('articles/') ||
+          pathname.includes('search') ||
+          pathname.includes('cart') ||
           pathname.includes('categories/') ||
           pathname.includes('groups/') ||
           // pathname === '/groups' ||
@@ -109,11 +133,15 @@ const Navbar = () => {
         <div className='mx-auto flex justify-between sm:justify-evenly'>
           <Link href='/' className='relative flex items-center justify-center'>
             <Image
-              src={Logo}
-              // fill
-              height={50}
-              width={50}
-              className='object-contain'
+              src={Logo2}
+              width={75}
+              height={75}
+              className='block h-1/2 w-1/2 object-contain'
+              alt='Profihoby Logo'
+            />
+            <Image
+              src={Logo1}
+              className='hidden h-1/3 w-full object-fill sm:block'
               alt='Profihoby Logo'
             />
             <h2 className='w-full text-center text-2xl font-bold tracking-tighter'>
@@ -122,6 +150,7 @@ const Navbar = () => {
           </Link>
 
           <SearchBar />
+
           <div className='flex md:order-2'>
             {/* Log out btn */}
             {status === 'authenticated' && (
@@ -179,11 +208,20 @@ const Navbar = () => {
                 )
               )}
             </ul>
+            <Link href='/cart' className='relative'>
+              <AiOutlineShoppingCart className='ml-1 h-8 w-8' />
+              {articleCount ? (
+                <p className='absolute top-[-0.5rem] right-[-0.7rem] h-6 w-6 rounded-full bg-red-600 text-center font-semibold text-white'>
+                  {articleCount}
+                </p>
+              ) : null}
+            </Link>
           </div>
         </div>
       </nav>
       {/* Dropdown */}
       <DropdownMenu
+        articleCount={articleCount || 0}
         wasOpen={dropdownWasOpen}
         isOpen={openDropDown}
         setIsOpen={setOpenDropDown}
@@ -209,7 +247,7 @@ const NavLink = ({ href, label }: { href: string; label: string }) => {
     <li>
       <Link
         href={href}
-        className={`block rounded bg-blue-700 py-2 pl-3 pr-4 md:bg-transparent md:p-0 ${
+        className={`text-normal block rounded bg-blue-700 py-2 pl-3 pr-4 md:bg-transparent md:p-0 ${
           router.pathname === href ? 'text-blue-700' : 'text-gray-800'
         }`}
         aria-current={router.pathname === href}

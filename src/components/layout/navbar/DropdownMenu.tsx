@@ -6,15 +6,23 @@ import { trpcClient } from '../../../utils/api'
 import SecondLevelDropdown from './SecondLevelDropdown'
 import { BiChevronLeft } from 'react-icons/bi'
 import Link from 'next/link'
+import { AiOutlineShoppingCart } from 'react-icons/ai'
 
 type TProps = {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   isOpen: boolean
   wasOpen: boolean
+  articleCount: number
   links: { href: string; label: string }[]
 }
 
-const DropdownMenu = ({ setIsOpen, isOpen, wasOpen, links }: TProps) => {
+const DropdownMenu = ({
+  setIsOpen,
+  isOpen,
+  wasOpen,
+  links,
+  articleCount,
+}: TProps) => {
   const [openAdminLinks, setOpenAdminLinks] = useState(false)
   const [openCategories, setOpenCategories] = useState(false)
   const { status, data } = useSession()
@@ -76,6 +84,25 @@ const DropdownMenu = ({ setIsOpen, isOpen, wasOpen, links }: TProps) => {
             <button onClick={() => setOpenCategories(true)}>Kategorije</button>
           </div>
         </div>
+
+        {/* Link to cart */}
+        <Link
+          onClick={() => setIsOpen(false)}
+          href='/cart'
+          className='flex w-full items-center justify-between'
+        >
+          <div className='w-full p-5 text-lg font-semibold text-gray-800'>
+            Korpa
+          </div>
+          <div className='relative'>
+            <AiOutlineShoppingCart className='ml-1 mr-4 h-8 w-8 text-gray-800' />
+            {articleCount ? (
+              <p className='absolute top-[-0.5rem] right-[-0.7rem] h-6 w-6 rounded-full bg-red-600 text-center font-semibold text-white'>
+                {articleCount}
+              </p>
+            ) : null}
+          </div>
+        </Link>
 
         {/* Open admin links dropdown */}
         {worker && (

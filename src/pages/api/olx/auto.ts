@@ -51,7 +51,7 @@ export default async function handler(
         },
       },
     },
-    // take: 300,
+    take: 300,
     orderBy: { createdAt: 'desc' }, // kada dodajes artikle stavi -> asc kada ne dodajes stavi desc
   })
 

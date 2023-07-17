@@ -33,13 +33,12 @@ export const articleRouter = createTRPCRouter({
         },
         include: {
           articles: {
-            orderBy: { article: { action: { createdAt: 'asc' } } },
+            orderBy: { article: { onDiscount: 'desc' } },
             take: input.pageSize,
             include: {
               article: {
                 include: {
                   image: true,
-                  action: true,
                   categories: {
                     include: {
                       category: true,
@@ -73,14 +72,14 @@ export const articleRouter = createTRPCRouter({
       z.object({
         pageSize: z.number(),
         pageIndex: z.number(),
-        name: z.string(),
+        name: z.string().nullish(),
         priceFrom: z.number().nullish(),
         priceTo: z.number().nullish(),
         orderByPrice: z.string().nullish(),
       })
     )
     .query(async ({ input, ctx }) => {
-      const name = input.name
+      const name = input.name || 'katcher'
 
       const articles = await ctx.prisma.article.findMany({
         include: {
@@ -92,7 +91,6 @@ export const articleRouter = createTRPCRouter({
             },
           },
           image: true,
-          action: true,
           brand: { select: { name: true } },
           categories: {
             include: {
@@ -159,7 +157,6 @@ export const articleRouter = createTRPCRouter({
       const articles = await ctx.prisma.article.findMany({
         include: {
           image: true,
-          action: true,
           categories: {
             include: {
               category: true,
@@ -220,7 +217,6 @@ export const articleRouter = createTRPCRouter({
           },
           include: {
             image: true,
-            action: true,
             categories: {
               include: {
                 category: true,
@@ -231,28 +227,6 @@ export const articleRouter = createTRPCRouter({
 
         return articles
       }
-    }),
-
-  getArticlesByActionID: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input, ctx }) => {
-      const articles = await ctx.prisma.article.findMany({
-        where: {
-          article_action_id: input.id,
-        },
-        include: {
-          image: true,
-          action: true,
-          categories: {
-            include: {
-              category: true,
-            },
-          },
-        },
-        orderBy: { createdAt: 'asc' },
-      })
-
-      return articles
     }),
 
   getArticlesByGroupID: publicProcedure
@@ -301,14 +275,13 @@ export const articleRouter = createTRPCRouter({
                     },
                   },
                 }
-              : { orderBy: { article: { action: { createdAt: 'asc' } } } }),
+              : { orderBy: { article: { onDiscount: 'desc' } } }),
             skip: input.pageSize * input.pageIndex,
             take: input.pageSize,
             include: {
               article: {
                 include: {
                   image: true,
-                  action: true,
                   categories: { include: { category: true } },
                 },
               },
@@ -336,12 +309,14 @@ export const articleRouter = createTRPCRouter({
       z.object({
         pageSize: z.number(),
         pageIndex: z.number(),
+        priceFrom: z.number().nullish(),
+        priceTo: z.number().nullish(),
+        orderByPrice: z.string().nullish(),
       })
     )
     .query(async ({ input, ctx }) => {
       const articles = await ctx.prisma.article.findMany({
         include: {
-          action: true,
           image: true,
           categories: {
             include: {
@@ -351,12 +326,28 @@ export const articleRouter = createTRPCRouter({
         },
         skip: input.pageSize * input.pageIndex,
         take: input.pageSize,
-        where: { article_action_id: { not: null } },
-        orderBy: { createdAt: 'asc' },
+        where: {
+          onDiscount: true,
+          ...(input.priceFrom || input.priceTo
+            ? {
+                base_price: {
+                  ...(input.priceFrom ? { gte: input.priceFrom } : {}),
+                  ...(input.priceTo ? { lte: input.priceTo } : {}),
+                },
+              }
+            : {}),
+        },
+        ...(input.orderByPrice
+          ? {
+              orderBy: {
+                base_price: input.orderByPrice === 'desc' ? 'desc' : 'asc',
+              },
+            }
+          : {}),
       })
 
       const totalArticles = await ctx.prisma.article.count({
-        where: { article_action_id: { not: null } },
+        where: { onDiscount: true },
       })
       const pageCount = Math.ceil(totalArticles / input.pageSize)
 
@@ -411,20 +402,6 @@ export const articleRouter = createTRPCRouter({
 
       return brand_articles
     }),
-
-  getRandomArticles: publicProcedure.query(async ({ ctx }) => {
-    const articles = await ctx.prisma.article.findMany({
-      take: 5,
-      orderBy: {
-        base_price: 'desc',
-      },
-      include: {
-        image: true,
-      },
-    })
-
-    return articles
-  }),
 
   createArticle: adminProcedure
     .input(
@@ -486,6 +463,9 @@ export const articleRouter = createTRPCRouter({
         brand_id: z.string().nullish(),
         warranty: z.string().nullish(),
         attributes: z.array(z.object({ title: z.string(), text: z.string() })),
+        discountPercentage: z.number().nullish(),
+        discountPrice: z.number().nullish(),
+        onDiscount: z.boolean().nullish(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -501,6 +481,16 @@ export const articleRouter = createTRPCRouter({
           base_price: input.base_price,
           warranty: input.warranty ? input.warranty : '',
           ...(input.brand_id ? { brand_id: input.brand_id } : {}), // optionaly accept brand_id
+          ...(input.discountPercentage !== null &&
+          input.discountPercentage !== undefined
+            ? { discountPercentage: input.discountPercentage }
+            : {}),
+          ...(input.discountPrice !== null && input.discountPrice !== undefined
+            ? { discountPrice: input.discountPrice }
+            : {}),
+          ...(input.onDiscount !== null && input.onDiscount !== undefined
+            ? { onDiscount: input.onDiscount }
+            : {}),
         },
       })
 

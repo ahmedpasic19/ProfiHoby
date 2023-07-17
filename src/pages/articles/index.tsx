@@ -2,13 +2,7 @@ import { NextPage } from 'next'
 import { useMemo, useState, useRef, FormEvent } from 'react'
 
 import { ColumnDef } from '@tanstack/react-table'
-import {
-  Article,
-  ArticleAction,
-  CategoriesOnArticle,
-  Category,
-  Image,
-} from '@prisma/client'
+import { Article, CategoriesOnArticle, Category, Image } from '@prisma/client'
 
 import { trpcClient } from '../../utils/api'
 import { useQuery } from '@tanstack/react-query'
@@ -23,9 +17,10 @@ import UpdateArticleCategoriesModal from '../../components/modals/articles/Updat
 import UpdateArticleImagesModal from '../../components/modals/articles/UpdateArticleImagesModal'
 import UpdateArticleGroupsModal from '../../components/modals/articles/UpdateArticleGroupsModal'
 import ArticleMultiformModal from '../../components/layout/forms/articles/ArticleMultiform'
+import ArticleActionModal from '../../components/modals/articles/ArticleActionModal'
 
 import { BiCategoryAlt } from 'react-icons/bi'
-import { BsFillImageFill } from 'react-icons/bs'
+import { BsFillImageFill, BsCashStack } from 'react-icons/bs'
 import { FaTrash } from 'react-icons/fa'
 import { AiFillEdit } from 'react-icons/ai'
 import { HiOutlineRectangleGroup } from 'react-icons/hi2'
@@ -43,7 +38,6 @@ type TArticle = Article & {
   categories: (CategoriesOnArticle & {
     category: Category
   })[]
-  action: ArticleAction | null
   attributes: { title: string; text: string; id: string }[]
 }
 
@@ -59,6 +53,7 @@ const Articles: NextPage = () => {
   const [openUpdateImages, setOpenUpdateImages] = useState(false)
   const [openUpdateGroups, setOpenUpdateGroups] = useState(false)
   const [openAddArticle, setOpenAddArticle] = useState(false)
+  const [openAction, setOpenAction] = useState(false)
 
   useProtectRoute()
 
@@ -112,6 +107,11 @@ const Articles: NextPage = () => {
     {
       header: 'Cijena',
       accessorKey: 'base_price',
+      cell: ({ row }: { row: TRow }) =>
+        row.original.base_price.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
     },
     {
       header: 'Brend',
@@ -132,6 +132,12 @@ const Articles: NextPage = () => {
     {
       header: 'Garancija',
       accessorKey: 'warranty',
+    },
+    {
+      header: 'Na sniženju',
+      accessorKey: 'olx_id',
+      cell: ({ row }: { row: TRow }) =>
+        row.original.onDiscount ? 'Snižen ✔️' : 'Nije snižen ❌',
     },
     {
       header: 'Objavljeno',
@@ -156,11 +162,20 @@ const Articles: NextPage = () => {
       },
     },
     {
-      header: 'Akcije',
-      accessorKey: 'actions',
+      header: 'Izmjene',
+      accessorKey: 'changes',
       cell: ({ row }: { row: TRow }) => {
         return (
           <div className='flex w-full justify-evenly gap-1 px-2'>
+            <button
+              className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
+              onClick={() => {
+                setOpenUpdate(true)
+                setArticle(row.original)
+              }}
+            >
+              <AiFillEdit className='h-8 w-8' />
+            </button>{' '}
             <button
               className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
               onClick={() => {
@@ -170,6 +185,16 @@ const Articles: NextPage = () => {
             >
               <BsFillImageFill className='h-8 w-8' />
             </button>
+          </div>
+        )
+      },
+    },
+    {
+      header: 'Akcije',
+      accessorKey: 'actions',
+      cell: ({ row }: { row: TRow }) => {
+        return (
+          <div className='flex w-full justify-evenly gap-1 px-2'>
             <button
               className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
               onClick={() => {
@@ -188,14 +213,15 @@ const Articles: NextPage = () => {
             >
               <HiOutlineRectangleGroup className='h-8 w-8' />
             </button>
+
             <button
               className='rounded-lg bg-blue-500 p-2 font-semibold text-white hover:bg-blue-600'
               onClick={() => {
-                setOpenUpdate(true)
+                setOpenAction(true)
                 setArticle(row.original)
               }}
             >
-              <AiFillEdit className='h-8 w-8' />
+              <BsCashStack className='h-8 w-8' />
             </button>
           </div>
         )
@@ -331,6 +357,12 @@ const Articles: NextPage = () => {
         article={article}
         isOpen={openUpdateGroups}
         setIsOpen={setOpenUpdateGroups}
+        setArticle={setArticle}
+      />
+      <ArticleActionModal
+        article={article}
+        isOpen={openAction}
+        setIsOpen={setOpenAction}
         setArticle={setArticle}
       />
     </>

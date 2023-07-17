@@ -30,12 +30,12 @@ const MainTable = <T extends object>({
   })
 
   return (
-    <div className='flex h-fit flex-col'>
-      <div className='overflow-x-auto'>
+    <div className='flex h-fit flex-col overflow-x-auto'>
+      <div>
         <div className='relative flex w-full flex-col items-center pb-4'>
           {showNavigation ? <Pagination table={table} /> : null}
           <div className='max-h-[450px] overflow-auto'>
-            <table className='w-full min-w-[1400px] text-center'>
+            <table className='w-full text-center'>
               <thead className='sticky top-0 border-b bg-gray-50'>
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr key={Math.random()}>
@@ -60,7 +60,7 @@ const MainTable = <T extends object>({
                   <tr key={Math.random()} className='border-b" bg-white'>
                     {row.getVisibleCells().map((cell) => (
                       <td
-                        className={`max-w-[10rem] overflow-hidden overflow-ellipsis whitespace-nowrap px-6 py-2 text-sm font-light text-gray-900 ${
+                        className={`overflow-ellipsis whitespace-nowrap px-6 py-2 text-sm font-light text-gray-900 ${
                           index % 2 === 0 ? 'bg-white' : 'bg-gray-200'
                         }`}
                         key={Math.random()}

@@ -4,8 +4,8 @@ import { trpcClient } from '../../../../utils/api'
 import { Category, Group } from '@prisma/client'
 
 import Select, { SingleValue } from 'react-select'
-import FieldSet from '../../../Fieldset'
-import Spinner from '../../../Spinner'
+import FieldSet from '../../../mics/Fieldset'
+import Spinner from '../../../mics/Spinner'
 import { AiFillCloseCircle } from 'react-icons/ai'
 
 type TProps = {

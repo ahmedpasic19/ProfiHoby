@@ -5,8 +5,8 @@ import { useEffect, useState, useRef } from 'react'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../utils/api'
 
-import Article from '../../components/Article'
-import Spinner from '../../components/Spinner'
+import Article from '../../components/mics/Article'
+import Spinner from '../../components/mics/Spinner'
 import FilterSidebar from '../../components/layout/FilterSidebar'
 
 const GroupArticles: NextPage = () => {
@@ -108,8 +108,11 @@ const GroupArticles: NextPage = () => {
                     className='flex w-full items-center justify-center'
                   >
                     <Article
-                      action={article.article.article_action_id ? true : false}
-                      actionPercentage={article.article.action?.discount}
+                      discountPercentage={
+                        article.article.discountPercentage || 0
+                      }
+                      discountPrice={article.article.discountPrice || 0}
+                      onDiscount={article.article.onDiscount || false}
                       categories={article.article.categories}
                       imageURL={
                         //@ts-ignore // Error: "url doesn't exits on image", but it does exits

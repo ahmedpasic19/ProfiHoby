@@ -1,16 +1,10 @@
 import { FormEvent } from 'react'
 import { trpcClient } from '../../../utils/api'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
-import {
-  Article,
-  CategoriesOnArticle,
-  Image,
-  Category,
-  ArticleAction,
-} from '@prisma/client'
+import { Article, CategoriesOnArticle, Image, Category } from '@prisma/client'
 
-import Textarea from '../../Textarea'
-import FieldSet from '../../Fieldset'
+import Textarea from '../../mics/Textarea'
+import FieldSet from '../../mics/Fieldset'
 import Select from 'react-select'
 import { Dialog } from '@headlessui/react'
 import * as Ai from 'react-icons/ai'
@@ -25,7 +19,6 @@ type TArticle = Article & {
   categories: (CategoriesOnArticle & {
     category: Category
   })[]
-  action: ArticleAction | null
   attributes: { title: string; text: string; id: string }[]
 }
 

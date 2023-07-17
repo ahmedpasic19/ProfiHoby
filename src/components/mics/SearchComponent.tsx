@@ -1,5 +1,5 @@
 import { useEffect, FormEvent, ChangeEvent } from 'react'
-import { debounce } from '../utils/debounce'
+import { debounce } from '../../utils/debounce'
 
 type TProps = {
   inputRef?: React.Ref<HTMLInputElement>

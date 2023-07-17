@@ -9,9 +9,9 @@ import {
   Category,
 } from '@prisma/client'
 
-import SearchComponent from '../../../SearchComponent'
-import FormButton from '../../../FormButton'
-import Article from '../../../Article'
+import SearchComponent from '../../../mics/SearchComponent'
+import FormButton from '../../../mics/FormButton'
+import Article from '../../../mics/Article'
 
 import { ImCheckboxChecked } from 'react-icons/im'
 import { AiFillCloseCircle } from 'react-icons/ai'

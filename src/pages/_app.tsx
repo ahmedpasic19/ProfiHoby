@@ -38,7 +38,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         {router.pathname !== '/signin' && <Navbar />}
         <ToastContainer />
         <Component {...pageProps} />
-        <ContactBlob />
+        {router.pathname !== '/cart' && <ContactBlob />}
       </SessionProvider>
     </QueryClientProvider>
   )

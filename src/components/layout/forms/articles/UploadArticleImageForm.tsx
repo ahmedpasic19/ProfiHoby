@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useDropzone } from 'react-dropzone'
 
 import Image from 'next/image'
-import Spinner from '../../../Spinner'
+import Spinner from '../../../mics/Spinner'
 import { toast } from 'react-toastify'
 import axios from 'axios'
 
@@ -14,14 +14,12 @@ type TProps = {
   setOpenAddArticle: React.Dispatch<React.SetStateAction<boolean>>
   setPageIndex: React.Dispatch<React.SetStateAction<number>>
   article_id: string | null
-  action_id: string | null
 }
 
 const UploadArticleImageForm = ({
   setOpenAddArticle,
   setPageIndex,
   article_id,
-  action_id,
 }: TProps) => {
   const [articleImage, setArticleImage] = useState<string>('')
   const [files, setFiles] = useState<File[] | undefined>(undefined)
@@ -42,11 +40,10 @@ const UploadArticleImageForm = ({
   }
 
   const { data: images, isLoading: loadingFetchImages } = useQuery(
-    ['image.getAllRelatedImages', { article_id, action_id }],
+    ['image.getAllRelatedImages', { article_id }],
     () =>
       trpcClient.image.getAllRelatedImages.query({
         article_id: article_id || null,
-        action_id: action_id || null,
       }),
     {
       enabled: article_id ? true : false,
@@ -59,7 +56,7 @@ const UploadArticleImageForm = ({
   )
 
   const { mutate: createImage, isLoading: loadingAddImage } = useMutation(
-    (input: { name: string; article_id: string; action_id: string }) =>
+    (input: { name: string; article_id: string }) =>
       trpcClient.image.createPresignedURL.mutate(input),
     {
       onSuccess: async (data) => {
@@ -103,7 +100,7 @@ const UploadArticleImageForm = ({
               queryClient
                 .invalidateQueries([
                   'image.getAllRelatedImages',
-                  { article_id, action_id },
+                  { article_id },
                 ])
                 .catch(console.error)
             },
@@ -142,18 +139,11 @@ const UploadArticleImageForm = ({
   const handleUploadImage = (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
 
-    if (
-      !files ||
-      article_id === null ||
-      article_id === undefined ||
-      action_id === null ||
-      action_id === undefined
-    )
+    if (!files || article_id === null || article_id === undefined)
       return console.error('Prvo dodajte artikal')
 
     createImage({
       article_id,
-      action_id,
       name: files[0]?.name || '',
     })
   }
