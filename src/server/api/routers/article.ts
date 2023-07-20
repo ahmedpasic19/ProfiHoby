@@ -79,8 +79,6 @@ export const articleRouter = createTRPCRouter({
       })
     )
     .query(async ({ input, ctx }) => {
-      const name = input.name || 'katcher'
-
       const articles = await ctx.prisma.article.findMany({
         include: {
           attributes: {
@@ -99,10 +97,14 @@ export const articleRouter = createTRPCRouter({
           },
         },
         where: {
-          name: {
-            contains: name,
-            mode: 'insensitive',
-          },
+          ...(input.name
+            ? {
+                name: {
+                  contains: input.name,
+                  mode: 'insensitive',
+                },
+              }
+            : {}),
           ...(input.priceFrom || input.priceTo
             ? {
                 base_price: {
@@ -125,10 +127,14 @@ export const articleRouter = createTRPCRouter({
 
       const totalArticles = await ctx.prisma.article.count({
         where: {
-          name: {
-            contains: name,
-            mode: 'insensitive',
-          },
+          ...(input.name
+            ? {
+                name: {
+                  contains: input.name,
+                  mode: 'insensitive',
+                },
+              }
+            : {}),
         },
       })
       const pageCount = Math.ceil(totalArticles / input.pageSize)
