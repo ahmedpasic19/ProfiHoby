@@ -32,7 +32,7 @@ const MainTable = <T extends object>({
   return (
     <div className='flex h-fit flex-col overflow-x-auto'>
       <div>
-        <div className='relative flex w-full flex-col items-center pb-4'>
+        <div className='relative flex w-full flex-col pb-4'>
           {showNavigation ? <Pagination table={table} /> : null}
           <div className='max-h-[450px] overflow-auto'>
             <table className='w-full text-center'>

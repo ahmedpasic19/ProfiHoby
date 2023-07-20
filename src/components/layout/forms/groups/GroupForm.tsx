@@ -34,6 +34,7 @@ const GroupForm = ({
   setGroup,
 }: TProps) => {
   const [name, setName] = useState('')
+  const [order_key, setOrder_key] = useState(0)
   const [category, setCategory] = useState({} as TCategoryOption)
 
   const queryClient = useQueryClient()
@@ -68,7 +69,7 @@ const GroupForm = ({
     }
   )
   const { mutate: updateGroup, isLoading: loadingUpdateGroup } = useMutation(
-    (input: TInput & { id: string }) =>
+    (input: TInput & { id: string; order_key: null | number }) =>
       trpcClient.group.updateGroup.mutate(input),
     {
       onSuccess: async () => {
@@ -97,6 +98,7 @@ const GroupForm = ({
     if (group && Object.keys(group).length) {
       setName(group.name)
       setCategory({ label: group.category.name, value: group.category.id })
+      setOrder_key(group.order_key || 0)
     }
   }, [group])
 
@@ -114,6 +116,7 @@ const GroupForm = ({
       updateGroup({
         id: group.id,
         name,
+        order_key,
         category_id: category?.value,
         articles: [],
       })
@@ -136,11 +139,21 @@ const GroupForm = ({
         <FieldSet
           label='Naziv'
           name='name'
-          value={name}
+          value={name || ''}
           readOnly={isDeleting}
           onChange={(e) => setName(e.target.value)}
           type='text'
         />
+        {isEditing && (
+          <FieldSet
+            label='Redni broj'
+            name='order_key'
+            value={order_key || ''}
+            readOnly={isDeleting}
+            onChange={(e) => setOrder_key(parseFloat(e.target.value))}
+            type='text'
+          />
+        )}
         <div className='w-[80%]'>
           <label className='w-full pl-4 text-xl font-medium text-gray-800'>
             Kategorija

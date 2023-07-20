@@ -60,7 +60,7 @@ const AddToCart = ({
       },
     }
   )
-
+  console.log(token)
   const { mutate: finishOrder, isLoading: loadingFinish } = useMutation(
     (input: {
       amount: number
@@ -195,7 +195,7 @@ const AddToCart = ({
                 <button
                   disabled={loadingFinish}
                   onClick={addOrderArticle}
-                  className='mt-3 flex w-full items-center justify-center rounded-sm bg-main p-2 uppercase text-white drop-shadow-[0px_3px_3px_rgba(0,0,0,0.25)] hover:bg-main/80 disabled:bg-main/80'
+                  className='mt-3 flex w-full cursor-pointer items-center justify-center rounded-sm bg-main p-2 uppercase text-white drop-shadow-[0px_3px_3px_rgba(0,0,0,0.25)] hover:bg-main/80 disabled:bg-main/80'
                 >
                   {loadingFinish ? (
                     'Nastavak kupovine'
@@ -207,12 +207,12 @@ const AddToCart = ({
                 </button>
               </div>
               <div className='flex w-full justify-evenly gap-4 sm:w-fit'>
-                <button className='mt-3 rounded-sm bg-gray-800 p-2 font-semibold uppercase text-white drop-shadow-[0px_3px_3px_rgba(0,0,0,0.25)] hover:bg-gray-100'>
+                <button className='mt-3 cursor-pointer rounded-sm bg-gray-800 p-2 font-semibold uppercase text-white drop-shadow-[0px_3px_3px_rgba(0,0,0,0.25)] hover:bg-gray-600'>
                   Pregled korpe
                 </button>
                 <button
                   onClick={finishPayment}
-                  className='mt-3 rounded-sm bg-main p-2 uppercase text-white drop-shadow-[0px_3px_3px_rgba(0,0,0,0.25)] hover:bg-main/80'
+                  className='mt-3 cursor-pointer rounded-sm bg-main p-2 uppercase text-white drop-shadow-[0px_3px_3px_rgba(0,0,0,0.25)] hover:bg-main/80'
                 >
                   {!loadingFinish ? (
                     'Zaključi prodaju'

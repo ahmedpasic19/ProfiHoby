@@ -29,6 +29,7 @@ export const groupRouter = createTRPCRouter({
         name: z.string(),
         category_id: z.string(),
         olx_category_id: z.string().nullish(),
+        order_key: z.number().nullish(),
         articles: z.array(z.object({ id: z.string() })),
       })
     )
@@ -37,6 +38,9 @@ export const groupRouter = createTRPCRouter({
         where: { id: input.id },
         data: {
           olx_category_id: input.olx_category_id,
+          ...(input.order_key || input.order_key === 0
+            ? { order_key: input.order_key }
+            : {}),
           name: input.name,
           category: { connect: { id: input.category_id } },
         },
@@ -60,14 +64,19 @@ export const groupRouter = createTRPCRouter({
       return deleted_group
     }),
 
-  getAllGroups: publicProcedure.query(async ({ ctx }) => {
-    const all_categories = await ctx.prisma.group.findMany({
-      include: { category: true },
-      orderBy: { createdAt: 'asc' },
-    })
+  getAllGroups: publicProcedure
+    .input(z.string().nullish())
+    .query(async ({ ctx, input }) => {
+      const all_categories = await ctx.prisma.group.findMany({
+        where: {
+          ...(input ? { name: { contains: input, mode: 'insensitive' } } : {}),
+        },
+        include: { category: true },
+        orderBy: { order_key: 'desc' },
+      })
 
-    return all_categories
-  }),
+      return all_categories
+    }),
 
   getGroup: adminProcedure
     .input(z.object({ id: z.string() }))

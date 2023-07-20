@@ -140,6 +140,7 @@ model Group {
     category_id String
     articles    ArticleGroups[]
     brands      Brand[]
+    order_key   Float?          @default(0)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -205,8 +206,10 @@ model OrderArticle {
 
 model Order {
     id           String         @id @default(cuid())
-    token        String         @unique
+    token        String
     price        Float
+    firstName    String?        @default(" ")
+    lastName     String?        @default(" ")
     address      String?        @default(" ")
     phone_number String?        @default(" ")
     note         String?        @default(" ")

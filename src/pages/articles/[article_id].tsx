@@ -28,7 +28,7 @@ const ArticlePage = () => {
   const { data: article } = useQuery(['article', { id: article_id }], () =>
     trpcClient.article.getArticle.query({ article_id: articleId })
   )
-  console.log(article?.groups[0]?.group_id)
+
   const { data: groupArticles } = useQuery(
     [
       'article.getArticlesByGroupID',
@@ -174,17 +174,17 @@ const ArticlePage = () => {
                   <Counter count={count} setCount={setCount} />
                   <button
                     onClick={() => setOpenCart(true)}
-                    className='my-2 flex w-full justify-evenly rounded-md bg-main p-2 text-center text-lg font-bold text-white sm:mx-2 sm:w-3/5'
+                    className='my-2 flex w-full cursor-pointer justify-evenly rounded-md bg-main p-2 text-center text-lg font-bold text-white sm:mx-2 sm:w-3/5'
                   >
-                    <AiOutlineShoppingCart className='h-8 w-8' />
-                    <label>Dodaj</label>
+                    <AiOutlineShoppingCart className='h-8 w-8 cursor-pointer' />
+                    <label className='cursor-pointer'>Dodaj</label>
                   </button>
                   <button
                     onClick={() => setOpenCart(true)}
-                    className='my-2 flex w-full justify-evenly rounded-md bg-gray-800 p-2 text-center text-lg font-bold text-white sm:mx-2 sm:w-3/5'
+                    className='my-2 flex w-full cursor-pointer justify-evenly rounded-md bg-gray-800 p-2 text-center text-lg font-bold text-white sm:mx-2 sm:w-3/5'
                   >
-                    <AiOutlineDropbox className='h-8 w-8' />
-                    <label>Naruči</label>
+                    <AiOutlineDropbox className='h-8 w-8 cursor-pointer' />
+                    <label className='cursor-pointer'>Naruči</label>
                   </button>
                 </section>
 
