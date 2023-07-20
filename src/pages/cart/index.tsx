@@ -35,10 +35,12 @@ const Cart = () => {
     setToken(uniqueToken)
   }, [])
 
-  const { data: order } = useQuery(['order.getMyUnfinishedOrder'], () =>
-    trpcClient.order.getMyUnfinishedOrder.query({
-      token,
-    })
+  const { data: order, refetch } = useQuery(
+    ['order.getMyUnfinishedOrder'],
+    () =>
+      trpcClient.order.getMyUnfinishedOrder.query({
+        token,
+      })
   )
 
   const { data: orderArticles } = useQuery(
@@ -49,6 +51,10 @@ const Cart = () => {
       }),
     { enabled: order?.id ? true : false }
   )
+
+  useEffect(() => {
+    if (token) refetch().catch(console.error)
+  }, [token, refetch])
 
   const workerColumns = [
     {
@@ -121,7 +127,6 @@ const Cart = () => {
   )
 
   const navigate = async () => {
-    console.log(order?.id)
     if (totalPrice) await router.push(`/cart/${order?.id || ''}`)
   }
 
@@ -144,7 +149,7 @@ const Cart = () => {
             </span>
             <span className='flex w-full justify-between'>
               <label>Cijena dostave: </label>
-              <span>8KM</span>
+              <span>{totalPrice >= 200 ? '0KM' : '8KM'}</span>
             </span>
             <span className='flex w-full justify-between font-bold'>
               <label>Ukupno: </label>
@@ -152,12 +157,12 @@ const Cart = () => {
             </span>
             <button
               onClick={navigate}
-              className='my-2 w-full bg-blue-500 p-2 text-center font-bold text-white hover:bg-blue-600'
+              className='my-2 w-full cursor-pointer bg-blue-500 p-2 text-center font-bold text-white hover:bg-blue-600'
             >
               Završi narudžbu
             </button>
             <Link
-              className='my-2 w-full bg-green-500 p-2 text-center text-white hover:bg-green-600'
+              className='my-2 w-full cursor-pointer bg-green-500 p-2 text-center text-white hover:bg-green-600'
               href='/'
             >
               Nastavi kupovinu

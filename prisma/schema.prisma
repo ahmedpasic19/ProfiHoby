@@ -205,8 +205,10 @@ model OrderArticle {
 
 model Order {
     id           String         @id @default(cuid())
-    token        String         @unique
+    token        String
     price        Float
+    firstName    String?        @default(" ")
+    lastName     String?        @default(" ")
     address      String?        @default(" ")
     phone_number String?        @default(" ")
     note         String?        @default(" ")

@@ -32,6 +32,7 @@ const DeleteOrderModal = ({
       onSuccess: async () => {
         onClose()
         await queryClient.invalidateQueries(['order.getAllLockedOrders'])
+        await queryClient.invalidateQueries(['order.getAllOrders'])
       },
     }
   )

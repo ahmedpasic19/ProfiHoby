@@ -49,6 +49,7 @@ const FinishOrderModal = ({
         setOrder({} as TData)
         toast.success('Narzdžba završena')
         await queryClient.invalidateQueries(['order.getAllLockedOrders'])
+        await queryClient.invalidateQueries(['order.getAllOrders'])
       },
     }
   )

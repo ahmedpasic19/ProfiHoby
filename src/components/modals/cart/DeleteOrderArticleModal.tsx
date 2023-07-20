@@ -36,6 +36,7 @@ const DeleteOrderArticleModal = ({
       onSuccess: async () => {
         await queryClient.invalidateQueries(['orderArticle.getOrderArticles'])
         await queryClient.invalidateQueries(['order.getMyUnfinishedOrder'])
+        await queryClient.invalidateQueries(['orderArticle.getOrderArticles'])
         setArticle({} as TData)
         setIsOpen(false)
       },

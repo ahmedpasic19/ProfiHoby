@@ -31,11 +31,17 @@ const Navbar = () => {
   const { data: allWorkers } = useQuery(['workers.getAllWorkers'], () =>
     trpcClient.workers.getAllWorkers.query()
   )
-  const { data: myOrder } = useQuery(['order.getMyUnfinishedOrder'], () =>
-    trpcClient.order.getMyUnfinishedOrder.query({
-      token,
-    })
+  const { data: myOrder, refetch } = useQuery(
+    ['order.getMyUnfinishedOrder'],
+    () =>
+      trpcClient.order.getMyUnfinishedOrder.query({
+        token,
+      })
   )
+
+  useEffect(() => {
+    if (token) refetch().catch(console.error)
+  }, [token, refetch])
 
   const articleCount = useMemo(
     () => myOrder?.articles?.reduce((prev) => prev + 1, 0),
@@ -120,7 +126,7 @@ const Navbar = () => {
           pathname === '/' ||
           pathname.includes('articles/') ||
           pathname.includes('search') ||
-          pathname.includes('cart') ||
+          pathname.includes('cart/') ||
           pathname.includes('categories/') ||
           pathname.includes('groups/') ||
           // pathname === '/groups' ||

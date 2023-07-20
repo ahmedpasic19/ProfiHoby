@@ -7,7 +7,6 @@ import 'react-toastify/dist/ReactToastify.css'
 import '../styles/globals.css'
 import Head from 'next/head'
 import Navbar from '../components/layout/Navbar'
-import ContactBlob from '../components/layout/ContactBlob'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useRouter } from 'next/router'
@@ -38,7 +37,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
         {router.pathname !== '/signin' && <Navbar />}
         <ToastContainer />
         <Component {...pageProps} />
-        {router.pathname !== '/cart' && <ContactBlob />}
       </SessionProvider>
     </QueryClientProvider>
   )

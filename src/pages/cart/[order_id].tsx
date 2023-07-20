@@ -13,6 +13,8 @@ import MainTable from '../../components/table/MainTable'
 import Image from 'next/image'
 
 type TData = {
+  firstName: string
+  lastName: string
   phone_number: string
   address: string
   note: string
@@ -63,6 +65,7 @@ const OrderInformation = () => {
         await queryClient.invalidateQueries(['order.getAllOrders'])
         await queryClient.invalidateQueries(['order.getMyUnfinishedOrder'])
         await queryClient.invalidateQueries(['order.getAllLockedOrders'])
+        await queryClient.invalidateQueries(['orderArticle.getOrderArticles'])
       },
     }
   )
@@ -70,11 +73,15 @@ const OrderInformation = () => {
   const handleSubbmit = async (e: FormEvent) => {
     e.preventDefault()
 
+    if (!orderData.firstName) return toast.error('Upišite Ime')
+    if (!orderData.lastName) return toast.error('Upišite Prezime')
     if (!orderData.address) return toast.error('Upišite adresu')
 
     updateOrder({ ...orderData, id: order_id as string, isLocked: true })
 
     await router.push('/')
+
+    toast.success('Narudžba poslana')
   }
 
   const workerColumns = [
@@ -125,6 +132,20 @@ const OrderInformation = () => {
       </h1>
       <form onSubmit={handleSubbmit} className='w-full max-w-2xl'>
         <FieldSet
+          value={orderData.firstName || ''}
+          onChange={handleChange}
+          name='firstName'
+          label='Ime'
+          type='text'
+        />
+        <FieldSet
+          value={orderData.lastName || ''}
+          onChange={handleChange}
+          name='lastName'
+          label='Prezime'
+          type='text'
+        />
+        <FieldSet
           value={orderData.address || ''}
           onChange={handleChange}
           name='address'
@@ -156,7 +177,9 @@ const OrderInformation = () => {
 
         <section className='mt-10 flex w-full items-center justify-center pb-10'>
           <button
-            disabled={!orderData.address}
+            disabled={
+              !orderData.address || !orderData.firstName || !orderData.lastName
+            }
             onSubmit={handleSubbmit}
             className='flex w-4/5 items-center justify-center rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
           >

@@ -46,6 +46,14 @@ const Orders: NextPage = () => {
       accessorKey: 'price',
     },
     {
+      header: 'Ime',
+      accessorKey: 'firstName',
+    },
+    {
+      header: 'Prezime',
+      accessorKey: 'lastName',
+    },
+    {
       header: 'Addresa dostave',
       accessorKey: 'address',
     },
