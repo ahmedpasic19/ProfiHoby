@@ -35,7 +35,7 @@ const Groups: NextPage = () => {
 
   const { data: allGroups, isLoading } = useQuery(
     ['group.getAllGroups', { name }],
-    () => trpcClient.group.getAllGroups.query({ name })
+    () => trpcClient.group.getAllGroups.query(name)
   )
 
   // eslint-disable-next-line

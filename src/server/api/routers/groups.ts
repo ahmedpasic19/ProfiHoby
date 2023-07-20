@@ -65,13 +65,11 @@ export const groupRouter = createTRPCRouter({
     }),
 
   getAllGroups: publicProcedure
-    .input(z.object({ name: z.string().nullish() }))
+    .input(z.string().nullish())
     .query(async ({ ctx, input }) => {
       const all_categories = await ctx.prisma.group.findMany({
         where: {
-          ...(input.name
-            ? { name: { contains: input.name, mode: 'insensitive' } }
-            : {}),
+          ...(input ? { name: { contains: input, mode: 'insensitive' } } : {}),
         },
         include: { category: true },
         orderBy: { order_key: 'desc' },
