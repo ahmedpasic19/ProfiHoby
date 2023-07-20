@@ -28,7 +28,9 @@ const SearchPage: NextPage = () => {
     isLoading,
     refetch,
   } = useInfiniteQuery(
-    ['articles.getAllArticles'],
+    name
+      ? ['articles.getAllArticles', { name }]
+      : ['articles.getAllArticles', { name: null }],
     ({ pageParam = 0 }) =>
       trpcClient.article.getAllArticles.query({
         name,
@@ -44,14 +46,15 @@ const SearchPage: NextPage = () => {
           ? undefined
           : data.pageIndex + 1
       },
-      enabled: name ? true : false,
     }
   )
   console.log(name)
   console.log(data)
   useEffect(() => {
-    refetch().catch(console.error)
-  }, [name])
+    if (name) {
+      refetch().catch(console.error)
+    }
+  }, [name, refetch])
 
   // ref to the div at the bottom of the page
   const ref = useRef<HTMLDivElement>(null)
