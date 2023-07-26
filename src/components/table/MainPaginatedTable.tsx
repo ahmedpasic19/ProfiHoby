@@ -51,59 +51,57 @@ const MainPaginatedTable = <T extends object>({
   }, [pageCount])
 
   return (
-    <div className='flex h-fit flex-col overflow-x-auto'>
-      <div>
-        <div className='relative flex w-full flex-col items-center pb-4'>
-          {showNavigation ? (
-            <PaginatedPagination
-              table={table}
-              setPage={setPage}
-              setPageSize={setPageSize}
-              pageCount={pageCount}
-            />
-          ) : null}
-          <div className='max-h-[450px] overflow-auto'>
-            <table className='w-full text-center'>
-              <thead className='sticky top-0 border-b bg-gray-50'>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <tr key={Math.random()}>
-                    {headerGroup.headers.map((header) => (
-                      <th
-                        key={Math.random()}
-                        className='px-6 py-4 text-lg font-medium text-gray-900'
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody>
-                {table.getRowModel().rows.map((row, index) => (
-                  <tr key={Math.random()} className='border-b" bg-white'>
-                    {row.getVisibleCells().map((cell) => (
-                      <td
-                        className={`max-w-[10rem] overflow-hidden overflow-ellipsis whitespace-nowrap px-6 py-2 text-sm font-light text-gray-900 ${
-                          index % 2 === 0 ? 'bg-white' : 'bg-gray-200'
-                        }`}
-                        key={Math.random()}
-                      >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+    <div className='flex h-fit flex-col items-center overflow-x-auto'>
+      <div className='relative w-full'>
+        {showNavigation ? (
+          <PaginatedPagination
+            table={table}
+            setPage={setPage}
+            setPageSize={setPageSize}
+            pageCount={pageCount}
+          />
+        ) : null}
+        <div className='max-h-[450px]'>
+          <table className='w-full text-center'>
+            <thead className='sticky top-0 border-b bg-gray-50'>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={Math.random()}>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={Math.random()}
+                      className='px-6 py-4 text-lg font-medium text-gray-900'
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.map((row, index) => (
+                <tr key={Math.random()} className='border-b bg-white'>
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      className={`max-w-[10rem] overflow-hidden overflow-ellipsis whitespace-nowrap px-6 py-2 text-sm font-light text-gray-900 ${
+                        index % 2 === 0 ? 'bg-white' : 'bg-gray-200'
+                      }`}
+                      key={Math.random()}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
