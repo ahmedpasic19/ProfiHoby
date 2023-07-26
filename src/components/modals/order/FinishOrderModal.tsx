@@ -94,10 +94,6 @@ const FinishOrderModal = ({
       accessorKey: 'amount',
     },
     {
-      header: 'Na stanju',
-      accessorKey: 'article.amount',
-    },
-    {
       header: 'Cijena',
       accessorKey: 'price',
     },
