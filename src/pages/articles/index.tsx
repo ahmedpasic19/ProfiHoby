@@ -62,7 +62,7 @@ const Articles: NextPage = () => {
   const [pageIndex, setPageIndex] = useState(0)
   const [inputName, setInputName] = useState('') // for input value
   const [name, setName] = useState('')
-  const [fetchPublished, setFetchPublished] = useState<boolean | null>(false)
+  const [fetchPublished, setFetchPublished] = useState<boolean | null>(null)
 
   const handleSearchArticle = (e: FormEvent) => {
     e.preventDefault()
