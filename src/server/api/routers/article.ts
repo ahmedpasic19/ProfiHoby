@@ -76,6 +76,7 @@ export const articleRouter = createTRPCRouter({
         priceFrom: z.number().nullish(),
         priceTo: z.number().nullish(),
         orderByPrice: z.string().nullish(),
+        fetchPublished: z.boolean().nullish(),
       })
     )
     .query(async ({ input, ctx }) => {
@@ -110,6 +111,14 @@ export const articleRouter = createTRPCRouter({
                 base_price: {
                   ...(input.priceFrom ? { gte: input.priceFrom } : {}),
                   ...(input.priceTo ? { lte: input.priceTo } : {}),
+                },
+              }
+            : {}),
+          ...(input.fetchPublished !== null &&
+          input.fetchPublished !== undefined
+            ? {
+                published: {
+                  equals: input.fetchPublished,
                 },
               }
             : {}),
@@ -472,6 +481,7 @@ export const articleRouter = createTRPCRouter({
         discountPercentage: z.number().nullish(),
         discountPrice: z.number().nullish(),
         onDiscount: z.boolean().nullish(),
+        published: z.boolean().nullish(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -496,6 +506,9 @@ export const articleRouter = createTRPCRouter({
             : {}),
           ...(input.onDiscount !== null && input.onDiscount !== undefined
             ? { onDiscount: input.onDiscount }
+            : {}),
+          ...(input.published !== null && input.published !== undefined
+            ? { published: input.published }
             : {}),
         },
       })

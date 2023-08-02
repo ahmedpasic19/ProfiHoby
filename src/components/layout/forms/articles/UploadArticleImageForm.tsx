@@ -35,7 +35,7 @@ const UploadArticleImageForm = ({
 
       toast.success('Objavljeno na OLX')
     } catch (error) {
-      toast.error('Došlo je do greške')
+      toast.error('Došlo je do greške pri objavljivanju na OLX')
     }
   }
 
