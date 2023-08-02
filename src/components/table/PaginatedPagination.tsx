@@ -31,7 +31,7 @@ const PaginatedPagination = <T extends object>({
   }, [pageIndex, pageSize])
 
   return (
-    <div className='sticky flex h-12 w-full min-w-[1400px] items-center justify-center gap-2 bg-gray-100'>
+    <div className='sticky flex h-12 w-full items-center justify-center gap-2 bg-gray-100'>
       <button
         className='min-w-[2.5rem] cursor-pointer rounded border bg-white p-1 text-gray-800 disabled:cursor-not-allowed disabled:bg-gray-800 disabled:text-white'
         onClick={() => table.setPageIndex(0)}
@@ -89,7 +89,7 @@ const PaginatedPagination = <T extends object>({
         {/* change items per page in this array */}
         {[10, 20, 30, 40, 50].map((pageSize) => (
           <option key={pageSize} value={pageSize}>
-            Show {pageSize}
+            Prikaži {pageSize}
           </option>
         ))}
       </select>

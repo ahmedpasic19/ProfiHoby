@@ -42,7 +42,7 @@ const UploadImageForm = ({
   )
 
   const { mutate: createImage } = useMutation(
-    (input: { name: string; article_id: string; contentType: string }) =>
+    (input: { name: string; article_id: string }) =>
       trpcClient.image.createPresignedURL.mutate(input),
     {
       onSuccess: async (data) => {
@@ -70,7 +70,7 @@ const UploadImageForm = ({
         if (!url) return alert('NO URL')
 
         await fetch(url, {
-          method: 'PUT',
+          method: 'POST',
           body: formData,
         })
           .then((res) => console.log(res))
@@ -131,7 +131,6 @@ const UploadImageForm = ({
     createImage({
       article_id,
       name: files[0]?.name || '',
-      contentType: files[0]?.type || 'image/jpeg',
     })
   }
 

@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useRef, useState } from 'react'
+import { ChangeEvent, FormEvent, useRef, useState, useEffect } from 'react'
 import { Article, Image, CategoriesOnArticle, Category } from '@prisma/client'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../../utils/api'
@@ -13,6 +13,7 @@ import Spinner from '../../mics/Spinner'
 
 import { Dialog } from '@headlessui/react'
 import * as Ai from 'react-icons/ai'
+import * as Im from 'react-icons/im'
 
 import { formatTextContent, parseTextFormat } from '../../../utils/formatText'
 
@@ -50,6 +51,12 @@ const UpdateArticleModal = ({
     text: '',
     id: Math.random().toString(),
   })
+  const [published, setPublished] = useState(false)
+
+  // Set initial value
+  useEffect(() => {
+    setPublished(article.published)
+  }, [article])
 
   const queryClient = useQueryClient()
 
@@ -198,6 +205,7 @@ const UpdateArticleModal = ({
     const updatedArticle = {
       ...article,
       ...(brand ? { brand_id: brand?.value } : {}), // optionaly send brand_id
+      published,
     }
 
     updatedArticle.base_price = parseFloat(updatedArticle.base_price.toString())
@@ -303,8 +311,33 @@ const UpdateArticleModal = ({
               label='Cijena'
               type='number'
             />
+            <fieldset className='relative flex w-full justify-center pb-5'>
+              <label
+                htmlFor='olx'
+                className='w-3/4 select-none font-semibold text-gray-800'
+              >
+                Objavljen na OLX
+              </label>
+              <input
+                type='checkbox'
+                id='olx'
+                onChange={() => setPublished((prev) => !prev)}
+                className='absolute hidden'
+              />
+              {published ? (
+                <Ai.AiFillCheckSquare
+                  onClick={() => setPublished((prev) => !prev)}
+                  className='bottom-2 h-7 w-7 text-gray-800 hover:text-gray-600'
+                />
+              ) : (
+                <Im.ImCheckboxUnchecked
+                  onClick={() => setPublished((prev) => !prev)}
+                  className='bottom-2 h-7 w-7 text-gray-800 hover:text-gray-600'
+                />
+              )}
+            </fieldset>
             <fieldset className='flex w-full flex-col items-center'>
-              <label className='text-cl mb-2 w-3/4 text-start text-xl font-semibold text-gray-800'>
+              <label className='mb-2 w-3/4 text-start text-xl font-semibold text-gray-800'>
                 Brend
               </label>
               <div className='w-4/5'>

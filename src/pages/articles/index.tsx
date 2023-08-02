@@ -1,5 +1,8 @@
 import { NextPage } from 'next'
 import { useMemo, useState, useRef, FormEvent } from 'react'
+import { parseTextFormat } from '../../utils/formatText'
+import { toast } from 'react-toastify'
+import axios from 'axios'
 
 import { ColumnDef } from '@tanstack/react-table'
 import { Article, CategoriesOnArticle, Category, Image } from '@prisma/client'
@@ -9,6 +12,7 @@ import { useQuery } from '@tanstack/react-query'
 
 import useProtectRoute from '../../hooks/useProtectRoute'
 
+import Select from 'react-select'
 import MainPaginatedTable from '../../components/table/MainPaginatedTable'
 
 import DeleteArticleModal from '../../components/modals/articles/DeleteArticleModal'
@@ -25,10 +29,7 @@ import { FaTrash } from 'react-icons/fa'
 import { AiFillEdit } from 'react-icons/ai'
 import { HiOutlineRectangleGroup } from 'react-icons/hi2'
 import { ImCancelCircle } from 'react-icons/im'
-
-import { parseTextFormat } from '../../utils/formatText'
-import { toast } from 'react-toastify'
-import axios from 'axios'
+import Spinner from '../../components/mics/Spinner'
 
 type TArticle = Article & {
   image: Image[]
@@ -61,6 +62,7 @@ const Articles: NextPage = () => {
   const [pageIndex, setPageIndex] = useState(0)
   const [inputName, setInputName] = useState('') // for input value
   const [name, setName] = useState('')
+  const [fetchPublished, setFetchPublished] = useState<boolean | null>(false)
 
   const handleSearchArticle = (e: FormEvent) => {
     e.preventDefault()
@@ -70,11 +72,16 @@ const Articles: NextPage = () => {
 
   const ref = useRef<HTMLInputElement>(null) // ref to article_name input
 
-  const { data: articleData, isLoading } = useQuery(
+  const {
+    data: articleData,
+    isLoading,
+    refetch,
+  } = useQuery(
     [
       'articles.getAllArticles',
       'articles.getAllArticles',
       {
+        fetchPublished,
         name,
         pageIndex,
         pageSize,
@@ -82,11 +89,26 @@ const Articles: NextPage = () => {
     ],
     () =>
       trpcClient.article.getAllArticles.query({
+        fetchPublished,
         name,
         pageIndex,
         pageSize,
       })
   )
+
+  const handleSelectChange = async (
+    option: {
+      label: string
+      value: boolean | null
+    } | null
+  ) => {
+    if (option) {
+      console.log(option.value)
+      setFetchPublished(option.value)
+      setPageIndex(0)
+      await refetch()
+    }
+  }
 
   // Publish article to OLX
   const postToOLX = async (article_id: string) => {
@@ -95,7 +117,7 @@ const Articles: NextPage = () => {
 
       toast.success('Objavljeno na OLX')
     } catch (error) {
-      toast.error('Došlo je do greške')
+      toast.error('Došlo je do greške pri objavljivanju na OLX')
     }
   }
 
@@ -143,7 +165,9 @@ const Articles: NextPage = () => {
       header: 'Objavljeno',
       accessorKey: 'olx_id',
       cell: ({ row }: { row: TRow }) =>
-        row.original.olx_id ? 'Objavljen ✔️' : 'Nije objavljen ❌',
+        row.original.olx_id || row.original.published
+          ? 'Objavljen ✔️'
+          : 'Nije objavljen ❌',
     },
     {
       header: 'Objavi',
@@ -280,7 +304,20 @@ const Articles: NextPage = () => {
             onSubmit={handleSearchArticle}
             className='flex h-full w-full items-center justify-end pb-5'
           >
-            <fieldset className='relative my-3 flex w-full flex-col items-end pr-5'>
+            <fieldset className='w-full max-w-xs pl-10'>
+              <label className='font-semibold text-gray-800'>Poredaj</label>
+              <Select
+                options={[
+                  { label: 'Svi', value: null },
+                  { label: 'Objavljeni', value: true },
+                  { label: 'Neobjavljeni', value: false },
+                ]}
+                onChange={handleSelectChange}
+                placeholder='Poredaj...'
+              />
+              {isLoading ? <Spinner /> : null}
+            </fieldset>
+            <fieldset className='relative my-3 flex w-full max-w-md flex-col items-end pr-5'>
               <input
                 ref={ref}
                 type='text'
