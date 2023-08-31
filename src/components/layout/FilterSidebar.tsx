@@ -1,11 +1,9 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { trpcClient } from '../../utils/api'
 
 import Select from 'react-select'
 import Spinner from '../mics/Spinner'
-import { BsFilterLeft } from 'react-icons/bs'
-import { AiFillCloseCircle } from 'react-icons/ai'
 
 type TProps = {
   orderByPrice?: string
@@ -34,8 +32,6 @@ const FilterSidebar = ({
   setPriceTo,
   refetch,
 }: TProps) => {
-  const [open, setOpen] = useState(false)
-
   function scrollToTop() {
     window.scrollTo({
       top: 0,
@@ -71,17 +67,6 @@ const FilterSidebar = ({
     [orderByPrice]
   )
 
-  // Prevent scrolling when the modal is open
-  useEffect(() => {
-    if (open) {
-      // Disable scrolling
-      document.body.style.overflow = 'hidden'
-    } else {
-      // Re-enable scrolling
-      document.body.style.overflow = 'auto'
-    }
-  }, [open])
-
   useEffect(() => {
     setTimeout(() => {
       refetch()
@@ -91,17 +76,8 @@ const FilterSidebar = ({
 
   return (
     <>
-      <button
-        onClick={() => setOpen(true)}
-        className='flex h-full w-full items-center justify-start p-2 pl-3 font-semibold text-gray-800 sm:hidden'
-      >
-        <BsFilterLeft className='mr-3 h-8 w-8' />
-        <label className='mb-1 text-lg'>Filteri</label>
-      </button>
       <div
-        className={`${
-          open ? 'absolute inset-0 z-50 flex justify-end bg-white' : 'hidden'
-        } h-full w-full flex-col px-2 pb-4 sm:sticky sm:top-[14vh] sm:flex sm:max-w-[16rem] sm:pl-2 sm:pb-0`}
+        className={`flex h-full w-full flex-col justify-end bg-white px-2 pb-4 sm:sticky sm:top-[14vh] sm:flex sm:max-w-[16rem] sm:pl-2 sm:pb-0`}
       >
         <fieldset className='mb-2 flex flex-col'>
           <label htmlFor='od' className='mb-1 font-semibold'>
@@ -139,7 +115,6 @@ const FilterSidebar = ({
             value={order_value || null}
             onChange={(option) => {
               if (option) {
-                setOpen(false)
                 setOrderByPrice(option.value)
                 scrollToTop()
               }
@@ -162,17 +137,12 @@ const FilterSidebar = ({
         <button
           onClick={() => {
             refetch()
-            setOpen(false)
             scrollToTop()
           }}
-          className='flex w-full items-center justify-center bg-gray-800 p-2 text-lg text-white'
+          className='flex w-full items-center justify-center bg-gray-800 py-2 text-lg text-white'
         >
           {isLoading ? <Spinner /> : 'Osvježi'}
         </button>
-        <AiFillCloseCircle
-          onClick={() => setOpen(false)}
-          className='absolute top-4 right-4 h-8 w-8 cursor-pointer rounded-full bg-gray-600 text-white hover:bg-gray-800 sm:hidden'
-        />
       </div>
     </>
   )
