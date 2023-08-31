@@ -72,35 +72,37 @@ const Sales: NextPage = () => {
 
       <div className='pt-5'>
         <div className='flex w-full items-center justify-center'>
-          <FilterSidebar
-            orderByPrice={orderByPrice}
-            isLoading={isLoading}
-            brand={brand}
-            priceFrom={priceFrom}
-            priceTo={priceTo}
-            setBrand={setBrand}
-            setOrderByPrice={setOrderByPrice}
-            setPriceFrom={setPriceFrom}
-            setPriceTo={setPriceTo}
-            refetch={refetch}
-          />
           <div className='flex h-full w-full flex-col sm:flex-row'>
-            {isSuccess &&
-              data.pages.map((page) =>
-                page.articles.map((article) => (
-                  <Article
-                    key={Math.random()}
-                    article_id={article.id}
-                    categories={article.categories}
-                    imageURL={article.image[0]?.access_url || ''}
-                    name={article.name}
-                    price={article.base_price}
-                    discountPercentage={article.discountPercentage || 0}
-                    discountPrice={article.discountPrice || 0}
-                    onDiscount={article.onDiscount || false}
-                  />
-                ))
-              )}
+            <FilterSidebar
+              orderByPrice={orderByPrice}
+              isLoading={isLoading}
+              brand={brand}
+              priceFrom={priceFrom}
+              priceTo={priceTo}
+              setBrand={setBrand}
+              setOrderByPrice={setOrderByPrice}
+              setPriceFrom={setPriceFrom}
+              setPriceTo={setPriceTo}
+              refetch={refetch}
+            />
+            <div className='article_grid_layout'>
+              {isSuccess &&
+                data.pages.map((page) =>
+                  page.articles.map((article) => (
+                    <Article
+                      key={Math.random()}
+                      article_id={article.id}
+                      categories={article.categories}
+                      imageURL={article.image[0]?.access_url || ''}
+                      name={article.name}
+                      price={article.base_price}
+                      discountPercentage={article.discountPercentage || 0}
+                      discountPrice={article.discountPrice || 0}
+                      onDiscount={article.onDiscount || false}
+                    />
+                  ))
+                )}
+            </div>
           </div>
         </div>
 

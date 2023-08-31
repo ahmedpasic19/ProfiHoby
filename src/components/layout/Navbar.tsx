@@ -126,6 +126,7 @@ const Navbar = () => {
           pathname === '/' ||
           pathname.includes('articles/') ||
           pathname.includes('search') ||
+          pathname.includes('sales') ||
           pathname.includes('cart/') ||
           pathname.includes('categories/') ||
           pathname.includes('groups/') ||
