@@ -16,6 +16,8 @@ import { applyDiscount } from '../../utils/utils'
 
 import OLXLogo from '../../assets/olx_logo.png'
 
+import Pixel from '../../components/Pixel'
+
 const ArticlePage = () => {
   const [openCart, setOpenCart] = useState(false)
   const [count, setCount] = useState(1)
@@ -82,6 +84,8 @@ const ArticlePage = () => {
 
   return (
     <>
+      <Pixel name='FACEBOOK_PIXEL_1' />
+
       <div className='flex w-full items-center justify-center'>
         <div className='flex h-full min-h-screen w-full flex-col pb-5 xl:w-4/5'>
           <div className='flex w-full flex-col items-center'>
