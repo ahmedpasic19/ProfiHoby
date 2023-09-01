@@ -11,6 +11,8 @@ import { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
 import Image from 'next/image'
 
+import Pixel from '../../components/Pixel'
+
 type TData = OrderArticle & {
   article: Article & {
     image: {
@@ -132,6 +134,8 @@ const Cart = () => {
 
   return (
     <>
+      <Pixel name='FACEBOOK_PIXEL_1' />
+
       <div className='flex h-full min-h-screen w-full flex-col items-center py-0 px-4 pt-0 sm:px-20'>
         <h1 className='w-full text-center text-[3em] font-bold text-gray-800'>
           Korpa

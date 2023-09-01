@@ -12,6 +12,8 @@ import Spinner from '../../components/mics/Spinner'
 import MainTable from '../../components/table/MainTable'
 import Image from 'next/image'
 
+import Pixel from '../../components/Pixel'
+
 type TData = {
   firstName: string
   lastName: string
@@ -126,71 +128,77 @@ const OrderInformation = () => {
   }
 
   return (
-    <div className='flex h-full min-h-screen w-full flex-col items-center justify-center px-4 py-0 pt-0 sm:px-20'>
-      <h1 className='mb-5 w-full text-center text-[3em] font-bold text-gray-800'>
-        Upotpunite narudžbu
-      </h1>
-      <form onSubmit={handleSubbmit} className='w-full max-w-2xl'>
-        <FieldSet
-          value={orderData.firstName || ''}
-          onChange={handleChange}
-          name='firstName'
-          label='Ime'
-          type='text'
-        />
-        <FieldSet
-          value={orderData.lastName || ''}
-          onChange={handleChange}
-          name='lastName'
-          label='Prezime'
-          type='text'
-        />
-        <FieldSet
-          value={orderData.address || ''}
-          onChange={handleChange}
-          name='address'
-          label='Adresa'
-          type='text'
-        />
-        <FieldSet
-          value={orderData.phone_number || ''}
-          onChange={handleChange}
-          name='phone_number'
-          label='Broj telefona'
-          type='text'
-        />
-        <fieldset className='flex w-full flex-col items-center'>
-          <label
-            htmlFor='note'
-            className='text-cl mb-2 w-3/4 text-start text-xl font-semibold text-gray-800'
-          >
-            Napomena
-          </label>
-          <Textarea
-            onChange={handleChange}
-            rows={4}
-            id='note'
-            name='note'
-            placeholder='Napomena'
-          />
-        </fieldset>
+    <>
+      <Pixel name='FACEBOOK_PIXEL_1' />
 
-        <section className='mt-10 flex w-full items-center justify-center pb-10'>
-          <button
-            disabled={
-              !orderData.address || !orderData.firstName || !orderData.lastName
-            }
-            onSubmit={handleSubbmit}
-            className='flex w-4/5 items-center justify-center rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
-          >
-            {isLoading ? <Spinner /> : 'Naruči'}
-          </button>
-        </section>
-      </form>
-      <div className='hidden sm:block'>
-        <MainTable data={useData()} columns={columns} />
+      <div className='flex h-full min-h-screen w-full flex-col items-center justify-center px-4 py-0 pt-0 sm:px-20'>
+        <h1 className='mb-5 w-full text-center text-[3em] font-bold text-gray-800'>
+          Upotpunite narudžbu
+        </h1>
+        <form onSubmit={handleSubbmit} className='w-full max-w-2xl'>
+          <FieldSet
+            value={orderData.firstName || ''}
+            onChange={handleChange}
+            name='firstName'
+            label='Ime'
+            type='text'
+          />
+          <FieldSet
+            value={orderData.lastName || ''}
+            onChange={handleChange}
+            name='lastName'
+            label='Prezime'
+            type='text'
+          />
+          <FieldSet
+            value={orderData.address || ''}
+            onChange={handleChange}
+            name='address'
+            label='Adresa'
+            type='text'
+          />
+          <FieldSet
+            value={orderData.phone_number || ''}
+            onChange={handleChange}
+            name='phone_number'
+            label='Broj telefona'
+            type='text'
+          />
+          <fieldset className='flex w-full flex-col items-center'>
+            <label
+              htmlFor='note'
+              className='text-cl mb-2 w-3/4 text-start text-xl font-semibold text-gray-800'
+            >
+              Napomena
+            </label>
+            <Textarea
+              onChange={handleChange}
+              rows={4}
+              id='note'
+              name='note'
+              placeholder='Napomena'
+            />
+          </fieldset>
+
+          <section className='mt-10 flex w-full items-center justify-center pb-10'>
+            <button
+              disabled={
+                !orderData.address ||
+                !orderData.firstName ||
+                !orderData.lastName
+              }
+              onSubmit={handleSubbmit}
+              className='flex w-4/5 items-center justify-center rounded-xl bg-gray-800 p-4 text-center text-xl font-semibold text-gray-300 hover:bg-gray-700 disabled:bg-gray-600'
+            >
+              {isLoading ? <Spinner /> : 'Naruči'}
+            </button>
+          </section>
+        </form>
+        <div className='hidden sm:block'>
+          <MainTable data={useData()} columns={columns} />
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 

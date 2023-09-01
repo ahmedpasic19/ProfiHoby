@@ -1,3 +1,4 @@
+import { NextPage } from 'next'
 import { useSearchParams } from 'next/navigation'
 import { useState, useRef, useEffect, useMemo } from 'react'
 
@@ -7,7 +8,8 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import Article from '../components/mics/Article'
 import Spinner from '../components/mics/Spinner'
 import FilterSidebar from '../components/layout/FilterSidebar'
-import { NextPage } from 'next'
+
+import Pixel from '../components/Pixel'
 
 const SearchPage: NextPage = () => {
   const [priceFrom, setPriceFrom] = useState(0)
@@ -48,8 +50,7 @@ const SearchPage: NextPage = () => {
       },
     }
   )
-  console.log(name)
-  console.log(data)
+
   useEffect(() => {
     if (name) {
       refetch().catch(console.error)
@@ -83,67 +84,71 @@ const SearchPage: NextPage = () => {
   }, [isVisible, fetchNextPage])
 
   return (
-    <div className='pt-5'>
-      <div className='flex w-full items-center justify-center'>
-        <div className='flex h-full w-full flex-col sm:flex-row'>
-          <FilterSidebar
-            orderByPrice={orderByPrice}
-            isLoading={isLoading}
-            brand={brand}
-            priceFrom={priceFrom}
-            priceTo={priceTo}
-            setBrand={setBrand}
-            setOrderByPrice={setOrderByPrice}
-            setPriceFrom={setPriceFrom}
-            setPriceTo={setPriceTo}
-            refetch={refetch}
-          />
-          <div className='article_grid_layout'>
-            {isSuccess &&
-              data?.pages?.map((page) =>
-                page.articles.map((article) => (
-                  <Article
-                    key={article.id}
-                    name={article.name}
-                    discountPercentage={article.discountPercentage || 0}
-                    discountPrice={article.discountPrice || 0}
-                    onDiscount={article.onDiscount || false}
-                    imageURL={article.image[0]?.access_url || ''}
-                    price={article.base_price}
-                    categories={article.categories}
-                    article_id={article.id}
-                  />
-                ))
-              )}
+    <>
+      <Pixel name='FACEBOOK_PIXEL_1' />
+
+      <div className='pt-5'>
+        <div className='flex w-full items-center justify-center'>
+          <div className='flex h-full w-full flex-col sm:flex-row'>
+            <FilterSidebar
+              orderByPrice={orderByPrice}
+              isLoading={isLoading}
+              brand={brand}
+              priceFrom={priceFrom}
+              priceTo={priceTo}
+              setBrand={setBrand}
+              setOrderByPrice={setOrderByPrice}
+              setPriceFrom={setPriceFrom}
+              setPriceTo={setPriceTo}
+              refetch={refetch}
+            />
+            <div className='article_grid_layout'>
+              {isSuccess &&
+                data?.pages?.map((page) =>
+                  page.articles.map((article) => (
+                    <Article
+                      key={article.id}
+                      name={article.name}
+                      discountPercentage={article.discountPercentage || 0}
+                      discountPrice={article.discountPrice || 0}
+                      onDiscount={article.onDiscount || false}
+                      imageURL={article.image[0]?.access_url || ''}
+                      price={article.base_price}
+                      categories={article.categories}
+                      article_id={article.id}
+                    />
+                  ))
+                )}
+            </div>
           </div>
         </div>
+
+        {isSuccess && data?.pages?.at(0)?.articles?.length === 0 ? (
+          <div className='w-full text-center text-2xl font-bold text-gray-800'>
+            Nema rezultata
+          </div>
+        ) : null}
+
+        {isLoading && (
+          <div className='flex w-full items-center justify-center text-center'>
+            <Spinner />
+            Učitavanje...
+          </div>
+        )}
+
+        {isFetchingNextPage && (
+          <div className='flex w-full items-center justify-center text-center'>
+            <Spinner />
+            Učitavanje...
+          </div>
+        )}
+
+        {/* Fetch more when this div is in view */}
+        <div ref={ref} className='z-[100] text-transparent'>
+          BOTTOM ELEMENT
+        </div>
       </div>
-
-      {isSuccess && data?.pages?.at(0)?.articles?.length === 0 ? (
-        <div className='w-full text-center text-2xl font-bold text-gray-800'>
-          Nema rezultata
-        </div>
-      ) : null}
-
-      {isLoading && (
-        <div className='flex w-full items-center justify-center text-center'>
-          <Spinner />
-          Učitavanje...
-        </div>
-      )}
-
-      {isFetchingNextPage && (
-        <div className='flex w-full items-center justify-center text-center'>
-          <Spinner />
-          Učitavanje...
-        </div>
-      )}
-
-      {/* Fetch more when this div is in view */}
-      <div ref={ref} className='z-[100] text-transparent'>
-        BOTTOM ELEMENT
-      </div>
-    </div>
+    </>
   )
 }
 
