@@ -38,6 +38,7 @@ const Article = ({
       <section className='relative flex h-3/5 w-full items-center justify-center overflow-hidden border-b-[1px] border-r-gray-100'>
         <div className='flex items-center justify-center'>
           <Image
+            unoptimized
             src={imageURL}
             alt='article image'
             // width={150}
