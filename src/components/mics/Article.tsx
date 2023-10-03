@@ -2,7 +2,7 @@ import { CategoriesOnArticle, Category } from '@prisma/client'
 import { useRouter } from 'next/router'
 import { applyDiscount } from '../../utils/utils'
 
-import Image from 'next/image'
+import UnoptimizedImage from './UnoptimizedImage'
 
 type TArticleProps = {
   disableLink?: boolean
@@ -37,7 +37,7 @@ const Article = ({
     >
       <section className='relative flex h-3/5 w-full items-center justify-center overflow-hidden border-b-[1px] border-r-gray-100'>
         <div className='flex items-center justify-center'>
-          <Image
+          <UnoptimizedImage
             unoptimized
             src={imageURL}
             alt='article image'

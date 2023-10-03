@@ -7,7 +7,7 @@ import { toast } from 'react-toastify'
 
 import Spinner from '../../mics/Spinner'
 import MainTable from '../../table/MainTable'
-import Image from 'next/image'
+import UnoptimizedImage from '../../mics/UnoptimizedImage'
 import { ColumnDef } from '@tanstack/react-table'
 
 type TData = Order
@@ -74,7 +74,7 @@ const FinishOrderModal = ({
       cell: ({ row }: { row: TRow }) => {
         return (
           <div className='flex w-full items-center justify-center'>
-            <Image
+            <UnoptimizedImage
               alt='article image'
               src={row.original.article.image.at(0)?.access_url || ''}
               width={100}

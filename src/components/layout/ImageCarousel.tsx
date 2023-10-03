@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import Image from 'next/image'
 import * as Bi from 'react-icons/bi'
 
 import FullScreenImageModal from '../modals/articles/FullScreenImageModal'
+import UnoptimizedImage from '../mics/UnoptimizedImage'
 
 const ImageCarousel = ({ images }: { images: string[] }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -29,7 +29,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
               <Bi.BiSkipPreviousCircle className='h-8 w-8' />
             </button>
             {/* eslint-disable */}
-            <Image
+            <UnoptimizedImage
               onClick={() => setOpenFullScreen(true)}
               src={images[currentImageIndex]!}
               fill

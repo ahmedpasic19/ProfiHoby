@@ -1,8 +1,9 @@
 import { useState } from 'react'
 
-import Image, { StaticImageData } from 'next/image'
+import { StaticImageData } from 'next/image'
 import Banner1 from '../../../assets/banner1.jpg'
 import Banner2 from '../../../assets/banner2.jpg'
+import UnoptimizedImage from '../../mics/UnoptimizedImage'
 
 const HighlightedArticles = () => {
   const [itemIndex, setItemIndex] = useState(0)
@@ -118,7 +119,7 @@ const HiglightedArticle = ({ url }: { url: StaticImageData }) => {
       className='relative flex h-full w-screen items-center justify-center duration-700 ease-in-out'
       data-carousel-item
     >
-      <Image
+      <UnoptimizedImage
         className='absolute block h-full w-full object-contain'
         alt='Article'
         src={url}

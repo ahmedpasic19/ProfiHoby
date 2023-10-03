@@ -10,7 +10,7 @@ import FieldSet from '../../components/mics/Fieldset'
 import Textarea from '../../components/mics/Textarea'
 import Spinner from '../../components/mics/Spinner'
 import MainTable from '../../components/table/MainTable'
-import Image from 'next/image'
+import UnoptimizedImage from '../../components/mics/UnoptimizedImage'
 
 import Pixel from '../../components/Pixel'
 
@@ -93,7 +93,7 @@ const OrderInformation = () => {
       cell: ({ row }: { row: TRow }) => {
         return (
           <div className='flex w-full items-center justify-center'>
-            <Image
+            <UnoptimizedImage
               alt='article image'
               src={row.original.article.image.at(0)?.access_url || ''}
               width={100}
