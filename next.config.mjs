@@ -20,6 +20,7 @@ const config = {
       'profihoby.s3.eu-north-1.amazonaws.com',
       'vp.lacuna.ba',
     ],
+    unoptimized: true,
   },
 }
 
