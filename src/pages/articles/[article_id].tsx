@@ -104,6 +104,7 @@ const ArticlePage = () => {
                       className='flex h-28 w-28 items-center justify-center overflow-hidden'
                     >
                       <Image
+                        unoptimized
                         alt='article image'
                         src={image}
                         width={300}
