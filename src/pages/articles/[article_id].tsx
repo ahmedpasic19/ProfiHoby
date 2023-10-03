@@ -103,7 +103,7 @@ const ArticlePage = () => {
                       key={Math.random().toString()}
                       className='flex h-28 w-28 items-center justify-center overflow-hidden'
                     >
-import UnoptimizedImage
+                      <UnoptimizedImage
                         unoptimized
                         alt='article image'
                         src={image}
@@ -215,7 +215,7 @@ import UnoptimizedImage
                 </section>
 
                 <section className='mt-5 flex w-full items-center'>
-import UnoptimizedImage
+                  <UnoptimizedImage
                     height={50}
                     width={50}
                     alt='OLX logo'
