@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 
 import ImageCarousel from '../../components/layout/ImageCarousel'
-import Image from 'next/image'
+import UnoptimizedImage from '../../components/mics/UnoptimizedImage'
 import Article from '../../components/mics/Article'
 import Counter from '../../components/mics/Counter'
 import AddToCart from '../../components/modals/cart/AddToCart'
@@ -103,7 +103,7 @@ const ArticlePage = () => {
                       key={Math.random().toString()}
                       className='flex h-28 w-28 items-center justify-center overflow-hidden'
                     >
-                      <Image
+                      <UnoptimizedImage
                         unoptimized
                         alt='article image'
                         src={image}
@@ -215,7 +215,7 @@ const ArticlePage = () => {
                 </section>
 
                 <section className='mt-5 flex w-full items-center'>
-                  <Image
+                  <UnoptimizedImage
                     height={50}
                     width={50}
                     alt='OLX logo'

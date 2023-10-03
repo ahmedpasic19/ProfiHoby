@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import useScrollDetector from '../../hooks/useScrollDetector'
@@ -8,6 +7,7 @@ import VIBER_logo from '../../assets/viber_logo.png'
 import { BiCopy } from 'react-icons/bi'
 import { BsFillTelephoneInboundFill } from 'react-icons/bs'
 import useCopyToClipboard from '../../hooks/useCopyToClipboard'
+import UnoptimizedImage from '../mics/UnoptimizedImage'
 
 const ContactBlob = () => {
   const [open, setOpen] = useState(false)
@@ -70,8 +70,8 @@ const ContactBlob = () => {
             }
             className='relative flex h-full w-full items-center justify-start rounded-full'
           >
-            <Image
-              alt='Image'
+            <UnoptimizedImage
+              alt='UnoptimizedImage'
               src={OLX_logo}
               width={100}
               height={100}
@@ -84,7 +84,7 @@ const ContactBlob = () => {
             onClick={() => handleCopyToClipboard('+387 62 671 327')}
             className='relative flex h-full w-full items-center justify-start rounded-full'
           >
-            <Image
+            <UnoptimizedImage
               alt='Image'
               src={VIBER_logo}
               width={100}

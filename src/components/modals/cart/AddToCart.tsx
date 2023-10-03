@@ -6,7 +6,7 @@ import { toast } from 'react-toastify'
 import { AiFillCloseCircle } from 'react-icons/ai'
 import { Dialog } from '@headlessui/react'
 import Spinner from '../../mics/Spinner'
-import Image from 'next/image'
+import UnoptimizedImage from '../../mics/UnoptimizedImage'
 import { useRouter } from 'next/router'
 
 type TProps = {
@@ -131,7 +131,7 @@ const AddToCart = ({
 
             <div className='flex w-full items-start justify-start px-3'>
               <div>
-                <Image
+                <UnoptimizedImage
                   alt='article image'
                   src={image}
                   width={100}

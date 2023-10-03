@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { useDropzone } from 'react-dropzone'
 
-import Image from 'next/image'
+import UnoptimizedImage from '../../../mics/UnoptimizedImage'
 import Spinner from '../../../mics/Spinner'
 import { toast } from 'react-toastify'
 import axios from 'axios'
@@ -218,7 +218,7 @@ const UploadArticleImageForm = ({
                 key={Math.random().toString()}
                 className='flex h-full w-full items-center justify-center'
               >
-                <Image
+                <UnoptimizedImage
                   alt='article image'
                   src={image.access_url || ''}
                   width={300}

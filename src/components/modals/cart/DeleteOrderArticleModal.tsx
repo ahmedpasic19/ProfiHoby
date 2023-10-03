@@ -3,7 +3,7 @@ import { Article, OrderArticle } from '@prisma/client'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 import Spinner from '../../mics/Spinner'
-import Image from 'next/image'
+import UnoptimizedImage from '../../mics/UnoptimizedImage'
 import { trpcClient } from '../../../utils/api'
 
 type TData = OrderArticle & {
@@ -67,7 +67,7 @@ const DeleteOrderArticleModal = ({
             </h1>
             <section className='flex flex-col'>
               <div className='flex w-full items-center justify-center'>
-                <Image
+                <UnoptimizedImage
                   alt='article image'
                   src={article?.article?.image?.at(0)?.access_url || ''}
                   width={300}

@@ -9,8 +9,8 @@ import useGrantUniqueToken from '../../hooks/useGrantUniqueToken'
 
 import Logo1 from '../../assets/logo1.png'
 import Logo2 from '../../assets/logo2.png'
-import Image from 'next/image'
 import Link from 'next/link'
+import UnoptimizedImage from '../mics/UnoptimizedImage'
 import DropdownMenu from './navbar/DropdownMenu'
 import SearchBar from '../mics/SearchBar'
 import { AiFillHome, AiOutlineShoppingCart } from 'react-icons/ai'
@@ -139,14 +139,14 @@ const Navbar = () => {
       >
         <div className='mx-auto flex justify-between sm:justify-evenly'>
           <Link href='/' className='relative flex items-center justify-center'>
-            <Image
+            <UnoptimizedImage
               src={Logo2}
               width={75}
               height={75}
               className='block h-1/2 w-1/2 object-contain'
               alt='Profihoby Logo'
             />
-            <Image
+            <UnoptimizedImage
               src={Logo1}
               className='hidden h-1/3 w-full object-fill sm:block'
               alt='Profihoby Logo'

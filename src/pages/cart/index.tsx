@@ -9,7 +9,7 @@ import DeleteOrderArticleModal from '../../components/modals/cart/DeleteOrderArt
 import { FaTrash } from 'react-icons/fa'
 import { ColumnDef } from '@tanstack/react-table'
 import Link from 'next/link'
-import Image from 'next/image'
+import UnoptimizedImage from '../../components/mics/UnoptimizedImage'
 
 import Pixel from '../../components/Pixel'
 
@@ -65,7 +65,7 @@ const Cart = () => {
       cell: ({ row }: { row: TRow }) => {
         return (
           <div className='flex w-full items-center justify-center'>
-            <Image
+            <UnoptimizedImage
               alt='article image'
               src={row.original.article.image.at(0)?.access_url || ''}
               width={100}

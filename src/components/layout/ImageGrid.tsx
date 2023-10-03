@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { trpcClient } from '../../utils/api'
 
-import Image from 'next/image'
+import UnoptimizedImage from '../mics/UnoptimizedImage'
 import * as Ai from 'react-icons/ai'
 import { Image as ImageModel } from '@prisma/client'
 
@@ -41,7 +41,7 @@ const ImageGrid = ({ images, article_id, action_id, isDelete }: TProps) => {
           key={Math.random().toString()}
           className='relative flex h-full w-full items-center justify-center'
         >
-          <Image
+          <UnoptimizedImage
             src={image.access_url || ''}
             width={300}
             height={200}
